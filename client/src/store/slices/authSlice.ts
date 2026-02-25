@@ -1,0 +1,58 @@
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import type { AuthResponseData } from '@/interfaces/auth';
+import { UserRole } from '@/constants/user-role';
+
+interface User {
+  id: string | null;
+  name: string | null;
+  email: string | null;
+  role: UserRole | null;
+  isVerified: boolean;
+  isBlocked: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+interface AuthState {
+  user: User | null;  
+  isAuthenticated: boolean;
+}
+
+const initialState: AuthState = {
+  user: null,
+  isAuthenticated: false,
+};
+
+const setAuthData = (state: AuthState, data: AuthResponseData) => {
+  state.isAuthenticated = data.isVerified && !data.isBlocked;
+
+  state.user = {
+    id: data.id,
+    name: data.name,
+    email: data.email,
+    role: data.role,
+    isVerified: data.isVerified,
+    isBlocked: data.isBlocked,
+  };
+}
+
+const authSlice = createSlice({
+  name: 'auth',
+  initialState,
+  reducers: {
+    setCredentials: (
+      state,
+      action: PayloadAction<AuthResponseData >
+    ) => {
+      setAuthData(state, action.payload)
+    },
+    logout: (state) => {
+      state.user = null;
+      state.isAuthenticated = false;
+    },
+  },
+});
+
+export const { setCredentials, logout } = authSlice.actions;
+
+export default authSlice.reducer;
