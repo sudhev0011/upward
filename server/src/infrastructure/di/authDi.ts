@@ -65,4 +65,4 @@ export const registrationController = new RegistrationController(registerUserUse
 export const loginController = new LoginController(loginUserUseCase,adminLoginUseCase,cookieService,googleLoginUseCase, logoutUseCase);
 export const otpController = new OtpController(requestOtpUseCase, verifyOtpUseCase, cookieService);
 export const passwordController = new PasswordController(forgotPasswordUseCase,resetPasswordUseCase)
-export const tokenController = new TokenController(refreshTokenUseCase,getUserByIdUseCase,tokenService,cookieService);
+export const tokenController = new TokenController(refreshTokenUseCase,getUserByIdUseCase,cookieService);

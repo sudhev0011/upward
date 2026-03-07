@@ -1,42 +1,73 @@
-import axios from 'axios';
-import { store } from '../store/store';
-import { logout } from '../store/slices/authSlice';
+import axios from "axios";
+import { store } from "../store/store";
+import { logout } from "../store/slices/authSlice";
+
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+const processQueue = (error: any) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve();
+    }
+  });
+
+  failedQueue = [];
+};
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-  withCredentials: true, // If using HTTP-only cookies
+  withCredentials: true,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
-// Request interceptor (Optional, keep if needed for other headers)
-api.interceptors.request.use(
-  (config) => {
-    // Tokens are now handled via HTTP-Only cookies automatically
-    // thanks to the 'withCredentials: true' setting above.
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// Response interceptor for handling 401s and token expiration
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      // Clear Redux state and local storage
-      store.dispatch(logout());
-      
-      // Optionally redirect to login page (handle securely depending on router context)
-      // window.location.href = '/login';
+  (response) => response,
+  async (error) => {
+    const original = error.config;
+    const status = error?.response?.status;
+    const message = error?.response?.data?.message || "";
+
+    if (!status) {
+      return Promise.reject(error);
     }
-    return Promise.reject(error.response.data);
+
+    if (status === 403 || message.includes("Invalid refresh token")) {
+      store.dispatch(logout());
+      return Promise.reject(error);
+    }
+
+    if (status === 401 && !original._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({
+            resolve: () => resolve(api(original)),
+            reject,
+          });
+        });
+      }
+
+      original._retry = true;
+      isRefreshing = true;
+
+      try {
+        await api.post("/api/auth/refresh");
+
+        processQueue(null);
+        return api(original);
+      } catch (err) {
+        processQueue(err);
+        store.dispatch(logout());
+        return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    return Promise.reject(error?.response?.data);
   }
 );
-
-export default api;

@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 export const useCheckAuthQuery = ()=>{
     return useQuery({
         queryKey: ['authData'],
-        queryFn: authApi.checkAuth
+        queryFn: authApi.checkAuth,
+        retry: false,
     })
 }

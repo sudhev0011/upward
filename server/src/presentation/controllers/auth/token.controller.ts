@@ -1,33 +1,31 @@
 import { Request, Response, NextFunction } from 'express';
 import { IAuthGetUserByIdUseCase } from '../../../domain/interfaces/usecases/auth/user/IAuthGetUserByIdUseCase';
 import { IRefreshTokenUseCase } from '../../../domain/interfaces/usecases/auth/session/IRefreshTokenUseCase';
-import { ITokenService } from '../../../domain/interfaces/services/ITokenService';
 import { ICookieService } from '../../services/ICookieService';
 import { AuthenticatedRequest } from '../../../shared/types/authenticated-request';
 import { handleValidationError, handleAsyncError,validateUserId,sendSuccessResponse,sendErrorResponse } from '../../../shared/utils/presentation/controller.utils';
-import { UserRole } from '../../../domain/enums/user-role.enum';
 import { env } from '../../../infrastructure/config/env';
 
 export class TokenController {
   constructor(
     private readonly _refreshTokenUseCase: IRefreshTokenUseCase,
     private readonly _getUserByIdUseCase: IAuthGetUserByIdUseCase,
-    private readonly _tokenService: ITokenService,
     private readonly _cookieService: ICookieService,
   ) { }
 
   refresh = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
-    const refreshToken = (req as Request & { cookies?: Record<string, string> }).cookies?.[env.COOKIE_NAME_ACCESS];
+    const refreshToken = (req as Request & { cookies?: Record<string, string> }).cookies?.[env.COOKIE_NAME_REFRESH];
 
     if (!refreshToken || typeof refreshToken !== 'string') {
-      return handleValidationError('Invalid refresh token', next);
+      return handleValidationError('Invalid refresh token or token missing', next);
     }
 
     try {
       const result = await this._refreshTokenUseCase.execute(refreshToken);
 
       if (result.tokens) {
+        this._cookieService.setAccessToken(res, result.tokens.accessToken);
         this._cookieService.setRefreshToken(res, result.tokens.refreshToken);
         sendSuccessResponse(res, 'Token refreshed', result.user, result.tokens.accessToken);
       } else {

@@ -6,6 +6,7 @@ export class User {
     public readonly email: string,
     public readonly password: string,
     public readonly role: UserRole,
+    public readonly avatarFileName: string | null,
     public readonly isVerified: boolean,
     public readonly isBlocked: boolean,
     public readonly refreshToken: string | null,
@@ -13,9 +14,9 @@ export class User {
     public readonly updatedAt: Date,
   ) {}
 
-  static create(data: { id: string; name: string; email: string; password: string; role?: UserRole; isVerified?: boolean; isBlocked?: boolean; refreshToken?: string | null; createdAt?: Date; updatedAt?: Date }): User {
+  static create(data: { id: string; name: string; email: string; password: string; role?: UserRole; avatarFileName?: string | null; isVerified?: boolean; isBlocked?: boolean; refreshToken?: string | null; createdAt?: Date; updatedAt?: Date }): User {
     const now = new Date();
-    return new User(data.id, data.name, data.email, data.password, data.role ?? UserRole.CLIENT, data.isVerified ?? false, data.isBlocked ?? false, data.refreshToken ?? null, data.createdAt ?? now, data.updatedAt ?? now);
+    return new User(data.id, data.name, data.email, data.password, data.role ?? UserRole.CLIENT, data.avatarFileName ?? null, data.isVerified ?? false, data.isBlocked ?? false, data.refreshToken ?? null, data.createdAt ?? now, data.updatedAt ?? now);
   }
 
 }

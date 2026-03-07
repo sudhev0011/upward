@@ -1,27 +1,36 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
+import { Loading } from '../ui/Loading';
+import { type RootState } from '@/store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { useCheckAuthQuery } from '@/hooks/auth/useCheckAuth';
+import { setCredentials, setAuthChecked } from '@/store/slices/authSlice';
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-
-import React, { useEffect } from 'react';
-import { Loading } from '../ui/Loading';
-import { type RootState } from '@/store/store';
-import { useDispatch, useSelector } from 'react-redux';
-import { useCheckAuthQuery } from '@/hooks/auth/useCheckAuth';
-import { setCredentials } from '@/store/slices/authSlice';
-
-
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-    const dispatch = useDispatch();
-  const {user} = useSelector((state: RootState)=> state.auth);
-  const {data} = useCheckAuthQuery();
-    console.log(data)
-  if(data?.data){
-    dispatch(setCredentials(data.data))
+  const dispatch = useDispatch();
+  const { isAuthChecked } = useSelector(
+    (state: RootState) => state.auth
+  );
+
+  const { data, isPending } = useCheckAuthQuery();
+
+  useEffect(() => {
+    if (data?.data) {
+      dispatch(setCredentials(data.data));
+    }
+
+    dispatch(setAuthChecked())
+
+  }, [data, dispatch]);
+
+  if (isPending) {
+    return <Loading />;
   }
-  if (!user) {
+
+  if (!isAuthChecked) {
     return <Loading />;
   }
 

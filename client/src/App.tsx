@@ -1,19 +1,22 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import ClientRoutes from "./routes/ClientRoutes";
-import ProviderRoutes from "./routes/ProviderRoutes";
-import AdminRoutes from "./routes/AdminRoutes";
-
-const App = () => {
+  import { Routes, Route } from "react-router-dom";
+  import ClientRoutes from "./routes/ClientRoutes";
+  import ProviderRoutes from "./routes/ProviderRoutes";
+  import AdminRoutes from "./routes/AdminRoutes";
+  import AutoScroller from "./components/AutoScroller";
+  import PublicRoutes from "./routes/PublicRoutes";
+  
+  const App = () => {
   return (
-    <Router>
+    <>
+      <AutoScroller />
       <Routes>
-          <Route path="/*" element={<ClientRoutes />} />
-          <Route path="/admin/*" element={<AdminRoutes />} />
-          <Route path="/provider/*" element={<ProviderRoutes />} />
-          {/* <Route path="*" element={<NotFoundPage />} /> */}
-        </Routes>
-    </Router>
+        <Route path="/client/*" element={<ClientRoutes />} />
+        <Route path="/admin/*" element={<AdminRoutes />} />
+        <Route path="/provider/*" element={<ProviderRoutes />} />
+        <Route path="/*" element={<PublicRoutes />} />
+      </Routes>
+    </>
   );
 };
 
-export default App;
+  export default App;

@@ -9,11 +9,12 @@ export class UserMapper {
       email: doc.email,
       password: doc.password,
       role: doc.role,
+      avatarFileName: doc.avatarFileName || '',
       isVerified: doc.isVerified,
       isBlocked: doc.isBlocked,
-      refreshToken: doc.refreshToken || null,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
+      refreshToken: doc.refreshToken,
     });
   }
 
@@ -23,9 +24,10 @@ export class UserMapper {
       email: entity.email,
       password: entity.password,
       role: entity.role,
+      avatarFileName: entity.avatarFileName,
       isVerified: entity.isVerified,
       isBlocked: entity.isBlocked,
-      refreshToken: entity.refreshToken || undefined,
+      refreshToken: entity.refreshToken,
     };
   }
 }

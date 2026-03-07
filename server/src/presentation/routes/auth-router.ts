@@ -18,9 +18,10 @@ export class AuthRouter {
     this.router.post('/otp-request', otpController.request);
     this.router.post('/otp-verify', otpController.verify);
     this.router.post('/admin-login', loginController.adminLogin);
-    this.router.post('/logout', loginController.logout);
+    this.router.post('/logout',authenticateToken, loginController.logout);
     this.router.post('/forgot-password', passwordController.forgotPassword);
     this.router.post('/reset-password', passwordController.resetPassword);
     this.router.get('/check-auth', authenticateToken, tokenController.checkAuth);
+    this.router.post('/refresh', tokenController.refresh);
   }
 }

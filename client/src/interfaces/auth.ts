@@ -31,6 +31,7 @@ export interface AuthResponseData {
   name: string
   email: string
   role: UserRole
+  avatar?: string
   isVerified: boolean
   isBlocked: boolean
   createdAt?: Date;

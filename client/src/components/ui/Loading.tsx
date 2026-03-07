@@ -7,6 +7,7 @@ interface LoadingProps {
   variant?: 'default' | 'card' | 'inline'
   className?: string
 }
+
 export const Loading = ({ 
   message = 'Loading...', 
   size = 'md', 

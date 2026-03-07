@@ -109,6 +109,7 @@ export class LoginController {
     try {
       const userId = validateUserId(req);
       await this._logoutUseCase.execute(userId);
+      this._cookieService.clearAccessToken(res);
       this._cookieService.clearRefreshToken(res);
       sendSuccessResponse(res, 'Logged out', null);
     } catch (error) {
