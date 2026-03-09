@@ -168,7 +168,7 @@ const ResetPassword = () => {
                   value={newPassword}
                   onChange={(e) => { setNewPassword(e.target.value); setFieldError('') }}
                   placeholder="Enter new password"
-                  required
+                  // required
                   className="block w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-10 text-sm text-gray-900 placeholder-gray-400 shadow-sm transition-all focus:border-[#719FC4] focus:outline-none focus:ring-2 focus:ring-[#719FC4]/20"
                 />
                 <button
@@ -197,7 +197,7 @@ const ResetPassword = () => {
                   value={confirmPassword}
                   onChange={(e) => { setConfirmPassword(e.target.value); setFieldError('') }}
                   placeholder="Re-enter new password"
-                  required
+                  // required
                   className="block w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-10 text-sm text-gray-900 placeholder-gray-400 shadow-sm transition-all focus:border-[#719FC4] focus:outline-none focus:ring-2 focus:ring-[#719FC4]/20"
                 />
                 <button

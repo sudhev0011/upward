@@ -3,20 +3,32 @@ import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
 import { Mail, ArrowRight, ArrowUpRight, CheckCircle, ArrowLeft } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+
 import { useForgotPasswordMutation } from '@/hooks/auth/useForgotPassword'
+import { forgotPasswordSchema, type ForgotPasswordFormData } from '@/utils/validations/email.schema'
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState('')
   const [isSubmitted, setIsSubmitted] = useState(false)
 
-  const { mutateAsync: forgotPassword, isPending, error } = useForgotPasswordMutation()
+  const { mutateAsync: forgotPassword, isPending, error: apiError } = useForgotPasswordMutation()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!email.trim()) { toast.error('Please provide an email'); return }
+  const {
+    register,
+    handleSubmit,
+    getValues, // <-- We use this to display the email on the success screen
+    formState: { errors },
+  } = useForm<ForgotPasswordFormData>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: { email: '' },
+    mode: 'onTouched',
+  })
 
+  // 2. Form Submit Handler
+  const onSubmit = async (data: ForgotPasswordFormData) => {
     try {
-      await forgotPassword(email)
+      await forgotPassword(data.email)
       toast.success('Reset link sent!')
       setIsSubmitted(true)
     } catch {
@@ -27,7 +39,7 @@ const ForgotPassword = () => {
   /* ── Success state ── */
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gray-200 flex items-center justify-center px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -45,7 +57,7 @@ const ForgotPassword = () => {
           <p className="text-sm text-gray-500 leading-relaxed mb-2">
             We've sent a password reset link to
           </p>
-          <p className="text-sm font-bold text-gray-800 mb-8">{email}</p>
+          <p className="text-sm font-bold text-gray-800 mb-8">{getValues("email")}</p>
 
           <div className="rounded-xl border border-gray-100 bg-white p-4 text-xs text-gray-400 leading-relaxed mb-8 shadow-sm">
             Click the link in the email to reset your password. The link will expire in{' '}
@@ -106,19 +118,19 @@ const ForgotPassword = () => {
             </p>
           </div>
 
-          {/* Error */}
-          {error && (
+          {/* API Error Box */}
+          {apiError && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               className="mb-4 rounded-xl border border-red-100 bg-red-50 p-3 text-xs font-medium text-red-600"
             >
-              {error.message || 'Something went wrong. Please try again.'}
+              {apiError.message || 'Something went wrong. Please try again.'}
             </motion.div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <label htmlFor="email" className="mb-1.5 block text-sm font-semibold text-gray-700">
                 Email address
@@ -130,13 +142,14 @@ const ForgotPassword = () => {
                 <input
                   id="email"
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  required
-                  className="block w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 shadow-sm transition-all focus:border-[#719FC4] focus:outline-none focus:ring-2 focus:ring-[#719FC4]/20"
+                  className={`block w-full rounded-xl border bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 shadow-sm transition-all focus:outline-none focus:ring-2 ${
+                    errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-[#719FC4] focus:ring-[#719FC4]/20'
+                  }`}
+                  {...register("email")}
                 />
               </div>
+              {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
             </div>
 
             <button
