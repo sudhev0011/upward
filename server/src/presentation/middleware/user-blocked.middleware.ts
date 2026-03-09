@@ -1,0 +1,33 @@
+import { NextFunction, Response } from "express";
+import { IAuthGetUserByIdUseCase } from "../../domain/interfaces/usecases/auth/user/IAuthGetUserByIdUseCase";
+import { AuthenticatedRequest } from "./auth.middleware";
+import { sendForbiddenResponse, validateUserId } from "../../shared/utils/presentation/controller.utils";
+
+export class UserBlockedMiddleware{
+
+    constructor(
+        private readonly _getUserByIdUseCase: IAuthGetUserByIdUseCase
+    ){}
+
+
+    checkUserBlocked= async(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> =>{
+        try {
+            const userId = validateUserId(req);
+            const user = await this._getUserByIdUseCase.execute(userId);
+
+            if(!user){
+                return next();
+            }
+
+            if(user.isBlocked){
+                sendForbiddenResponse(res, 'User account is blocked. Please contact support for assistance.');
+                return;
+            }
+
+            next();
+            
+        } catch (error) {
+            next(error);
+        }
+    }
+}
