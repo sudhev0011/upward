@@ -1,0 +1,175 @@
+import { NavLink, useNavigate } from "react-router-dom";
+import {
+  LayoutDashboard,
+  CalendarCheck,
+  Search,
+  MessageSquare,
+  Heart,
+  CreditCard,
+  Star,
+  Settings,
+  LogOut,
+  Zap,
+  type LucideIcon,
+} from "lucide-react";
+import { useLogoutMutation } from "@/hooks/auth/useLogout";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
+import { logout } from "@/store/slices/authSlice";
+import type { RootState } from "@/store/store";
+
+export const USER = {
+  name: "Alex Johnson",
+  initials: "AJ",
+  email: "alex@example.com",
+  memberSince: "Jan 2024",
+  plan: "Pro",
+  tasksCompleted: 24,
+  totalSpent: 3840,
+  savedPros: 7,
+  activeBookings: 3,
+};
+
+interface NavItem {
+  to: string;
+  icon: LucideIcon;
+  label: string;
+  badge?: number;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { to: "/client/dashboard", icon: LayoutDashboard, label: "Overview" },
+  {
+    to: "/client/dashboard/bookings",
+    icon: CalendarCheck,
+    label: "My Bookings",
+  },
+  { to: "/client/dashboard/explore", icon: Search, label: "Explore" },
+  {
+    to: "/client/dashboard/messages",
+    icon: MessageSquare,
+    label: "Messages",
+    badge: 2,
+  },
+  { to: "/client/dashboard/saved", icon: Heart, label: "Saved Pros" },
+  { to: "/client/dashboard/payments", icon: CreditCard, label: "Payments" },
+  { to: "/client/dashboard/reviews", icon: Star, label: "Reviews" },
+];
+
+interface BottomItem {
+  to: string;
+  icon: LucideIcon;
+  label: string;
+}
+
+const BOTTOM_ITEMS: BottomItem[] = [
+  { to: "/client/dashboard/settings", icon: Settings, label: "Settings" },
+];
+
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+export const Sidebar = ({ onClose }: SidebarProps) => {
+  const { mutate: logoutMutation } = useLogoutMutation();
+  const {user} = useSelector((state:RootState)=> state.auth)
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    logoutMutation(undefined, {
+      onSuccess: () => {
+        dispatch(logout());
+        navigate("/login");
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
+  };
+
+  return (
+    <aside className="flex h-full w-64 flex-col bg-white border-r border-gray-100">
+      {/* Logo */}
+      <div className="flex items-center gap-2.5 px-6 py-5 border-b border-gray-100">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#719FC4]">
+          <Zap className="h-4 w-4 text-white" />
+        </div>
+        <span className="text-lg font-extrabold tracking-tight text-gray-900">
+          Upward
+        </span>
+      </div>
+
+      {/* User chip */}
+      <div className="mx-4 mt-4 mb-2 flex items-center gap-3 rounded-xl bg-[#EAF2F9] px-3 py-2.5">
+        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#719FC4] text-xs font-bold text-white">
+          {user?.name?.charAt(0).toUpperCase()}
+        </div>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-gray-900">
+            {user?.name}
+          </p>
+          <p className="text-[11px] text-[#5585A8] font-medium">
+            {user?.role?.toUpperCase()}
+          </p>
+        </div>
+      </div>
+
+      {/* Nav */}
+      <nav className="flex-1 overflow-y-auto px-3 py-2">
+        <p className="px-3 pt-2 pb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">
+          Menu
+        </p>
+        {NAV_ITEMS.map(({ to, icon: Icon, label, badge }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={to === "/client/dashboard"}
+            onClick={onClose}
+            className={({ isActive }) =>
+              `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150 mb-0.5 ${
+                isActive
+                  ? "bg-[#719FC4] text-white shadow-sm"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              }`
+            }
+          >
+            <Icon className="h-4 w-4 flex-shrink-0 text-current opacity-70" />
+            <span className="flex-1">{label}</span>
+            {badge && (
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/30 text-[10px] font-bold text-white">
+                {badge}
+              </span>
+            )}
+          </NavLink>
+        ))}
+      </nav>
+
+      {/* Bottom */}
+      <div className="border-t border-gray-100 px-3 py-3">
+        {BOTTOM_ITEMS.map(({ to, icon: Icon, label }) => (
+          <NavLink
+            key={to}
+            to={to}
+            onClick={onClose}
+            className={({ isActive }) =>
+              `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150 ${
+                isActive
+                  ? "bg-[#719FC4] text-white shadow-sm"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              }`
+            }
+          >
+            <Icon className="h-4 w-4 flex-shrink-0 text-current opacity-70" />
+            {label}
+          </NavLink>
+        ))}
+        <button onClick={handleLogout} className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-500 transition-all duration-150">
+          <LogOut className="h-4 w-4 text-gray-400 group-hover:text-red-400" />
+          Sign Out
+        </button>
+      </div>
+    </aside>
+  );
+};

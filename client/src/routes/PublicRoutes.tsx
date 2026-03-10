@@ -25,7 +25,7 @@ const PublicRoutes = () => {
           />
           <Route
             path="/verify-otp"
-            element={<VerifyOtp/>}   
+            element={<AuthRedirect><VerifyOtp/></AuthRedirect>}   
           />
 
           <Route

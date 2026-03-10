@@ -15,7 +15,7 @@ import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
 import { useRegisterMutation } from "@/hooks/auth/useRegister";
 import { useGoogleLoginMutation } from "@/hooks/auth/useGoogle";
 import { setCredentials } from "@/store/slices/authSlice";
-import { registerSchema, type RegisterFormData } from "@/utils/validations/register.schema";
+import { registerSchema, type RegisterFormData } from "@/utils/validations/auth/register.schema";
 
 const panelFeatures = [
   { icon: ShieldCheck, title: "Vetted & Verified", desc: "Every professional is background-checked before joining." },
