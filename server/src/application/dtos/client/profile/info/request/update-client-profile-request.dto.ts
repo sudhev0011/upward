@@ -15,12 +15,10 @@ export const UpdateClientProfileRequestDtoSchema = z.object({
     .string()
     .regex(/^\+?[\d\s\-\(\)]+$/, "Please enter a valid phone number")
     .optional(),
-  dateOfBirth: z.string().date("Please enter a valid date of birth").optional(),
-  gender: z.string().max(50, "Gender must not exceed 50 characters").optional(),
+  email: z.string().email('Please enter a valid email address').optional(),  
 });
 
 export type UpdateClientProfileRequestDto = z.infer<
   typeof UpdateClientProfileRequestDtoSchema
 >;
 
-export const UpdateClientProfileDto = UpdateClientProfileRequestDtoSchema;

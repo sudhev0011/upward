@@ -12,3 +12,9 @@ export const AuthRoutes = {
   OTP_REQUEST: '/api/auth/otp-request',
   OTP_VERIFY: '/api/auth/otp-verify',
 } as const;
+
+
+export const ClientRoutes = {
+  PROFILE: '/api/client/profile',
+  PROFILE_AVATAR: '/api/client/profile/avatar',
+} as const;

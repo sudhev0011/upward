@@ -33,15 +33,16 @@ api.interceptors.response.use(
     const message = error?.response?.data?.message || "";
 
     if (!status) {
-      return Promise.reject(error);
+      console.log(message)
+      return Promise.reject(error?.response?.data);
     }
 
     if (status === 403 || message.includes("Invalid refresh token")) {
       store.dispatch(logout());
-      return Promise.reject(error);
+      return Promise.reject(error?.response?.data);
     }
 
-    if (status === 401 && !original._retry) {
+    if (status === 401 && message.includes('Missing access token') && !original._retry) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({
@@ -67,7 +68,7 @@ api.interceptors.response.use(
         isRefreshing = false;
       }
     }
-
+    
     return Promise.reject(error?.response?.data);
   }
 );

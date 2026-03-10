@@ -7,6 +7,7 @@ import { connectToDatabase } from "../../infrastructure/persistence/mongodb/conn
 import { connectRedis } from "../../infrastructure/persistence/redis/connection/redis";
 import { env } from "../../infrastructure/config/env";
 import { AuthRouter } from "../routes/auth-router";
+import { ClientRouter } from "../routes/client-router";
 import { errorHandler } from "../middleware/error-handler";
 
 export class AppServer {
@@ -42,6 +43,7 @@ export class AppServer {
   private configureRoutes(): void {
 
     this._app.use("/api/auth", new AuthRouter().router);
+    this._app.use("/api/client", new ClientRouter().router);
 
     this._app.use(errorHandler);
   }

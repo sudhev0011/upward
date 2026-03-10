@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Mail, Lock, ArrowRight, ArrowUpRight, Eye, EyeOff } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  ArrowRight,
+  ArrowUpRight,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch } from "react-redux";
@@ -12,29 +19,36 @@ import { useLoginMutation } from "@/hooks/auth/useLogin";
 import { useGoogleLoginMutation } from "@/hooks/auth/useGoogle";
 import { GoogleLoginButton } from "../../components/auth/GoogleLoginButton";
 import { setCredentials } from "@/store/slices/authSlice";
-import { loginSchema, type LoginFormData } from "@/utils/validations/login.schema";
+import {
+  loginSchema,
+  type LoginFormData,
+} from "@/utils/validations/auth/login.schema";
 const features = [
   { value: "10K+", label: "Tasks completed" },
-  { value: "2K+",  label: "Verified pros" },
+  { value: "2K+", label: "Verified pros" },
   { value: "4.9★", label: "Avg rating" },
 ];
 
 const navigateByRole = (role: UserRole, navigate: (path: string) => void) => {
   const routes: Record<UserRole, string> = {
-    [UserRole.PROVIDER]: '/provider/dashboard',
-    [UserRole.ADMIN]:    '/admin/dashboard',
-    [UserRole.CLIENT]:   '/client/dashboard',
-  }
-  navigate(routes[role] || '/')
-}
+    [UserRole.PROVIDER]: "/provider/dashboard",
+    [UserRole.ADMIN]: "/admin/dashboard",
+    [UserRole.CLIENT]: "/client/dashboard",
+  };
+  navigate(routes[role] || "/");
+};
 
 const Login = () => {
   const [showPw, setShowPw] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
-  const { mutate: loginMutation, isPending, error: apiError } = useLoginMutation();
+
+  const {
+    mutate: loginMutation,
+    isPending,
+    error: apiError,
+  } = useLoginMutation();
   const { mutate: googleLogin } = useGoogleLoginMutation();
 
   const {
@@ -56,18 +70,21 @@ const Login = () => {
         if (response.success && response.data) {
           dispatch(setCredentials(response.data));
           toast.success("Login successful");
-          navigateByRole(response.data.role, navigate)
+          navigateByRole(response.data.role, navigate);
         }
       },
-      onError: (error) => toast.error(error.message),
+      onError: (error) => {
+        // console.log(error.name)
+        toast.error(error.message);
+      },
     });
   };
 
   const googleAuth = (credentialResponse: CredentialResponse) => {
     const idToken = credentialResponse.credential;
-    if (!idToken) { 
-      toast.error("Google authentication failed."); 
-      return; 
+    if (!idToken) {
+      toast.error("Google authentication failed.");
+      return;
     }
     googleLogin(
       { idToken },
@@ -78,14 +95,14 @@ const Login = () => {
             toast.success("Login successful");
           }
         },
-        onError: (error: any) => toast.error(error.response?.data?.message || "Login failed"),
-      }
+        onError: (error: any) =>
+          toast.error(error.response?.data?.message || "Login failed"),
+      },
     );
   };
 
   return (
     <div className="min-h-screen flex bg-gray-50">
-
       {/* ── Left: Form ── */}
       <div className="flex flex-1 flex-col justify-center px-6 py-12 sm:px-12 lg:w-1/2 lg:flex-none xl:w-5/12">
         <motion.div
@@ -99,7 +116,9 @@ const Login = () => {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#719FC4] transition-colors duration-200 group-hover:bg-[#5585A8]">
               <ArrowUpRight className="h-4 w-4 text-white" />
             </div>
-            <span className="text-lg font-extrabold tracking-tight text-gray-900">Upward</span>
+            <span className="text-lg font-extrabold tracking-tight text-gray-900">
+              Upward
+            </span>
           </Link>
 
           {/* Heading */}
@@ -114,10 +133,12 @@ const Login = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-
             {/* Email */}
             <div>
-              <label htmlFor="email" className="mb-1.5 block text-sm font-semibold text-gray-700">
+              <label
+                htmlFor="email"
+                className="mb-1.5 block text-sm font-semibold text-gray-700"
+              >
                 Email
               </label>
               <div className="relative group">
@@ -129,18 +150,27 @@ const Login = () => {
                   type="email"
                   placeholder="you@example.com"
                   className={`block w-full rounded-xl border bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 shadow-sm transition-all focus:outline-none focus:ring-2 ${
-                    errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-[#719FC4] focus:ring-[#719FC4]/20'
+                    errors.email
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                      : "border-gray-200 focus:border-[#719FC4] focus:ring-[#719FC4]/20"
                   }`}
                   {...register("email")}
                 />
               </div>
-              {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
+              {errors.email && (
+                <p className="mt-1 text-xs text-red-500">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
             {/* Password */}
             <div>
               <div className="mb-1.5 flex items-center justify-between">
-                <label htmlFor="password" className="block text-sm font-semibold text-gray-700">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-semibold text-gray-700"
+                >
                   Password
                 </label>
                 <Link
@@ -160,7 +190,9 @@ const Login = () => {
                   placeholder="••••••••"
                   autoComplete="current-password"
                   className={`block w-full rounded-xl border bg-white py-2.5 pl-10 pr-10 text-sm text-gray-900 placeholder-gray-400 shadow-sm transition-all focus:outline-none focus:ring-2 ${
-                    errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-[#719FC4] focus:ring-[#719FC4]/20'
+                    errors.password
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                      : "border-gray-200 focus:border-[#719FC4] focus:ring-[#719FC4]/20"
                   }`}
                   {...register("password")}
                 />
@@ -169,10 +201,18 @@ const Login = () => {
                   onClick={() => setShowPw(!showPw)}
                   className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 hover:text-gray-600"
                 >
-                  {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPw ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </button>
               </div>
-              {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>}
+              {errors.password && (
+                <p className="mt-1 text-xs text-red-500">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             {/* API Error Box */}
@@ -204,7 +244,9 @@ const Login = () => {
                 <div className="w-full border-t border-gray-200" />
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="bg-gray-50 px-3 text-gray-400 font-medium">or continue with</span>
+                <span className="bg-gray-50 px-3 text-gray-400 font-medium">
+                  or continue with
+                </span>
               </div>
             </div>
 
@@ -213,7 +255,10 @@ const Login = () => {
 
           <p className="mt-7 text-center text-sm text-gray-500">
             Don't have an account?{" "}
-            <Link to="/register" className="font-bold text-[#719FC4] hover:text-[#5585A8] transition-colors">
+            <Link
+              to="/register"
+              className="font-bold text-[#719FC4] hover:text-[#5585A8] transition-colors"
+            >
               Sign up
             </Link>
           </p>
@@ -222,7 +267,6 @@ const Login = () => {
 
       {/* ── Right: Decorative panel ── */}
       <div className="hidden lg:flex flex-1 flex-col justify-between overflow-hidden bg-[#719FC4] p-16 relative">
-
         {/* Subtle grid */}
         <div
           className="pointer-events-none absolute inset-0"
@@ -241,7 +285,9 @@ const Login = () => {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20">
             <ArrowUpRight className="h-4 w-4 text-white" />
           </div>
-          <span className="text-base font-extrabold text-white tracking-tight">Upward</span>
+          <span className="text-base font-extrabold text-white tracking-tight">
+            Upward
+          </span>
         </div>
 
         {/* Centre copy */}
@@ -252,18 +298,27 @@ const Login = () => {
           className="relative"
         >
           <h2 className="text-4xl xl:text-5xl font-extrabold tracking-tight text-white leading-tight mb-5">
-            Connect.<br />Collaborate.<br />Grow Upward.
+            Connect.
+            <br />
+            Collaborate.
+            <br />
+            Grow Upward.
           </h2>
           <p className="text-white/70 text-base leading-relaxed max-w-sm">
-            Join the platform where clients find top professionals and get things done — fast, reliably, and on their terms.
+            Join the platform where clients find top professionals and get
+            things done — fast, reliably, and on their terms.
           </p>
 
           {/* Stats row */}
           <div className="mt-10 flex gap-8">
             {features.map((f) => (
               <div key={f.label}>
-                <p className="text-2xl font-extrabold text-white tracking-tight">{f.value}</p>
-                <p className="text-xs font-semibold text-white/60 mt-0.5 uppercase tracking-widest">{f.label}</p>
+                <p className="text-2xl font-extrabold text-white tracking-tight">
+                  {f.value}
+                </p>
+                <p className="text-xs font-semibold text-white/60 mt-0.5 uppercase tracking-widest">
+                  {f.label}
+                </p>
               </div>
             ))}
           </div>
@@ -277,7 +332,8 @@ const Login = () => {
           className="relative rounded-2xl bg-white/10 border border-white/20 p-6 backdrop-blur-sm"
         >
           <p className="text-sm text-white/80 leading-relaxed italic mb-4">
-            "Upward sent a plumber within hours. The process was completely seamless from start to finish."
+            "Upward sent a plumber within hours. The process was completely
+            seamless from start to finish."
           </p>
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-xs font-bold text-white">
@@ -289,7 +345,6 @@ const Login = () => {
             </div>
           </div>
         </motion.div>
-
       </div>
     </div>
   );
