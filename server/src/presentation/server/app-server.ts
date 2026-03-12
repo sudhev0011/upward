@@ -8,7 +8,10 @@ import { connectRedis } from "../../infrastructure/persistence/redis/connection/
 import { env } from "../../infrastructure/config/env";
 import { AuthRouter } from "../routes/auth-router";
 import { ClientRouter } from "../routes/client-router";
+import { ProviderRouter } from "../routes/provider.router";
 import { errorHandler } from "../middleware/error-handler";
+import { requestLogger } from "../middleware/logger.middleware";
+import { winstonLogger } from "../../infrastructure/config/logger";
 
 export class AppServer {
   private _app: express.Application;
@@ -38,12 +41,14 @@ export class AppServer {
     this._app.use(express.json({ limit: "10mb" }));
     this._app.use(express.urlencoded({ extended: true }));
     this._app.use(cookieParser());
+    this._app.use(requestLogger)
   }
 
   private configureRoutes(): void {
 
     this._app.use("/api/auth", new AuthRouter().router);
     this._app.use("/api/client", new ClientRouter().router);
+    this._app.use("/api/provider", new ProviderRouter().router);
 
     this._app.use(errorHandler);
   }
@@ -51,17 +56,17 @@ export class AppServer {
   public async connectDatabase(): Promise<void> {
     try {
       await connectToDatabase(env.MONGO_URI as string);
-      console.log("connected to MongoDB");
+      winstonLogger.info("connected to MongoDB");
     } catch (error) {
-      console.log("MongoDB connection failed:", error);
+      winstonLogger.error("MongoDB connection failed:", error);
       throw error;
     }
 
     try {
       await connectRedis();
-      console.log("Connected to Redis");
+      winstonLogger.info("Connected to Redis");
     } catch (error) {
-      console.log("Redis connection failed:", error);
+      winstonLogger.info("Redis connection failed:", error);
       throw error;
     }
   }
@@ -72,10 +77,10 @@ export class AppServer {
       this.init();
 
       this._httpServer.listen(this._port, () => {
-        console.log(`Server running on http://localhost:${this._port}`);
+        winstonLogger.info(`Server running on http://localhost:${this._port}`);
       });
     } catch (error) {
-      console.log("Server startup failed:", error);
+      winstonLogger.error("Server startup failed:", error);
       throw error;
     }
   }

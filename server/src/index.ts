@@ -1,13 +1,14 @@
 import 'dotenv/config';
 import { AppServer } from './presentation/server/app-server';
+import { winstonLogger } from './infrastructure/config/logger';
 
 async function start() {
   try {
     const server = new AppServer();
-    console.log('Server initialization started');
+    winstonLogger.info('Server initialization started');
     await server.start();
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
+    winstonLogger.error('❌ Failed to start server:', error);
     process.exit(1);
   }
 }
