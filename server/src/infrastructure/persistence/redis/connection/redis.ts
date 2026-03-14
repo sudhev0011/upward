@@ -1,12 +1,13 @@
 import { createClient } from "redis";
 import { env } from "../../../config/env";
+import { winstonLogger } from "../../../config/logger";
 
 export const redisClient = createClient({
   url: env.REDIS_URL,
 });
 
 redisClient.on("error", (err) => {
-  console.log(err)
+  winstonLogger.error(err)
 });
 
 export async function connectRedis(): Promise<void> {
@@ -15,6 +16,6 @@ export async function connectRedis(): Promise<void> {
       await redisClient.connect();
     }
   } catch (error) {
-    console.log(error)
+    winstonLogger.error(error)
   }
 }
