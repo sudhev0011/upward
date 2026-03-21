@@ -6,7 +6,7 @@ interface User {
   id: string | null;
   name: string | null;
   email: string | null;
-  role: UserRole | null;
+  roles: UserRole[] | null;
   avatar: string | null;
   isVerified: boolean;
   isBlocked: boolean;
@@ -18,12 +18,14 @@ interface AuthState {
   user: User | null;  
   isAuthenticated: boolean;
   isAuthChecked: boolean;
+  activeRole: string | null;
 }
 
 const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
   isAuthChecked: false,
+  activeRole: null
 };
 
 const setAuthData = (state: AuthState, data: AuthResponseData) => {
@@ -33,7 +35,7 @@ const setAuthData = (state: AuthState, data: AuthResponseData) => {
     id: data.id,
     name: data.name,
     email: data.email,
-    role: data.role,
+    roles: data.roles,
     avatar: data?.avatar || null,
     isVerified: data.isVerified,
     isBlocked: data.isBlocked,
@@ -60,10 +62,13 @@ const authSlice = createSlice({
     },
     setAuthChecked: (state) => {
       state.isAuthChecked = true;
-    }
+    },
+    setActiveRole: (state, action)=>{
+      state.activeRole = action.payload
+    },
   },
 });
 
-export const { setCredentials, logout, setAuthChecked,clearCredentials } = authSlice.actions;
+export const { setCredentials, logout, setAuthChecked,clearCredentials, setActiveRole } = authSlice.actions;
 
 export default authSlice.reducer;

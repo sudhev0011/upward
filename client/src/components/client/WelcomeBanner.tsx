@@ -21,10 +21,10 @@ interface QuickActionItem {
 }
 
 const QUICK_ACTIONS: QuickActionItem[] = [
-  { icon: Search,        label: "Find a Pro",     sub: "Browse 2K+ experts",   to: "/dashboard/explore",  color: "bg-[#EAF2F9] text-[#719FC4]" },
-  { icon: CalendarCheck, label: "My Bookings",    sub: "3 active now",          to: "/dashboard/bookings", color: "bg-emerald-50 text-emerald-500" },
-  { icon: MessageSquare, label: "Messages",       sub: "2 unread",              to: "/dashboard/messages", color: "bg-indigo-50  text-indigo-500"  },
-  { icon: Star,          label: "Leave a Review", sub: "2 pending reviews",     to: "/dashboard/reviews",  color: "bg-amber-50   text-amber-500"   },
+  { icon: Search,        label: "Find a Pro",     sub: "Browse 2K+ experts",   to: "explore",  color: "bg-[#EAF2F9] text-[#719FC4]" },
+  { icon: CalendarCheck, label: "My Bookings",    sub: "3 active now",          to: "bookings", color: "bg-emerald-50 text-emerald-500" },
+  { icon: MessageSquare, label: "Messages",       sub: "2 unread",              to: "messages", color: "bg-indigo-50  text-indigo-500"  },
+  { icon: Star,          label: "Leave a Review", sub: "2 pending reviews",     to: "reviews",  color: "bg-amber-50   text-amber-500"   },
 ];
 
 export const WelcomeBanner = () => (
@@ -47,8 +47,8 @@ export const WelcomeBanner = () => (
         </p>
       </div>
       <Link
-        to="/dashboard/explore"
-        className="flex-shrink-0 flex items-center gap-2 self-start sm:self-auto rounded-xl bg-white text-[#719FC4] hover:bg-gray-50 px-5 py-2.5 text-sm font-bold transition-all duration-200 shadow-lg hover:-translate-y-px"
+        to="explore"
+        className="shrink-0 flex items-center gap-2 self-start sm:self-auto rounded-xl bg-white text-[#719FC4] hover:bg-gray-50 px-5 py-2.5 text-sm font-bold transition-all duration-200 shadow-lg hover:-translate-y-px"
       >
         Post a Task <ArrowRight className="h-4 w-4" />
       </Link>

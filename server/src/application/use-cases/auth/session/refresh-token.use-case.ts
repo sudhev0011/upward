@@ -32,8 +32,8 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
       throw new AuthorizationError('User account is blocked');
     }
 
-    const accessToken = this._tokenService.signAccess({ sub: user.id, role: user.role, email:user.email});
-    const newRefreshToken = this._tokenService.signRefresh({ sub: user.id, role: user.role, email:user.email });
+    const accessToken = this._tokenService.signAccess({ sub: user.id, roles: user.roles, email:user.email});
+    const newRefreshToken = this._tokenService.signRefresh({ sub: user.id, roles: user.roles, email:user.email });
     const hashedNewRefresh = await this._passwordHasher.hash(newRefreshToken);
     await this._userRepository.update(user.id, { refreshToken: hashedNewRefresh });
 

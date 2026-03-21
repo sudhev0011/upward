@@ -1,0 +1,23 @@
+export interface SocialLinkResponseDto {
+  name: string;
+  link: string;
+}
+
+export interface ProviderProfileResponseDto {
+  id: string;
+  userId: string;
+  name: string;
+  bio: string | null;
+  location: string | null;
+  phone: string | null;
+  email: string | null; 
+  avatarUrl: string | null; 
+  dateOfBirth: string | null;
+  gender: string | null;
+  skills: string[];
+  languages: string[];
+  experience: string | null;
+  socialLinks: SocialLinkResponseDto[];
+  createdAt: string;
+  updatedAt: string;
+}

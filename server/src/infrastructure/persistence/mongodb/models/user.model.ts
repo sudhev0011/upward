@@ -5,7 +5,7 @@ export interface UserDocument extends Document {
   name?: string;
   email: string;
   password: string;
-  role: UserRole;
+  roles: UserRole[];
   avatarFileName?: string | null;
   isVerified: boolean;
   isBlocked: boolean;
@@ -19,12 +19,12 @@ const UserSchema = new Schema<UserDocument>(
     name: { type: String },
     email: { type: String, required: true, unique: true, index: true },
     password: { type: String, required: true },
-    role: {
+    roles: [{
       type: String,
       required: true,
       default: UserRole.CLIENT,
       enum: Object.values(UserRole),
-    },
+    }],
     avatarFileName: {type:String},
     isVerified: { type: Boolean, required: true, default: false },
     isBlocked: { type: Boolean, required: true, default: false },

@@ -9,7 +9,8 @@ export const RegisterDto = z.object({
     .regex(/[0-9]/, 'Password must contain at least one number')
     .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character')
     .regex(/^\S*$/, 'Password must not contain spaces'),
-  role: z.nativeEnum(UserRole).optional().default(UserRole.CLIENT),
+  
+  roles: z.array(z.nativeEnum(UserRole)).optional().default([UserRole.CLIENT]),
 });
 
 export type RegisterRequestDto = z.infer<typeof RegisterDto>;

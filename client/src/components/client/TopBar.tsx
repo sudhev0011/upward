@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Bell, Search, Menu, Plus, X } from "lucide-react";
-import { useSelector } from "react-redux";
+import { Bell, Search, Menu, X } from "lucide-react";
+import { useAppSelector } from "@/hooks/useRedux";
 import type { RootState } from "@/store/store";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface TopbarProps {
   onMenuToggle: () => void;
@@ -9,16 +10,27 @@ interface TopbarProps {
 }
 
 const NOTIFICATIONS = [
-  { id: 1, text: "Sarah M. confirmed your booking for Mar 11", time: "2h ago",  unread: true  },
-  { id: 2, text: "New message from Luca T.",                   time: "4h ago",  unread: true  },
-  { id: 3, text: "Your review for Tom R. was published",       time: "Feb 21",  unread: false },
+  {
+    id: 1,
+    text: "Sarah M. confirmed your booking for Mar 11",
+    time: "2h ago",
+    unread: true,
+  },
+  { id: 2, text: "New message from Luca T.", time: "4h ago", unread: true },
+  {
+    id: 3,
+    text: "Your review for Tom R. was published",
+    time: "Feb 21",
+    unread: false,
+  },
 ];
 
 export const Topbar = ({ onMenuToggle, sidebarOpen }: TopbarProps) => {
   const [showNotifs, setShowNotifs] = useState(false);
-  const [search, setSearch]         = useState("");
+  const [search, setSearch] = useState("");
   const unreadCount = NOTIFICATIONS.filter((n) => n.unread).length;
-  const {user} = useSelector((state: RootState)=> state.auth);
+  const { user } = useAppSelector((state: RootState) => state.auth);
+  const avatarUrl = user?.avatar ? user?.avatar : "";
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-gray-100 bg-white/90 backdrop-blur-sm px-4 md:px-6">
       {/* Mobile menu toggle */}
@@ -40,13 +52,7 @@ export const Topbar = ({ onMenuToggle, sidebarOpen }: TopbarProps) => {
         />
       </div>
 
-      <div className="ml-auto flex items-center gap-2">
-        {/* Post task CTA */}
-        <button className="hidden sm:flex items-center gap-1.5 rounded-xl bg-[#719FC4] hover:bg-[#5585A8] px-4 py-2 text-sm font-semibold text-white transition-all duration-200 shadow-sm hover:shadow-md">
-          <Plus className="h-3.5 w-3.5" />
-          Post a Task
-        </button>
-
+      <div className="ml-auto flex items-center gap-3">
         {/* Notifications */}
         <div className="relative">
           <button
@@ -76,11 +82,15 @@ export const Topbar = ({ onMenuToggle, sidebarOpen }: TopbarProps) => {
                   className={`flex gap-3 px-4 py-3 border-b border-gray-50 last:border-0 cursor-pointer hover:bg-gray-50 transition-colors ${n.unread ? "bg-[#EAF2F9]/40" : ""}`}
                 >
                   {n.unread && (
-                    <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#719FC4]" />
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#719FC4]" />
                   )}
-                  {!n.unread && <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0" />}
+                  {!n.unread && (
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0" />
+                  )}
                   <div>
-                    <p className="text-xs text-gray-700 leading-relaxed">{n.text}</p>
+                    <p className="text-xs text-gray-700 leading-relaxed">
+                      {n.text}
+                    </p>
                     <p className="mt-0.5 text-[11px] text-gray-400">{n.time}</p>
                   </div>
                 </div>
@@ -95,9 +105,10 @@ export const Topbar = ({ onMenuToggle, sidebarOpen }: TopbarProps) => {
         </div>
 
         {/* Avatar */}
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#719FC4] text-xs font-bold text-white cursor-pointer hover:bg-[#5585A8] transition-colors">
-          {user?.name?.charAt(0).toUpperCase()}
-        </div>
+        <Avatar size="lg">
+          <AvatarImage src={avatarUrl} />
+          <AvatarFallback>{user?.name?.charAt(0).toUpperCase()}</AvatarFallback>
+        </Avatar>
       </div>
     </header>
   );

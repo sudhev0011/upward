@@ -249,7 +249,7 @@ const ForgotPassword = () => {
               { step: "03", text: "Create a new password and sign in" },
             ].map((item) => (
               <div key={item.step} className="flex items-center gap-4">
-                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-white/15 text-xs font-black text-white">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/15 text-xs font-black text-white">
                   {item.step}
                 </div>
                 <p className="text-sm text-white/75">{item.text}</p>

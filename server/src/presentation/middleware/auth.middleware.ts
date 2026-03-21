@@ -5,6 +5,7 @@ import { AuthenticatedRequest } from '../../shared/types/authenticated-request';
 import { ITokenPayload } from '../../domain/interfaces/services/ITokenService';
 export { AuthenticatedRequest };
 import { env } from '../../infrastructure/config/env';
+import { winstonLogger } from '../../infrastructure/config/logger';
 
 
 
@@ -20,7 +21,7 @@ function createUserContext(payload: ITokenPayload): AuthenticatedRequest['user']
     id: payload.sub,
     userId: payload.sub,
     email: payload.email || '',
-    role: payload.role || 'seeker',
+    roles: payload.roles || [],
   };
 }
 
@@ -33,13 +34,14 @@ export function createAuthenticationMiddleware(tokenService: JwtTokenService) {
     if (!token) {
       return next(new AuthenticationError('Missing access token'));
     }
-
+    
     try {
       const payload = tokenService.verifyAccess(token);
       req.user = createUserContext(payload);
       next();
     } catch (error) {
-      next(new AuthenticationError('Invalid or expired token'));
+      winstonLogger.error(error)
+      next(new AuthenticationError('expired token'));
     }
   }
 
@@ -49,14 +51,20 @@ export function createAuthenticationMiddleware(tokenService: JwtTokenService) {
 }
 
 
-export function authorizeRoles(...roles: string[]) {
+export function authorizeRoles(...allowedRoles: string[]) {
   return (req: AuthenticatedRequest, _res: Response, next: NextFunction): void => {
-    const role = req.user?.role;
-    
-    if (!role || !roles.includes(role)) {
+    const userRoles = req.user?.roles;
+
+    if (!userRoles) {
       return next(new AuthorizationError());
     }
-    
+
+    const hasPermission = userRoles.some(role => allowedRoles.includes(role));
+
+    if (!hasPermission) {
+      return next(new AuthorizationError());
+    }
+
     next();
   };
 }

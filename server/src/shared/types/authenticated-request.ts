@@ -5,6 +5,6 @@ export interface AuthenticatedRequest extends Request {
     id: string;
     userId: string;
     email: string;
-    role: string;
+    roles: string[];
   };
 }
