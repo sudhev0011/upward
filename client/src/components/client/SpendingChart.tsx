@@ -8,8 +8,8 @@ export const SPENDING_MONTHS = [
 ];
 
 export const CATEGORY_SPLIT = [
-  { label: "Onsite",    pct: 52, color: "#719FC4" },
-  { label: "Offsite",   pct: 35, color: "#A8C8E0" },
+  { label: "Onsite", pct: 52, color: "#719FC4" },
+  { label: "Offsite", pct: 35, color: "#A8C8E0" },
   { label: "Dedicated", pct: 13, color: "#D4E8F4" },
 ];
 const MAX_AMOUNT = Math.max(...SPENDING_MONTHS.map((m) => m.amount));
@@ -22,8 +22,12 @@ export const SpendingChart = () => (
         <p className="text-xs text-gray-400 mt-0.5">Last 6 months</p>
       </div>
       <div className="text-right">
-        <p className="text-xl font-extrabold tracking-tight text-gray-900">$3,525</p>
-        <p className="text-xs text-emerald-500 font-semibold">+12% vs prev period</p>
+        <p className="text-xl font-extrabold tracking-tight text-gray-900">
+          $3,525
+        </p>
+        <p className="text-xs text-emerald-500 font-semibold">
+          +12% vs prev period
+        </p>
       </div>
     </div>
 
@@ -33,8 +37,14 @@ export const SpendingChart = () => (
         const pct = (m.amount / MAX_AMOUNT) * 100;
         const isCurrent = m.month === "Mar";
         return (
-          <div key={m.month} className="flex flex-1 flex-col items-center gap-1 group">
-            <div className="relative w-full flex items-end" style={{ height: "120px" }}>
+          <div
+            key={m.month}
+            className="flex flex-1 flex-col items-center gap-1 group"
+          >
+            <div
+              className="relative w-full flex items-end"
+              style={{ height: "120px" }}
+            >
               <div
                 className={`w-full rounded-t-lg transition-all duration-500 group-hover:opacity-90 ${isCurrent ? "bg-[#719FC4]" : "bg-[#719FC4]/25 group-hover:bg-[#719FC4]/40"}`}
                 style={{ height: `${pct}%` }}
@@ -45,7 +55,9 @@ export const SpendingChart = () => (
                 </div>
               </div>
             </div>
-            <span className={`text-[11px] font-medium ${isCurrent ? "text-[#719FC4] font-bold" : "text-gray-400"}`}>
+            <span
+              className={`text-[11px] font-medium ${isCurrent ? "text-[#719FC4] font-bold" : "text-gray-400"}`}
+            >
               {m.month}
             </span>
           </div>
@@ -76,7 +88,10 @@ export const CategorySplit = () => (
       {CATEGORY_SPLIT.map((c) => (
         <div key={c.label} className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <span className="h-2.5 w-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: c.color }} />
+            <span
+              className="h-2.5 w-2.5 rounded-full shrink-0"
+              style={{ backgroundColor: c.color }}
+            />
             <span className="text-sm text-gray-600">{c.label}</span>
           </div>
           <div className="flex items-center gap-3">
@@ -86,7 +101,9 @@ export const CategorySplit = () => (
                 style={{ width: `${c.pct}%`, backgroundColor: c.color }}
               />
             </div>
-            <span className="text-sm font-bold text-gray-900 w-8 text-right">{c.pct}%</span>
+            <span className="text-sm font-bold text-gray-900 w-8 text-right">
+              {c.pct}%
+            </span>
           </div>
         </div>
       ))}

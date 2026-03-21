@@ -1,19 +1,29 @@
 import React, { useState } from "react";
-import { User, Lock, Trash2, Camera, ChevronRight, Loader2 } from "lucide-react";
+import {
+  User,
+  Lock,
+  Trash2,
+  Camera,
+  ChevronRight,
+  Loader2,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
 import { useGetProfileQuery } from "@/hooks/client/useGetProfile";
 import { useUpdateProfileMutation } from "@/hooks/client/useUpdateProfile";
-import { profileSchema, type ProfileFormData } from "@/utils/validations/client/profile.schema";
+import {
+  profileSchema,
+  type ProfileFormData,
+} from "@/utils/validations/client/profile.schema";
 
 /* ─── Types ─────────────────────────────────────────── */
 type Tab = "profile" | "notifications" | "security" | "billing" | "preferences";
 
 /* ─── Sidebar tabs ───────────────────────────────────── */
 const TABS: { id: Tab; label: string; icon: typeof User }[] = [
-  { id: "profile",  label: "Profile",  icon: User },
+  { id: "profile", label: "Profile", icon: User },
   { id: "security", label: "Security", icon: Lock },
 ];
 
@@ -29,20 +39,32 @@ const Field = React.forwardRef<HTMLInputElement, any>(
         type={type}
         {...props}
         className={`w-full rounded-xl border bg-gray-50 px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-2 transition-all ${
-          error ? 'border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-[#719FC4] focus:ring-[#719FC4]/20'
-        } ${props.disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+          error
+            ? "border-red-500 focus:ring-red-200"
+            : "border-gray-200 focus:border-[#719FC4] focus:ring-[#719FC4]/20"
+        } ${props.disabled ? "opacity-60 cursor-not-allowed" : ""}`}
       />
       {error && <p className="text-[11px] text-red-500 mt-1">{error}</p>}
-      {hint && !error && <p className="text-[11px] text-gray-400 mt-1">{hint}</p>}
+      {hint && !error && (
+        <p className="text-[11px] text-gray-400 mt-1">{hint}</p>
+      )}
     </div>
-  )
+  ),
 );
 Field.displayName = "Field";
 
 /* ─── Section wrapper ────────────────────────────────── */
-const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
+const Section = ({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) => (
   <div className="rounded-2xl border border-gray-100 bg-white shadow-sm p-6 flex flex-col gap-5">
-    <h2 className="text-base font-extrabold text-gray-900 tracking-tight">{title}</h2>
+    <h2 className="text-base font-extrabold text-gray-900 tracking-tight">
+      {title}
+    </h2>
     {children}
   </div>
 );
@@ -58,13 +80,18 @@ const getInitials = (name?: string) => {
 /* ═══════════════════════════════════════════════════════ */
 const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState<Tab>("profile");
-  
+
   // Security State (Left as controlled state until you build a schema for it)
-  const [passwords, setPasswords] = useState({ current: "", next: "", confirm: "" });
+  const [passwords, setPasswords] = useState({
+    current: "",
+    next: "",
+    confirm: "",
+  });
 
   /* ── Server State (React Query) ── */
   const { data: response, isLoading } = useGetProfileQuery();
-  const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfileMutation();
+  const { mutate: updateProfile, isPending: isUpdating } =
+    useUpdateProfileMutation();
 
   /* ── Client State (React Hook Form) ── */
   const {
@@ -75,12 +102,14 @@ const SettingsPage = () => {
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     // 'values' will automatically update the form when React Query finishes fetching!
-    values: response?.data ? {
-      name: response.data.name || "",
-      email: response.data.email || "",
-      phone: response.data.phone || "",
-      location: response.data.location || "",
-    } : undefined,
+    values: response?.data
+      ? {
+          name: response.data.name || "",
+          email: response.data.email || "",
+          phone: response.data.phone || "",
+          location: response.data.location || "",
+        }
+      : undefined,
   });
 
   const onSubmitProfile = (data: ProfileFormData) => {
@@ -91,7 +120,7 @@ const SettingsPage = () => {
       },
       onError: (err: any) => {
         toast.error(err.response?.data?.message || "Failed to update profile");
-      }
+      },
     });
   };
 
@@ -106,13 +135,17 @@ const SettingsPage = () => {
   return (
     <div className="p-4 md:p-6 max-w-[1200px] mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">Settings</h1>
-        <p className="text-sm text-gray-400 mt-0.5">Manage your account preferences</p>
+        <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">
+          Settings
+        </h1>
+        <p className="text-sm text-gray-400 mt-0.5">
+          Manage your account preferences
+        </p>
       </div>
 
       <div className="flex flex-col md:flex-row gap-5">
         {/* ── Left nav ── */}
-        <nav className="md:w-52 flex-shrink-0">
+        <nav className="md:w-52 shrink-0">
           <div className="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
             {TABS.map((t) => {
               const Icon = t.icon;
@@ -126,9 +159,11 @@ const SettingsPage = () => {
                       : "text-gray-600 hover:bg-gray-50"
                   }`}
                 >
-                  <Icon className="h-4 w-4 flex-shrink-0" />
+                  <Icon className="h-4 w-4 shrink-0" />
                   {t.label}
-                  {activeTab === t.id && <ChevronRight className="h-3.5 w-3.5 ml-auto" />}
+                  {activeTab === t.id && (
+                    <ChevronRight className="h-3.5 w-3.5 ml-auto" />
+                  )}
                 </button>
               );
             })}
@@ -137,17 +172,19 @@ const SettingsPage = () => {
 
         {/* ── Right panels ── */}
         <div className="flex-1 flex flex-col gap-5 min-w-0">
-
           {/* ── Profile Tab ── */}
           {activeTab === "profile" && (
-            <form onSubmit={handleSubmit(onSubmitProfile)} className="flex flex-col gap-5">
+            <form
+              onSubmit={handleSubmit(onSubmitProfile)}
+              className="flex flex-col gap-5"
+            >
               <Section title="Avatar">
                 <div className="flex items-center gap-5">
-                  <div className="relative flex-shrink-0">
+                  <div className="relative shrink-0">
                     {response?.data?.profilePicture ? (
-                      <img 
-                        src={response?.data?.profilePicture} 
-                        alt="Profile" 
+                      <img
+                        src={response?.data?.profilePicture}
+                        alt="Profile"
                         className="h-20 w-20 rounded-2xl object-cover"
                       />
                     ) : (
@@ -155,14 +192,24 @@ const SettingsPage = () => {
                         {getInitials(response?.data?.name)}
                       </div>
                     )}
-                    <button type="button" className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm hover:bg-gray-50 transition-colors">
+                    <button
+                      type="button"
+                      className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm hover:bg-gray-50 transition-colors"
+                    >
                       <Camera className="h-3.5 w-3.5 text-gray-500" />
                     </button>
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-gray-900">{response?.data?.name || "User"}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">JPG or PNG. Max 5MB.</p>
-                    <button type="button" className="mt-2 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
+                    <p className="text-sm font-bold text-gray-900">
+                      {response?.data?.name || "User"}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      JPG or PNG. Max 5MB.
+                    </p>
+                    <button
+                      type="button"
+                      className="mt-2 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
                       Upload Photo
                     </button>
                   </div>
@@ -170,32 +217,32 @@ const SettingsPage = () => {
               </Section>
 
               <Section title="Personal Information">
-                <Field 
-                  label="Full Name" 
-                  {...register("name")} 
-                  error={errors.name?.message} 
+                <Field
+                  label="Full Name"
+                  {...register("name")}
+                  error={errors.name?.message}
                 />
-                
+
                 {/* Email is typically disabled in settings unless there's a specific change-email flow */}
-                <Field 
-                  label="Email Address" 
-                  type="email" 
-                  disabled 
+                <Field
+                  label="Email Address"
+                  type="email"
+                  disabled
                   hint="Contact support to change your email."
-                  {...register("email")} 
+                  {...register("email")}
                 />
-                
-                <Field 
-                  label="Phone Number" 
-                  type="tel" 
-                  {...register("phone")} 
-                  error={errors.phone?.message} 
+
+                <Field
+                  label="Phone Number"
+                  type="tel"
+                  {...register("phone")}
+                  error={errors.phone?.message}
                 />
-                
-                <Field 
-                  label="Location" 
-                  {...register("location")} 
-                  error={errors.location?.message} 
+
+                <Field
+                  label="Location"
+                  {...register("location")}
+                  error={errors.location?.message}
                 />
               </Section>
 
@@ -209,9 +256,9 @@ const SettingsPage = () => {
                   {isUpdating ? "Saving..." : "Save Changes"}
                 </button>
                 {isDirty && (
-                  <button 
-                    type="button" 
-                    onClick={() => reset()} 
+                  <button
+                    type="button"
+                    onClick={() => reset()}
                     className="rounded-xl border border-gray-200 px-6 py-2.5 text-sm font-semibold text-gray-500 hover:bg-gray-50 transition-colors"
                   >
                     Cancel
@@ -227,24 +274,30 @@ const SettingsPage = () => {
               <Section title="Change Password">
                 {/* Notice how Field is still compatible with value/onChange if you manually pass them, 
                     though upgrading this to a nested form with Zod would be best! */}
-                <Field 
-                  label="Current Password" 
-                  type="password" 
-                  value={passwords.current}  
-                  onChange={(e: any) => setPasswords({ ...passwords, current: e.target.value })} 
+                <Field
+                  label="Current Password"
+                  type="password"
+                  value={passwords.current}
+                  onChange={(e: any) =>
+                    setPasswords({ ...passwords, current: e.target.value })
+                  }
                 />
-                <Field 
-                  label="New Password" 
-                  type="password" 
+                <Field
+                  label="New Password"
+                  type="password"
                   hint="Minimum 8 characters"
-                  value={passwords.next}     
-                  onChange={(e: any) => setPasswords({ ...passwords, next: e.target.value })} 
+                  value={passwords.next}
+                  onChange={(e: any) =>
+                    setPasswords({ ...passwords, next: e.target.value })
+                  }
                 />
-                <Field 
-                  label="Confirm Password" 
-                  type="password" 
-                  value={passwords.confirm}  
-                  onChange={(e: any) => setPasswords({ ...passwords, confirm: e.target.value })} 
+                <Field
+                  label="Confirm Password"
+                  type="password"
+                  value={passwords.confirm}
+                  onChange={(e: any) =>
+                    setPasswords({ ...passwords, confirm: e.target.value })
+                  }
                 />
                 <button className="self-start rounded-xl bg-[#719FC4] hover:bg-[#5585A8] px-5 py-2.5 text-sm font-bold text-white transition-all shadow-sm hover:shadow-md">
                   Update Password
@@ -254,17 +307,20 @@ const SettingsPage = () => {
               <Section title="Danger Zone">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-semibold text-gray-800">Delete Account</p>
-                    <p className="text-xs text-gray-400 mt-0.5">Permanently delete your account and all associated data.</p>
+                    <p className="text-sm font-semibold text-gray-800">
+                      Delete Account
+                    </p>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      Permanently delete your account and all associated data.
+                    </p>
                   </div>
-                  <button className="flex items-center gap-1.5 flex-shrink-0 rounded-xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-500 hover:bg-red-50 transition-all">
+                  <button className="flex items-center gap-1.5 shrink-0 rounded-xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-500 hover:bg-red-50 transition-all">
                     <Trash2 className="h-4 w-4" /> Delete
                   </button>
                 </div>
               </Section>
             </div>
           )}
-
         </div>
       </div>
     </div>

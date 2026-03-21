@@ -42,7 +42,7 @@ api.interceptors.response.use(
       return Promise.reject(error?.response?.data);
     }
 
-    if (status === 401 && message.includes('Missing access token') && !original._retry) {
+    if (status === 401 && (message.includes('Missing access token') || message.includes('expired token')) && !original._retry) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({

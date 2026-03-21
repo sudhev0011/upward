@@ -9,7 +9,7 @@ export interface RegisterPayload {
   name: string
   email: string
   password: string
-  role: UserRole
+  roles: UserRole[]
 }
 
 export interface GoogleLoginPayload {
@@ -30,7 +30,7 @@ export interface AuthResponseData {
   id: string
   name: string
   email: string
-  role: UserRole
+  roles: UserRole[]
   avatar?: string
   isVerified: boolean
   isBlocked: boolean

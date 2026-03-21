@@ -8,6 +8,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import {
   DropdownMenu,
@@ -36,7 +37,7 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user, activeRole } = useSelector((state: RootState) => state.auth);
 
   const { mutate: logoutMutation } = useLogoutMutation();
 
@@ -115,7 +116,7 @@ const Navbar = () => {
                       {user?.name?.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="max-w-[120px] truncate">{user?.name}</span>
+                  <span className="max-w-120px truncate">{user?.name}</span>
                   <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
                 </button>
               </DropdownMenuTrigger>
@@ -144,7 +145,7 @@ const Navbar = () => {
                 <DropdownMenuSeparator className="bg-gray-100" />
 
                 <DropdownMenuItem
-                  onClick={() => navigate(`/${user?.role}/dashboard`)}
+                  onClick={() => navigate(`/${activeRole}/dashboard`)}
                   className="rounded-lg cursor-pointer gap-2.5 text-sm font-medium text-gray-700 focus:bg-[#EAF2F9] focus:text-[#5585A8]"
                 >
                   <User className="h-4 w-4" /> Profile
@@ -207,6 +208,9 @@ const Navbar = () => {
                   Upward
                 </span>
               </SheetTitle>
+              <SheetDescription className="sr-only">
+                Mobile navigation menu
+              </SheetDescription>
             </SheetHeader>
 
             <nav className="flex flex-col gap-1 px-3 pt-4">
@@ -226,7 +230,7 @@ const Navbar = () => {
               ))}
             </nav>
 
-            <div className="mt-auto px-3 pt-6 pb-6 border-t border-gray-100 mx-3 mt-6">
+            <div className="mt-auto px-3 pt-6 pb-6 border-t border-gray-100 mx-3">
               {user ? (
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-3 rounded-xl bg-gray-50 px-3 py-3 mb-1">
@@ -250,7 +254,7 @@ const Navbar = () => {
                     className="justify-start gap-2 text-sm font-medium text-gray-600 hover:bg-[#EAF2F9] hover:text-[#719FC4] rounded-xl"
                     onClick={() => {
                       setOpen(false);
-                      navigate(`/${user?.role}/dashboard`);
+                      navigate(`/${activeRole}/dashboard`);
                     }}
                   >
                     <User className="h-4 w-4" /> Profile

@@ -39,12 +39,12 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
 
         const accessToken = this._tokenService.signAccess({
         sub: user.id,
-        role: user.role,
+        roles: user.roles,
         email: user.email});
 
         const refreshToken = this._tokenService.signRefresh({
             sub: user.id,
-            role: user.role,
+            roles: user.roles,
             email: user.email
         });
 

@@ -2,7 +2,7 @@ import { UserRole } from '../../enums/user-role.enum';
 
 export interface ITokenPayload {
   sub: string;
-  role?: UserRole;
+  roles?: UserRole[];
   email: string;
 }
 

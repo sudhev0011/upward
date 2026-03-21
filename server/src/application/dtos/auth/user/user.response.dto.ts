@@ -1,10 +1,11 @@
 import { z } from 'zod';
 import { ClientProfileResponseDto } from '../../client/profile/info/response/client-profile-response.dto';
+import { UserRole } from '../../../../domain/enums/user-role.enum';
 export const UserResponseDto = z.object({
   id: z.string(),
   name: z.string(),
   email: z.string().email(),
-  role: z.string(),
+  roles: z.array(z.nativeEnum(UserRole)),
   isVerified: z.boolean(),
   isBlocked: z.boolean(),
   createdAt: z.date(),

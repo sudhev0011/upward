@@ -7,13 +7,14 @@ import ResetPassword from '@/pages/auth/ResetPassword';
 import ForgotPassword from '@/pages/auth/ForgotPassword';
 import AuthRedirect from '@/components/common/AuthRedirect';
 import PublicLayout from '@/layouts/PublicLayout';
-  
+import { RoleGuard } from '@/components/common/RoleGuard';
+
 const PublicRoutes = () => {
   return (
     <Routes>
         <Route element={<PublicLayout />}>
 
-          <Route index element={<LandingPage />} />
+          <Route index element={<RoleGuard><LandingPage /></RoleGuard>} />
 
           <Route
             path="/login"

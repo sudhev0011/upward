@@ -45,7 +45,7 @@ export class LoginUserUseCase implements ILoginUserUseCase {
       return { user: UserMapper.toResponse(user) };
     }
 
-    if (user.role === UserRole.ADMIN) {
+    if (user.roles.includes(UserRole.ADMIN) ) {
       throw new AuthenticationError("Please use admin login endpoint");
     }
 
@@ -59,7 +59,7 @@ export class LoginUserUseCase implements ILoginUserUseCase {
 
     const accessToken = this._tokenService.signAccess({
       sub: user.id,
-      role: user.role,
+      roles: user.roles,
       email: user.email
     });
     const refreshToken = this._tokenService.signRefresh({ sub: user.id, email: user.email });

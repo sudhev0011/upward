@@ -11,14 +11,14 @@ import {
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "@/hooks/useRedux";
 import { toast } from "sonner";
 import type { CredentialResponse } from "@react-oauth/google";
 import { UserRole } from "@/constants/user-role";
 import { useLoginMutation } from "@/hooks/auth/useLogin";
 import { useGoogleLoginMutation } from "@/hooks/auth/useGoogle";
 import { GoogleLoginButton } from "../../components/auth/GoogleLoginButton";
-import { setCredentials } from "@/store/slices/authSlice";
+import { setActiveRole, setCredentials } from "@/store/slices/authSlice";
 import {
   loginSchema,
   type LoginFormData,
@@ -41,7 +41,7 @@ const navigateByRole = (role: UserRole, navigate: (path: string) => void) => {
 const Login = () => {
   const [showPw, setShowPw] = useState(false);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const {
@@ -70,7 +70,12 @@ const Login = () => {
         if (response.success && response.data) {
           dispatch(setCredentials(response.data));
           toast.success("Login successful");
-          navigateByRole(response.data.role, navigate);
+          if(response?.data?.roles?.length === 1){
+            dispatch(setActiveRole(response?.data?.roles[0]))
+            navigateByRole(response?.data?.roles[0], navigate)
+          }else if(response?.data?.roles?.length > 1){
+            navigate('/select-role')
+          }
         }
       },
       onError: (error) => {

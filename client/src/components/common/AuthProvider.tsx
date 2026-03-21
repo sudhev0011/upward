@@ -1,17 +1,17 @@
 import { useEffect, type ReactNode } from 'react';
 import { Loading } from '../ui/Loading';
 import { type RootState } from '@/store/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { useCheckAuthQuery } from '@/hooks/auth/useCheckAuth';
-import { setCredentials, setAuthChecked } from '@/store/slices/authSlice';
+import { setCredentials, setAuthChecked,setActiveRole } from '@/store/slices/authSlice';
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const dispatch = useDispatch();
-  const { isAuthChecked } = useSelector(
+  const dispatch = useAppDispatch();
+  const { isAuthChecked } = useAppSelector(
     (state: RootState) => state.auth
   );
 
@@ -20,6 +20,12 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     if (data?.data) {
       dispatch(setCredentials(data.data));
+    }
+
+    if(data?.data?.roles){
+      if(data?.data?.roles?.length === 1){
+        dispatch(setActiveRole(data?.data?.roles[0]));
+      }
     }
 
     dispatch(setAuthChecked())

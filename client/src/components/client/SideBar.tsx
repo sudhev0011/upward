@@ -1,4 +1,5 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge"
 import {
   LayoutDashboard,
   CalendarCheck,
@@ -13,22 +14,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useLogoutMutation } from "@/hooks/auth/useLogout";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { toast } from "sonner";
 import { logout } from "@/store/slices/authSlice";
 import type { RootState } from "@/store/store";
-
-export const USER = {
-  name: "Alex Johnson",
-  initials: "AJ",
-  email: "alex@example.com",
-  memberSince: "Jan 2024",
-  plan: "Pro",
-  tasksCompleted: 24,
-  totalSpent: 3840,
-  savedPros: 7,
-  activeBookings: 3,
-};
 
 interface NavItem {
   to: string;
@@ -56,25 +45,15 @@ const NAV_ITEMS: NavItem[] = [
   { to: "/client/dashboard/reviews", icon: Star, label: "Reviews" },
 ];
 
-interface BottomItem {
-  to: string;
-  icon: LucideIcon;
-  label: string;
-}
-
-const BOTTOM_ITEMS: BottomItem[] = [
-  { to: "/client/dashboard/settings", icon: Settings, label: "Settings" },
-];
-
 interface SidebarProps {
   onClose?: () => void;
 }
 
 export const Sidebar = ({ onClose }: SidebarProps) => {
   const { mutate: logoutMutation } = useLogoutMutation();
-  const {user} = useSelector((state:RootState)=> state.auth)
+  const { user } = useAppSelector((state: RootState) => state.auth);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -97,13 +76,13 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
           <Zap className="h-4 w-4 text-white" />
         </div>
         <span className="text-lg font-extrabold tracking-tight text-gray-900">
-          Upward
+          <Link to={"/"}>Upward</Link>
         </span>
       </div>
 
       {/* User chip */}
       <div className="mx-4 mt-4 mb-2 flex items-center gap-3 rounded-xl bg-[#EAF2F9] px-3 py-2.5">
-        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#719FC4] text-xs font-bold text-white">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#719FC4] text-xs font-bold text-white">
           {user?.name?.charAt(0).toUpperCase()}
         </div>
         <div className="min-w-0">
@@ -111,7 +90,9 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
             {user?.name}
           </p>
           <p className="text-[11px] text-[#5585A8] font-medium">
-            {user?.role?.toUpperCase()}
+            {user?.roles?.map((r)=>(
+              <Badge key={r} className="bg-[#5585A8] text-white m-0.5">{r}</Badge>
+            ))}
           </p>
         </div>
       </div>
@@ -135,7 +116,7 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
               }`
             }
           >
-            <Icon className="h-4 w-4 flex-shrink-0 text-current opacity-70" />
+            <Icon className="h-4 w-4 shrink-0 text-current opacity-70" />
             <span className="flex-1">{label}</span>
             {badge && (
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/30 text-[10px] font-bold text-white">
@@ -148,24 +129,24 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
 
       {/* Bottom */}
       <div className="border-t border-gray-100 px-3 py-3">
-        {BOTTOM_ITEMS.map(({ to, icon: Icon, label }) => (
-          <NavLink
-            key={to}
-            to={to}
-            onClick={onClose}
-            className={({ isActive }) =>
-              `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150 ${
-                isActive
-                  ? "bg-[#719FC4] text-white shadow-sm"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-              }`
-            }
-          >
-            <Icon className="h-4 w-4 flex-shrink-0 text-current opacity-70" />
-            {label}
-          </NavLink>
-        ))}
-        <button onClick={handleLogout} className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-500 transition-all duration-150">
+        <NavLink
+          to="/client/dashboard/settings"
+          onClick={onClose}
+          className={({ isActive }) =>
+            `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150 ${
+              isActive
+                ? "bg-[#719FC4] text-white shadow-sm"
+                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+            }`
+          }
+        >
+          <Settings className="h-4 w-4 shrink-0 text-current opacity-70" />
+          Settings
+        </NavLink>
+        <button
+          onClick={handleLogout}
+          className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-500 transition-all duration-150"
+        >
           <LogOut className="h-4 w-4 text-gray-400 group-hover:text-red-400" />
           Sign Out
         </button>

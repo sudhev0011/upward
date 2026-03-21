@@ -3,21 +3,7 @@ import { Outlet } from "react-router-dom";
 import { Sidebar as DashSidebar } from "@/components/client/SideBar";
 import { Topbar } from "@/components/client/TopBar";
 
-/**
- * DashboardLayout
- * Usage in your router:
- *
- *   <Route path="/dashboard" element={<DashboardLayout />}>
- *     <Route index element={<DashboardOverview />} />
- *     <Route path="bookings"  element={<BookingsPage />} />
- *     <Route path="messages"  element={<MessagesPage />} />
- *     <Route path="explore"   element={<ExplorePage />} />
- *     <Route path="saved"     element={<SavedPage />} />
- *     <Route path="payments"  element={<PaymentsPage />} />
- *     <Route path="reviews"   element={<ReviewsPage />} />
- *     <Route path="settings"  element={<SettingsPage />} />
- *   </Route>
- */
+
 const ClientLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -25,7 +11,7 @@ const ClientLayout = () => {
     <div className="flex h-screen overflow-hidden bg-gray-50/60 font-sans">
       {/* ── Sidebar (desktop: always visible, mobile: overlay) ── */}
       {/* Desktop */}
-      <div className="hidden md:flex flex-shrink-0">
+      <div className="hidden md:flex shrink-0">
         <DashSidebar />
       </div>
 

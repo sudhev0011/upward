@@ -34,7 +34,7 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
 
     const accessToken = this._tokenService.signAccess({
       sub: user.id,
-      role: user.role as UserRole,
+      roles: user.roles as UserRole[],
       email: user.email
     });
     const refreshToken = this._tokenService.signRefresh({ sub: user.id, email: user.email });

@@ -26,7 +26,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
       throw new AuthorizationError('User is blocked');
     }
 
-    if (user.role !== UserRole.ADMIN) {
+    if (!user.roles.includes(UserRole.ADMIN)) {
       throw new AuthorizationError('Not authorized as admin');
     }
 
@@ -35,7 +35,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
       throw new AuthenticationError('Invalid credentials');
     }
 
-    const accessToken = this._tokenService.signAccess({ sub: user.id, role: user.role, email: user.email });
+    const accessToken = this._tokenService.signAccess({ sub: user.id, roles: user.roles, email: user.email });
     const refreshToken = this._tokenService.signRefresh({ sub: user.id, email: user.email });
     const hashedRefresh = await this._passwordHasher.hash(refreshToken);
     await this._userRepository.update(user.id, { refreshToken: hashedRefresh });

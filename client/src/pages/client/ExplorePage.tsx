@@ -1,51 +1,160 @@
 import { useState } from "react";
-import { Search, Star, SlidersHorizontal, MapPin, Monitor, Users } from "lucide-react";
+import {
+  Search,
+  Star,
+  SlidersHorizontal,
+  MapPin,
+  Monitor,
+  Users,
+} from "lucide-react";
 export type ServiceCategory = "Onsite" | "Offsite" | "Dedicated";
 const SERVICES = [
-  { id: "e1",  title: "Home Deep Cleaning",    provider: "CleanPro",      initials: "CP", category: "Onsite"    as ServiceCategory, rating: 4.9, reviews: 512, price: "From $80",   tags: ["Cleaning", "Home"],         badge: "Top Rated" },
-  { id: "e2",  title: "React / Next.js Dev",   provider: "CodeCraft",     initials: "CC", category: "Offsite"   as ServiceCategory, rating: 4.8, reviews: 203, price: "From $75/h", tags: ["Development", "React"],     badge: "Popular"  },
-  { id: "e3",  title: "Plumbing Repairs",      provider: "PipeWorks",     initials: "PW", category: "Onsite"    as ServiceCategory, rating: 4.7, reviews: 389, price: "From $60",   tags: ["Plumbing", "Repairs"]                         },
-  { id: "e4",  title: "Brand & Logo Design",   provider: "PixelStudio",   initials: "PS", category: "Offsite"   as ServiceCategory, rating: 4.9, reviews: 140, price: "From $120",  tags: ["Design", "Branding"],       badge: "New"      },
-  { id: "e5",  title: "Electrical Inspection", provider: "VoltCheck",     initials: "VC", category: "Onsite"    as ServiceCategory, rating: 4.6, reviews: 271, price: "From $55",   tags: ["Electrical", "Safety"]                        },
-  { id: "e6",  title: "Full-Stack Dev Team",   provider: "DevSquad",      initials: "DS", category: "Dedicated" as ServiceCategory, rating: 4.9, reviews: 88,  price: "From $200/d",tags: ["Team", "Full-Stack"],       badge: "Top Rated"},
-  { id: "e7",  title: "SEO & Content",         provider: "RankLab",       initials: "RL", category: "Offsite"   as ServiceCategory, rating: 4.7, reviews: 167, price: "From $90/h", tags: ["SEO", "Marketing"]                            },
-  { id: "e8",  title: "AC Maintenance",        provider: "CoolFix",       initials: "CF", category: "Onsite"    as ServiceCategory, rating: 4.8, reviews: 330, price: "From $70",   tags: ["HVAC", "Maintenance"],      badge: "Popular"  },
-  { id: "e9",  title: "Interior Painting",     provider: "BrushWorks",    initials: "BW", category: "Onsite"    as ServiceCategory, rating: 4.7, reviews: 445, price: "From $150",  tags: ["Painting", "Interior"]                        },
+  {
+    id: "e1",
+    title: "Home Deep Cleaning",
+    provider: "CleanPro",
+    initials: "CP",
+    category: "Onsite" as ServiceCategory,
+    rating: 4.9,
+    reviews: 512,
+    price: "From $80",
+    tags: ["Cleaning", "Home"],
+    badge: "Top Rated",
+  },
+  {
+    id: "e2",
+    title: "React / Next.js Dev",
+    provider: "CodeCraft",
+    initials: "CC",
+    category: "Offsite" as ServiceCategory,
+    rating: 4.8,
+    reviews: 203,
+    price: "From $75/h",
+    tags: ["Development", "React"],
+    badge: "Popular",
+  },
+  {
+    id: "e3",
+    title: "Plumbing Repairs",
+    provider: "PipeWorks",
+    initials: "PW",
+    category: "Onsite" as ServiceCategory,
+    rating: 4.7,
+    reviews: 389,
+    price: "From $60",
+    tags: ["Plumbing", "Repairs"],
+  },
+  {
+    id: "e4",
+    title: "Brand & Logo Design",
+    provider: "PixelStudio",
+    initials: "PS",
+    category: "Offsite" as ServiceCategory,
+    rating: 4.9,
+    reviews: 140,
+    price: "From $120",
+    tags: ["Design", "Branding"],
+    badge: "New",
+  },
+  {
+    id: "e5",
+    title: "Electrical Inspection",
+    provider: "VoltCheck",
+    initials: "VC",
+    category: "Onsite" as ServiceCategory,
+    rating: 4.6,
+    reviews: 271,
+    price: "From $55",
+    tags: ["Electrical", "Safety"],
+  },
+  {
+    id: "e6",
+    title: "Full-Stack Dev Team",
+    provider: "DevSquad",
+    initials: "DS",
+    category: "Dedicated" as ServiceCategory,
+    rating: 4.9,
+    reviews: 88,
+    price: "From $200/d",
+    tags: ["Team", "Full-Stack"],
+    badge: "Top Rated",
+  },
+  {
+    id: "e7",
+    title: "SEO & Content",
+    provider: "RankLab",
+    initials: "RL",
+    category: "Offsite" as ServiceCategory,
+    rating: 4.7,
+    reviews: 167,
+    price: "From $90/h",
+    tags: ["SEO", "Marketing"],
+  },
+  {
+    id: "e8",
+    title: "AC Maintenance",
+    provider: "CoolFix",
+    initials: "CF",
+    category: "Onsite" as ServiceCategory,
+    rating: 4.8,
+    reviews: 330,
+    price: "From $70",
+    tags: ["HVAC", "Maintenance"],
+    badge: "Popular",
+  },
+  {
+    id: "e9",
+    title: "Interior Painting",
+    provider: "BrushWorks",
+    initials: "BW",
+    category: "Onsite" as ServiceCategory,
+    rating: 4.7,
+    reviews: 445,
+    price: "From $150",
+    tags: ["Painting", "Interior"],
+  },
 ];
 
 const CATEGORY_STYLES: Record<ServiceCategory, string> = {
-  Onsite:    "bg-[#EAF2F9] text-[#5585A8]",
-  Offsite:   "bg-indigo-50  text-indigo-500",
+  Onsite: "bg-[#EAF2F9] text-[#5585A8]",
+  Offsite: "bg-indigo-50  text-indigo-500",
   Dedicated: "bg-violet-50  text-violet-500",
 };
 
 const CATEGORY_ICONS: Record<ServiceCategory, typeof MapPin> = {
-  Onsite:    MapPin,
-  Offsite:   Monitor,
+  Onsite: MapPin,
+  Offsite: Monitor,
   Dedicated: Users,
 };
 
 const BADGE_STYLES: Record<string, string> = {
   "Top Rated": "bg-amber-50 text-amber-600",
-  "Popular":   "bg-emerald-50 text-emerald-600",
-  "New":       "bg-[#EAF2F9] text-[#5585A8]",
+  Popular: "bg-emerald-50 text-emerald-600",
+  New: "bg-[#EAF2F9] text-[#5585A8]",
 };
 
-const CATS: Array<ServiceCategory | "All"> = ["All", "Onsite", "Offsite", "Dedicated"];
+const CATS: Array<ServiceCategory | "All"> = [
+  "All",
+  "Onsite",
+  "Offsite",
+  "Dedicated",
+];
 
 const ExplorePage = () => {
-  const [search, setSearch]   = useState("");
-  const [cat, setCat]         = useState<ServiceCategory | "All">("All");
-  const [sortBy, setSortBy]   = useState<"rating" | "reviews" | "price">("rating");
+  const [search, setSearch] = useState("");
+  const [cat, setCat] = useState<ServiceCategory | "All">("All");
+  const [sortBy, setSortBy] = useState<"rating" | "reviews" | "price">(
+    "rating",
+  );
 
-  const visible = SERVICES
-    .filter((s) => cat === "All" || s.category === cat)
-    .filter((s) =>
-      s.title.toLowerCase().includes(search.toLowerCase()) ||
-      s.tags.some((t) => t.toLowerCase().includes(search.toLowerCase()))
+  const visible = SERVICES.filter((s) => cat === "All" || s.category === cat)
+    .filter(
+      (s) =>
+        s.title.toLowerCase().includes(search.toLowerCase()) ||
+        s.tags.some((t) => t.toLowerCase().includes(search.toLowerCase())),
     )
     .sort((a, b) => {
-      if (sortBy === "rating")  return b.rating  - a.rating;
+      if (sortBy === "rating") return b.rating - a.rating;
       if (sortBy === "reviews") return b.reviews - a.reviews;
       return 0;
     });
@@ -54,8 +163,12 @@ const ExplorePage = () => {
     <div className="p-4 md:p-6 max-w-[1400px] mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">Explore Services</h1>
-        <p className="text-sm text-gray-400 mt-0.5">Find the perfect professional for any job</p>
+        <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">
+          Explore Services
+        </h1>
+        <p className="text-sm text-gray-400 mt-0.5">
+          Find the perfect professional for any job
+        </p>
       </div>
 
       {/* Search + controls */}
@@ -70,7 +183,7 @@ const ExplorePage = () => {
           />
         </div>
         <div className="flex items-center gap-2">
-          <SlidersHorizontal className="h-4 w-4 text-gray-400 flex-shrink-0" />
+          <SlidersHorizontal className="h-4 w-4 text-gray-400 shrink-0" />
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
@@ -89,14 +202,22 @@ const ExplorePage = () => {
             key={c}
             onClick={() => setCat(c)}
             className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-              cat === c ? "bg-[#719FC4] text-white shadow-sm" : "bg-white border border-gray-200 text-gray-600 hover:border-[#719FC4]/40 hover:text-[#719FC4]"
+              cat === c
+                ? "bg-[#719FC4] text-white shadow-sm"
+                : "bg-white border border-gray-200 text-gray-600 hover:border-[#719FC4]/40 hover:text-[#719FC4]"
             }`}
           >
-            {c !== "All" && (() => { const Icon = CATEGORY_ICONS[c as ServiceCategory]; return <Icon className="h-3.5 w-3.5" />; })()}
+            {c !== "All" &&
+              (() => {
+                const Icon = CATEGORY_ICONS[c as ServiceCategory];
+                return <Icon className="h-3.5 w-3.5" />;
+              })()}
             {c}
           </button>
         ))}
-        <span className="ml-auto text-xs text-gray-400">{visible.length} services</span>
+        <span className="ml-auto text-xs text-gray-400">
+          {visible.length} services
+        </span>
       </div>
 
       {/* Grid */}
@@ -111,7 +232,11 @@ const ExplorePage = () => {
                 {s.initials}
               </div>
               {s.badge && (
-                <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${BADGE_STYLES[s.badge]}`}>{s.badge}</span>
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${BADGE_STYLES[s.badge]}`}
+                >
+                  {s.badge}
+                </span>
               )}
             </div>
 
@@ -119,20 +244,33 @@ const ExplorePage = () => {
             <p className="text-sm text-gray-400 mb-3">{s.provider}</p>
 
             <div className="flex items-center gap-2 mb-4 flex-wrap">
-              <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${CATEGORY_STYLES[s.category]}`}>{s.category}</span>
+              <span
+                className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${CATEGORY_STYLES[s.category]}`}
+              >
+                {s.category}
+              </span>
               {s.tags.slice(0, 2).map((t) => (
-                <span key={t} className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-500">{t}</span>
+                <span
+                  key={t}
+                  className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-500"
+                >
+                  {t}
+                </span>
               ))}
             </div>
 
             <div className="flex items-center justify-between pt-4 border-t border-gray-100">
               <div className="flex items-center gap-1.5">
                 <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                <span className="text-sm font-bold text-gray-800">{s.rating}</span>
+                <span className="text-sm font-bold text-gray-800">
+                  {s.rating}
+                </span>
                 <span className="text-xs text-gray-400">({s.reviews})</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-gray-900">{s.price}</span>
+                <span className="text-sm font-bold text-gray-900">
+                  {s.price}
+                </span>
                 <button className="rounded-lg bg-[#EAF2F9] hover:bg-[#719FC4] px-3 py-1.5 text-xs font-bold text-[#5585A8] hover:text-white transition-all duration-200">
                   Book
                 </button>

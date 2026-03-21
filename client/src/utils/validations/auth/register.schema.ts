@@ -7,7 +7,7 @@ export const registerSchema = z.object({
   name: z.string().min(2).max(50),
   email: emailSchema,
   password: passwordSchema,
-  role: z.nativeEnum(UserRole),
+  roles: z.array(z.nativeEnum(UserRole)).min(1),
 });
 
 export type RegisterFormData = z.infer<typeof registerSchema>;

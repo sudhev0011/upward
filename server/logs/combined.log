@@ -1,0 +1,609 @@
+2026-03-12T16:46:13.192Z [info]: GET /api/client/profile 200 41.047 ms 
+2026-03-12T16:49:26.374Z [info]: GET /api/client/profile 401 2.549 ms 
+2026-03-12T16:49:26.396Z [info]: GET /api/auth/check-auth 401 1.743 ms 
+2026-03-12T16:49:30.312Z [info]: GET /api/auth/check-auth 401 2.128 ms 
+2026-03-12T16:49:37.291Z [info]: GET /api/auth/check-auth 401 1.197 ms 
+2026-03-12T16:49:59.327Z [info]: GET /api/auth/check-auth 401 1.141 ms 
+2026-03-12T16:50:00.314Z [info]: GET /api/auth/check-auth 401 1.446 ms 
+2026-03-12T16:54:49.113Z [info]: Server initialization started 
+2026-03-12T16:54:49.216Z [info]: connected to MongoDB 
+2026-03-12T16:54:49.252Z [info]: Connected to Redis 
+2026-03-12T16:54:49.260Z [info]: Server running on http://localhost:8080 
+2026-03-16T08:59:45.145Z [info]: Server initialization started 
+2026-03-16T08:59:45.237Z [info]: connected to MongoDB 
+2026-03-16T08:59:45.255Z [error]: AggregateError 
+2026-03-16T08:59:45.468Z [error]: AggregateError 
+2026-03-16T08:59:45.687Z [error]: AggregateError 
+2026-03-16T08:59:46.002Z [error]: AggregateError 
+2026-03-16T08:59:46.436Z [error]: AggregateError 
+2026-03-16T08:59:47.340Z [error]: AggregateError 
+2026-03-16T08:59:49.035Z [error]: AggregateError 
+2026-03-16T08:59:51.185Z [error]: AggregateError 
+2026-03-16T08:59:53.247Z [info]: Connected to Redis 
+2026-03-16T08:59:53.256Z [info]: Server running on http://localhost:8080 
+2026-03-16T09:09:38.475Z [info]: GET /api/auth/check-auth 401 7.601 ms 
+2026-03-16T09:09:38.560Z [info]: POST /api/auth/refresh 404 69.658 ms 
+2026-03-16T09:10:16.238Z [info]: POST /api/auth/register 201 3684.251 ms 
+2026-03-16T09:10:36.408Z [info]: POST /api/auth/otp-verify 200 317.064 ms 
+2026-03-16T09:10:53.376Z [info]: GET /api/auth/check-auth 200 7.463 ms 
+2026-03-16T09:12:20.995Z [info]: GET /api/auth/check-auth 304 15.998 ms 
+2026-03-16T09:14:44.161Z [info]: GET /api/auth/check-auth 304 9.891 ms 
+2026-03-16T09:16:30.322Z [info]: GET /api/auth/check-auth 304 8.032 ms 
+2026-03-16T09:16:42.128Z [info]: GET /api/auth/check-auth 304 13.107 ms 
+2026-03-16T09:17:04.661Z [info]: Server initialization started 
+2026-03-16T09:17:04.769Z [info]: connected to MongoDB 
+2026-03-16T09:17:04.812Z [info]: Connected to Redis 
+2026-03-16T09:17:04.818Z [info]: Server running on http://localhost:8080 
+2026-03-16T09:17:06.298Z [info]: GET /api/auth/check-auth 200 46.344 ms 
+2026-03-16T09:17:15.166Z [info]: GET /api/auth/check-auth 304 9.063 ms 
+2026-03-16T09:18:27.776Z [info]: Server initialization started 
+2026-03-16T09:18:27.865Z [info]: connected to MongoDB 
+2026-03-16T09:18:27.929Z [info]: Connected to Redis 
+2026-03-16T09:18:27.939Z [info]: Server running on http://localhost:8080 
+2026-03-16T09:18:31.509Z [info]: GET /api/auth/check-auth 200 37.415 ms 
+2026-03-16T09:19:49.856Z [info]: Server initialization started 
+2026-03-16T09:19:49.948Z [info]: connected to MongoDB 
+2026-03-16T09:19:49.973Z [info]: Connected to Redis 
+2026-03-16T09:19:49.981Z [info]: Server running on http://localhost:8080 
+2026-03-16T09:19:55.340Z [info]: GET /api/auth/check-auth 200 37.396 ms 
+2026-03-16T09:20:07.417Z [info]: GET /api/auth/check-auth 304 21.029 ms 
+2026-03-16T09:20:19.456Z [info]: GET /api/auth/check-auth 304 5.765 ms 
+2026-03-16T09:25:34.201Z [info]: GET /api/auth/check-auth 401 2.465 ms 
+2026-03-16T09:25:56.257Z [info]: GET /api/auth/check-auth 401 1.223 ms 
+2026-03-16T09:25:56.711Z [info]: POST /api/auth/refresh 200 417.804 ms 
+2026-03-16T09:25:56.727Z [info]: GET /api/auth/check-auth 200 7.213 ms 
+2026-03-16T09:27:51.345Z [info]: GET /api/auth/check-auth 304 4.093 ms 
+2026-03-16T09:27:54.556Z [info]: GET /api/auth/check-auth 304 5.245 ms 
+2026-03-16T09:28:05.343Z [info]: GET /api/auth/check-auth 304 4.499 ms 
+2026-03-16T09:28:08.281Z [info]: GET /api/auth/check-auth 304 3.130 ms 
+2026-03-16T09:37:17.842Z [info]: GET /api/auth/check-auth 401 7.191 ms 
+2026-03-16T10:19:30.897Z [info]: POST /api/auth/login 200 466.379 ms 
+2026-03-16T10:19:39.165Z [info]: GET /api/client/profile 200 228.627 ms 
+2026-03-16T10:19:45.716Z [info]: GET /api/auth/check-auth 200 12.347 ms 
+2026-03-16T10:19:56.926Z [info]: GET /api/auth/check-auth 304 5.183 ms 
+2026-03-16T10:19:59.549Z [info]: GET /api/auth/check-auth 304 7.707 ms 
+2026-03-16T10:20:08.384Z [info]: GET /api/auth/check-auth 304 7.470 ms 
+2026-03-16T20:27:01.213Z [info]: Server initialization started 
+2026-03-16T20:27:01.272Z [info]: connected to MongoDB 
+2026-03-16T20:27:01.305Z [info]: Connected to Redis 
+2026-03-16T20:27:01.313Z [info]: Server running on http://localhost:8080 
+2026-03-16T20:27:06.758Z [info]: GET /api/auth/check-auth 401 6.363 ms 
+2026-03-16T20:27:07.437Z [info]: POST /api/auth/refresh 200 611.641 ms 
+2026-03-16T20:27:07.462Z [info]: GET /api/auth/check-auth 200 14.100 ms 
+2026-03-16T20:27:17.664Z [info]: GET /api/auth/check-auth 304 61.730 ms 
+2026-03-16T20:28:35.144Z [info]: GET /api/auth/check-auth 200 11.912 ms 
+2026-03-16T20:28:43.505Z [info]: GET /api/auth/check-auth 304 13.997 ms 
+2026-03-16T20:28:47.646Z [info]: GET /api/auth/check-auth 304 5.553 ms 
+2026-03-16T20:30:24.219Z [info]: GET /api/auth/check-auth 304 6.250 ms 
+2026-03-16T20:30:29.837Z [info]: GET /api/auth/check-auth 304 5.113 ms 
+2026-03-16T20:30:33.621Z [info]: GET /api/auth/check-auth 304 11.016 ms 
+2026-03-16T20:30:46.757Z [info]: GET /api/auth/check-auth 304 15.957 ms 
+2026-03-16T20:31:28.790Z [info]: GET /api/auth/check-auth 304 5.634 ms 
+2026-03-16T20:33:40.167Z [info]: GET /api/auth/check-auth 304 4.932 ms 
+2026-03-16T20:33:49.991Z [info]: GET /api/auth/check-auth 304 3.866 ms 
+2026-03-16T20:33:52.236Z [info]: GET /api/auth/check-auth 304 4.280 ms 
+2026-03-16T20:34:04.772Z [info]: GET /api/auth/check-auth 304 3.998 ms 
+2026-03-16T20:34:12.555Z [info]: GET /api/auth/check-auth 304 3.202 ms 
+2026-03-16T20:34:26.975Z [info]: GET /api/auth/check-auth 304 3.702 ms 
+2026-03-17T05:28:17.473Z [info]: Server initialization started 
+2026-03-17T05:28:17.552Z [info]: connected to MongoDB 
+2026-03-17T05:28:17.599Z [info]: Connected to Redis 
+2026-03-17T05:28:17.606Z [info]: Server running on http://localhost:8080 
+2026-03-17T05:28:48.109Z [info]: GET /api/auth/check-auth 401 8.020 ms 
+2026-03-17T05:28:48.797Z [info]: POST /api/auth/refresh 200 634.376 ms 
+2026-03-17T05:28:48.812Z [info]: GET /api/auth/check-auth 200 6.455 ms 
+2026-03-17T05:29:23.864Z [info]: GET /api/auth/check-auth 304 8.428 ms 
+2026-03-17T05:29:53.956Z [info]: GET /api/auth/check-auth 304 29.338 ms 
+2026-03-17T05:33:04.704Z [info]: GET /api/auth/check-auth 304 7.904 ms 
+2026-03-17T05:34:33.170Z [info]: GET /api/auth/check-auth 304 387.357 ms 
+2026-03-17T05:35:35.707Z [info]: GET /api/auth/check-auth 304 5.888 ms 
+2026-03-17T05:36:00.744Z [info]: GET /api/auth/check-auth 304 12.260 ms 
+2026-03-17T06:17:16.743Z [info]: GET /api/auth/check-auth 401 2.147 ms 
+2026-03-17T06:17:18.989Z [info]: POST /api/auth/refresh 200 2156.429 ms 
+2026-03-17T06:17:20.334Z [info]: GET /api/auth/check-auth 200 7.619 ms 
+2026-03-17T08:16:53.491Z [info]: GET /api/auth/check-auth 401 2.837 ms 
+2026-03-17T08:16:53.918Z [info]: POST /api/auth/refresh 200 368.484 ms 
+2026-03-17T08:16:53.930Z [info]: GET /api/auth/check-auth 200 3.704 ms 
+2026-03-17T08:17:36.179Z [info]: GET /api/auth/check-auth 304 4.440 ms 
+2026-03-17T08:21:41.591Z [info]: POST /api/auth/logout 200 12.323 ms 
+2026-03-17T08:22:29.288Z [info]: GET /api/auth/check-auth 401 0.694 ms 
+2026-03-17T08:22:29.322Z [info]: POST /api/auth/refresh 400 1.870 ms 
+2026-03-17T08:22:48.078Z [info]: POST /api/auth/login 200 312.212 ms 
+2026-03-17T08:27:11.406Z [info]: GET /api/auth/check-auth 200 5.991 ms 
+2026-03-17T08:34:12.176Z [info]: GET /api/auth/check-auth 401 2.841 ms 
+2026-03-17T08:34:32.269Z [info]: GET /api/auth/check-auth 401 0.925 ms 
+2026-03-17T08:35:11.142Z [info]: GET /api/auth/check-auth 401 1.085 ms 
+2026-03-17T08:36:01.215Z [info]: POST /api/auth/login 401 155.915 ms 
+2026-03-17T08:36:11.364Z [info]: POST /api/auth/login 200 295.532 ms 
+2026-03-17T08:37:52.871Z [info]: GET /api/auth/check-auth 200 3.924 ms 
+2026-03-17T08:38:00.577Z [info]: POST /api/auth/logout 200 3.280 ms 
+2026-03-17T08:38:04.954Z [info]: GET /api/auth/check-auth 401 0.442 ms 
+2026-03-17T08:38:04.971Z [info]: POST /api/auth/refresh 400 1.140 ms 
+2026-03-17T08:38:15.908Z [info]: POST /api/auth/login 200 301.534 ms 
+2026-03-17T08:47:58.724Z [info]: GET /api/auth/check-auth 200 4.216 ms 
+2026-03-17T08:48:08.181Z [info]: GET /api/auth/check-auth 304 4.050 ms 
+2026-03-17T08:48:09.471Z [info]: GET /api/auth/check-auth 304 3.111 ms 
+2026-03-17T09:33:07.001Z [info]: POST /api/auth/logout 401 18.496 ms 
+2026-03-17T09:33:07.555Z [info]: POST /api/auth/refresh 200 542.505 ms 
+2026-03-17T09:33:07.580Z [info]: POST /api/auth/logout 200 10.447 ms 
+2026-03-17T09:34:28.028Z [info]: GET /api/auth/check-auth 401 0.842 ms 
+2026-03-17T09:34:32.693Z [info]: POST /api/auth/login 200 416.772 ms 
+2026-03-17T09:36:01.630Z [info]: GET /api/auth/check-auth 200 3.530 ms 
+2026-03-17T09:36:24.585Z [info]: GET /api/auth/check-auth 304 5.612 ms 
+2026-03-17T16:21:57.021Z [info]: Server initialization started 
+2026-03-17T16:21:57.082Z [info]: connected to MongoDB 
+2026-03-17T16:21:57.119Z [info]: Connected to Redis 
+2026-03-17T16:21:57.124Z [info]: Server running on http://localhost:8080 
+2026-03-17T16:27:06.338Z [info]: GET /api/auth/check-auth 401 35.237 ms 
+2026-03-17T16:27:07.063Z [info]: POST /api/auth/refresh 200 515.755 ms 
+2026-03-17T16:27:07.085Z [info]: GET /api/auth/check-auth 200 7.675 ms 
+2026-03-17T16:32:30.258Z [info]: GET /api/auth/check-auth 304 5.284 ms 
+2026-03-17T16:33:06.104Z [info]: POST /api/auth/logout 200 15.365 ms 
+2026-03-17T16:33:19.884Z [info]: GET /api/auth/check-auth 401 0.878 ms 
+2026-03-17T16:33:19.901Z [info]: POST /api/auth/refresh 400 1.022 ms 
+2026-03-17T16:33:25.839Z [info]: POST /api/auth/login 200 409.119 ms 
+2026-03-17T16:33:44.646Z [info]: GET /api/auth/check-auth 200 3.998 ms 
+2026-03-17T16:34:00.084Z [info]: GET /api/auth/check-auth 304 6.023 ms 
+2026-03-17T16:34:19.841Z [info]: GET /api/auth/check-auth 304 4.756 ms 
+2026-03-17T16:36:52.816Z [info]: GET /api/auth/check-auth 304 5.619 ms 
+2026-03-17T16:38:08.063Z [info]: GET /api/auth/check-auth 304 4.455 ms 
+2026-03-17T16:39:52.064Z [info]: GET /api/auth/check-auth 304 3.837 ms 
+2026-03-17T16:40:05.503Z [info]: GET /api/auth/check-auth 304 6.815 ms 
+2026-03-17T18:37:32.928Z [info]: Server initialization started 
+2026-03-17T18:37:32.977Z [info]: connected to MongoDB 
+2026-03-17T18:37:33.034Z [info]: Connected to Redis 
+2026-03-17T18:37:33.040Z [info]: Server running on http://localhost:8080 
+2026-03-17T18:37:49.384Z [info]: GET /api/auth/check-auth 401 3.666 ms 
+2026-03-17T18:37:49.759Z [info]: POST /api/auth/refresh 200 316.309 ms 
+2026-03-17T18:37:49.777Z [info]: GET /api/auth/check-auth 200 5.286 ms 
+2026-03-17T18:38:11.060Z [info]: GET /api/auth/check-auth 304 7.470 ms 
+2026-03-17T18:42:10.276Z [info]: GET /api/auth/check-auth 304 3.800 ms 
+2026-03-17T18:42:18.199Z [info]: GET /api/auth/check-auth 304 3.412 ms 
+2026-03-17T18:42:27.185Z [info]: GET /api/auth/check-auth 304 3.362 ms 
+2026-03-17T18:42:34.185Z [info]: GET /api/auth/check-auth 304 6.033 ms 
+2026-03-17T18:42:44.183Z [info]: GET /api/auth/check-auth 304 6.394 ms 
+2026-03-17T18:42:47.173Z [info]: GET /api/auth/check-auth 304 5.018 ms 
+2026-03-17T18:42:49.236Z [info]: GET /api/auth/check-auth 304 4.118 ms 
+2026-03-17T18:43:16.192Z [info]: GET /api/auth/check-auth 304 3.799 ms 
+2026-03-17T18:43:24.185Z [info]: GET /api/auth/check-auth 304 2.616 ms 
+2026-03-17T18:43:27.199Z [info]: GET /api/auth/check-auth 304 4.262 ms 
+2026-03-17T18:43:39.167Z [info]: GET /api/auth/check-auth 304 3.517 ms 
+2026-03-17T18:43:54.181Z [info]: GET /api/auth/check-auth 304 3.547 ms 
+2026-03-17T18:43:55.290Z [info]: GET /api/auth/check-auth 304 3.471 ms 
+2026-03-17T18:44:02.355Z [info]: GET /api/auth/check-auth 304 3.414 ms 
+2026-03-17T18:44:07.316Z [info]: GET /api/auth/check-auth 304 3.878 ms 
+2026-03-17T18:44:09.188Z [info]: GET /api/auth/check-auth 304 2.548 ms 
+2026-03-17T18:44:14.287Z [info]: GET /api/auth/check-auth 304 3.807 ms 
+2026-03-17T18:44:16.218Z [info]: GET /api/auth/check-auth 304 2.961 ms 
+2026-03-17T18:44:24.184Z [info]: GET /api/auth/check-auth 304 3.569 ms 
+2026-03-17T18:44:31.148Z [info]: GET /api/auth/check-auth 304 3.663 ms 
+2026-03-17T18:44:36.175Z [info]: GET /api/auth/check-auth 304 3.393 ms 
+2026-03-17T18:45:04.208Z [info]: GET /api/auth/check-auth 304 3.654 ms 
+2026-03-17T18:45:07.216Z [info]: GET /api/auth/check-auth 304 3.544 ms 
+2026-03-17T18:45:09.177Z [info]: GET /api/auth/check-auth 304 3.513 ms 
+2026-03-17T18:45:15.876Z [info]: GET /api/auth/check-auth 304 4.119 ms 
+2026-03-17T18:45:23.946Z [info]: GET /api/auth/check-auth 304 4.837 ms 
+2026-03-17T18:46:45.752Z [info]: GET /api/auth/check-auth 200 6.042 ms 
+2026-03-17T18:46:53.183Z [info]: GET /api/auth/check-auth 304 3.000 ms 
+2026-03-17T18:47:23.073Z [info]: GET /api/auth/check-auth 304 3.349 ms 
+2026-03-17T18:48:22.636Z [info]: GET /api/auth/check-auth 401 1.794 ms 
+2026-03-17T18:48:26.743Z [info]: GET /api/auth/check-auth 401 1.639 ms 
+2026-03-17T18:48:40.818Z [info]: GET /api/auth/check-auth 401 2.159 ms 
+2026-03-17T18:49:05.053Z [info]: GET /api/auth/check-auth 401 1.329 ms 
+2026-03-17T18:49:32.601Z [info]: GET /api/auth/check-auth 401 1.156 ms 
+2026-03-17T18:50:44.373Z [info]: POST /api/auth/logout 401 1.832 ms 
+2026-03-17T18:51:22.576Z [info]: Server initialization started 
+2026-03-17T18:51:22.638Z [info]: connected to MongoDB 
+2026-03-17T18:51:22.667Z [info]: Connected to Redis 
+2026-03-17T18:51:22.673Z [info]: Server running on http://localhost:8080 
+2026-03-17T18:51:29.281Z [info]: POST /api/auth/login 200 492.298 ms 
+2026-03-17T18:54:08.514Z [info]: GET /api/auth/check-auth 401 5.809 ms 
+2026-03-17T18:57:21.768Z [info]: GET /api/auth/check-auth 401 2.448 ms 
+2026-03-17T18:57:55.161Z [info]: GET /api/auth/check-auth 401 0.843 ms 
+2026-03-17T18:58:08.910Z [info]: GET /api/auth/check-auth 401 1.619 ms 
+2026-03-17T18:59:14.248Z [info]: Server initialization started 
+2026-03-17T18:59:14.311Z [info]: connected to MongoDB 
+2026-03-17T18:59:14.339Z [info]: Connected to Redis 
+2026-03-17T18:59:14.347Z [info]: Server running on http://localhost:8080 
+2026-03-17T18:59:17.869Z [error]: error cought at middleware 
+2026-03-17T18:59:17.882Z [info]: GET /api/auth/check-auth 401 17.654 ms 
+2026-03-17T19:01:15.304Z [info]: Server initialization started 
+2026-03-17T19:01:15.425Z [info]: connected to MongoDB 
+2026-03-17T19:01:15.454Z [info]: Connected to Redis 
+2026-03-17T19:01:15.463Z [info]: Server running on http://localhost:8080 
+2026-03-17T19:01:16.919Z [error]: error cought at middleware 
+2026-03-17T19:01:16.938Z [info]: GET /api/auth/check-auth 401 23.125 ms 
+2026-03-17T19:01:48.513Z [info]: Server initialization started 
+2026-03-17T19:01:48.630Z [info]: connected to MongoDB 
+2026-03-17T19:01:48.674Z [info]: Connected to Redis 
+2026-03-17T19:01:48.687Z [info]: Server running on http://localhost:8080 
+2026-03-17T19:01:49.903Z [error]: payload at 
+2026-03-17T19:01:49.972Z [error]: error cought at middleware 
+2026-03-17T19:01:49.990Z [info]: GET /api/auth/check-auth 401 81.808 ms 
+2026-03-17T19:03:01.727Z [info]: Server initialization started 
+2026-03-17T19:03:01.808Z [info]: connected to MongoDB 
+2026-03-17T19:03:01.839Z [info]: Connected to Redis 
+2026-03-17T19:03:01.848Z [info]: Server running on http://localhost:8080 
+2026-03-17T19:03:03.830Z [error]: error cought at authenticate middleware 
+2026-03-17T19:03:03.841Z [info]: GET /api/auth/check-auth 401 13.886 ms 
+2026-03-17T19:03:26.624Z [info]: Server initialization started 
+2026-03-17T19:03:26.732Z [info]: connected to MongoDB 
+2026-03-17T19:03:26.769Z [info]: Connected to Redis 
+2026-03-17T19:03:26.780Z [info]: Server running on http://localhost:8080 
+2026-03-17T19:03:29.020Z [error]: payload at 
+2026-03-17T19:03:29.025Z [error]: error cought at authenticate middleware 
+2026-03-17T19:03:29.032Z [info]: GET /api/auth/check-auth 401 10.735 ms 
+2026-03-17T19:07:55.024Z [info]: Server initialization started 
+2026-03-17T19:07:55.097Z [info]: connected to MongoDB 
+2026-03-17T19:07:55.134Z [info]: Connected to Redis 
+2026-03-17T19:07:55.146Z [info]: Server running on http://localhost:8080 
+2026-03-17T19:08:09.256Z [info]: GET /api/auth/check-auth 401 11.193 ms 
+2026-03-17T19:08:09.898Z [info]: POST /api/auth/refresh 200 536.175 ms 
+2026-03-17T19:08:09.921Z [error]: payload at 
+2026-03-17T19:08:09.934Z [info]: GET /api/auth/check-auth 200 17.216 ms 
+2026-03-17T19:08:45.355Z [error]: payload at 
+2026-03-17T19:08:45.414Z [info]: POST /api/auth/logout 200 19.686 ms 
+2026-03-17T19:08:59.020Z [info]: POST /api/auth/login 200 404.859 ms 
+2026-03-17T19:09:19.391Z [error]: payload at 
+2026-03-17T19:09:19.400Z [info]: GET /api/auth/check-auth 200 8.753 ms 
+2026-03-17T19:09:26.963Z [error]: payload at 
+2026-03-17T19:09:26.969Z [info]: GET /api/auth/check-auth 304 5.213 ms 
+2026-03-17T19:10:14.684Z [error]: payload at 
+2026-03-17T19:10:14.686Z [error]: error cought at authenticate middleware 
+2026-03-17T19:10:14.690Z [info]: GET /api/auth/check-auth 401 2.955 ms 
+2026-03-17T19:10:23.669Z [error]: payload at 
+2026-03-17T19:10:23.670Z [error]: error cought at authenticate middleware 
+2026-03-17T19:10:23.672Z [info]: GET /api/auth/check-auth 401 2.711 ms 
+2026-03-17T19:10:27.369Z [error]: payload at 
+2026-03-17T19:10:27.370Z [error]: error cought at authenticate middleware 
+2026-03-17T19:10:27.372Z [info]: GET /api/auth/check-auth 401 2.560 ms 
+2026-03-17T19:11:38.280Z [info]: Server initialization started 
+2026-03-17T19:11:38.485Z [info]: connected to MongoDB 
+2026-03-17T19:11:38.527Z [info]: Connected to Redis 
+2026-03-17T19:11:38.545Z [info]: Server running on http://localhost:8080 
+2026-03-17T19:11:39.624Z [error]: payload at 
+2026-03-17T19:11:39.640Z [error]: error cought at authenticate middleware 
+2026-03-17T19:11:39.659Z [info]: GET /api/auth/check-auth 401 30.520 ms 
+2026-03-17T19:13:30.943Z [info]: Server initialization started 
+2026-03-17T19:13:31.020Z [info]: connected to MongoDB 
+2026-03-17T19:13:31.047Z [info]: Connected to Redis 
+2026-03-17T19:13:31.056Z [info]: Server running on http://localhost:8080 
+2026-03-17T19:13:32.611Z [error]: error cought at authenticate middleware 
+2026-03-17T19:13:32.631Z [info]: GET /api/auth/check-auth 401 20.849 ms 
+2026-03-17T19:13:56.800Z [info]: Server initialization started 
+2026-03-17T19:13:56.910Z [info]: connected to MongoDB 
+2026-03-17T19:13:56.958Z [info]: Connected to Redis 
+2026-03-17T19:13:56.974Z [info]: Server running on http://localhost:8080 
+2026-03-17T19:13:57.806Z [error]: error cought at authenticate middleware 
+2026-03-17T19:13:57.840Z [info]: GET /api/auth/check-auth 401 38.005 ms 
+2026-03-17T19:15:05.951Z [info]: GET /api/auth/check-auth 401 2.305 ms 
+2026-03-17T19:15:06.521Z [info]: POST /api/auth/refresh 200 542.947 ms 
+2026-03-17T19:15:06.560Z [info]: GET /api/auth/check-auth 200 19.406 ms 
+2026-03-17T19:18:23.607Z [info]: Server initialization started 
+2026-03-17T19:18:23.672Z [info]: connected to MongoDB 
+2026-03-17T19:18:23.697Z [info]: Connected to Redis 
+2026-03-17T19:18:23.705Z [info]: Server running on http://localhost:8080 
+2026-03-17T19:18:28.050Z [error]: jwt expired {"name":"TokenExpiredError","expiredAt":"2026-03-17T19:16:06.000Z"}
+2026-03-17T19:18:28.063Z [info]: GET /api/auth/check-auth 401 12.481 ms 
+2026-03-17T19:21:12.628Z [info]: Server initialization started 
+2026-03-17T19:21:12.700Z [info]: connected to MongoDB 
+2026-03-17T19:21:12.730Z [info]: Connected to Redis 
+2026-03-17T19:21:12.740Z [info]: Server running on http://localhost:8080 
+2026-03-17T19:21:14.501Z [error]: jwt expired {"name":"TokenExpiredError","expiredAt":"2026-03-17T19:16:06.000Z"}
+2026-03-17T19:21:14.514Z [info]: GET /api/auth/check-auth 401 18.683 ms 
+2026-03-17T19:21:15.105Z [info]: POST /api/auth/refresh 200 504.937 ms 
+2026-03-17T19:21:15.121Z [info]: GET /api/auth/check-auth 200 7.570 ms 
+2026-03-17T19:21:26.701Z [info]: GET /api/auth/check-auth 401 0.693 ms 
+2026-03-17T19:21:27.138Z [info]: POST /api/auth/refresh 200 419.953 ms 
+2026-03-17T19:21:27.153Z [info]: GET /api/auth/check-auth 200 5.577 ms 
+2026-03-17T19:37:11.282Z [info]: GET /api/auth/check-auth 401 0.732 ms 
+2026-03-17T19:37:11.669Z [info]: POST /api/auth/refresh 200 361.502 ms 
+2026-03-17T19:37:11.685Z [info]: GET /api/auth/check-auth 200 5.620 ms 
+2026-03-17T19:37:38.285Z [info]: Server initialization started 
+2026-03-17T19:37:38.360Z [info]: connected to MongoDB 
+2026-03-17T19:37:38.391Z [info]: Connected to Redis 
+2026-03-17T19:37:38.399Z [info]: Server running on http://localhost:8080 
+2026-03-17T19:43:29.820Z [error]: jwt expired {"name":"TokenExpiredError","expiredAt":"2026-03-17T19:38:11.000Z"}
+2026-03-17T19:43:29.823Z [error]: expired token {"name":"AuthenticationError","statusCode":401,"isOperational":true}
+2026-03-17T19:43:29.836Z [info]: GET /api/auth/check-auth 401 18.909 ms 
+2026-03-17T19:43:30.359Z [info]: POST /api/auth/refresh 200 458.501 ms 
+2026-03-17T19:43:30.377Z [info]: GET /api/auth/check-auth 200 8.798 ms 
+2026-03-17T19:43:36.496Z [info]: GET /api/auth/check-auth 304 6.476 ms 
+2026-03-17T19:44:21.547Z [info]: POST /api/auth/logout 200 7.198 ms 
+2026-03-17T19:44:25.388Z [info]: POST /api/auth/login 200 308.964 ms 
+2026-03-17T19:44:29.781Z [info]: POST /api/auth/logout 200 9.384 ms 
+2026-03-17T19:44:34.094Z [info]: POST /api/auth/login 200 301.967 ms 
+2026-03-17T19:44:38.256Z [info]: POST /api/auth/logout 200 5.808 ms 
+2026-03-17T19:44:49.959Z [info]: POST /api/auth/login 200 334.269 ms 
+2026-03-17T19:45:01.645Z [info]: POST /api/auth/logout 200 8.808 ms 
+2026-03-17T19:45:08.405Z [info]: POST /api/auth/login 200 327.240 ms 
+2026-03-17T19:45:12.749Z [info]: POST /api/auth/logout 200 8.306 ms 
+2026-03-17T19:45:16.261Z [info]: POST /api/auth/login 200 285.992 ms 
+2026-03-17T19:45:22.807Z [info]: POST /api/auth/logout 200 4.945 ms 
+2026-03-17T19:45:28.642Z [info]: POST /api/auth/login 200 348.736 ms 
+2026-03-17T19:46:57.104Z [info]: POST /api/auth/logout 200 6.433 ms 
+2026-03-17T19:47:09.626Z [info]: POST /api/auth/login 200 289.858 ms 
+2026-03-17T19:47:18.047Z [info]: POST /api/auth/logout 200 6.451 ms 
+2026-03-17T19:47:57.449Z [info]: POST /api/auth/login 200 329.958 ms 
+2026-03-17T19:48:10.636Z [info]: POST /api/auth/logout 200 8.453 ms 
+2026-03-17T19:48:12.314Z [info]: POST /api/auth/logout 200 6.117 ms 
+2026-03-17T19:48:13.325Z [error]: Missing access token {"name":"AuthenticationError","statusCode":401,"isOperational":true}
+2026-03-17T19:48:13.327Z [info]: POST /api/auth/logout 401 2.316 ms 
+2026-03-17T19:48:14.024Z [error]: Missing access token {"name":"AuthenticationError","statusCode":401,"isOperational":true}
+2026-03-17T19:48:14.028Z [info]: POST /api/auth/logout 401 3.959 ms 
+2026-03-17T19:48:15.355Z [error]: Invalid refresh token or token missing {"name":"ValidationError","statusCode":400,"isOperational":true}
+2026-03-17T19:48:15.359Z [info]: POST /api/auth/refresh 400 4.358 ms 
+2026-03-17T19:48:26.229Z [error]: Missing access token {"name":"AuthenticationError","statusCode":401,"isOperational":true}
+2026-03-17T19:48:26.230Z [info]: POST /api/auth/logout 401 1.595 ms 
+2026-03-17T19:48:26.234Z [error]: Invalid refresh token or token missing {"name":"ValidationError","statusCode":400,"isOperational":true}
+2026-03-17T19:48:26.236Z [info]: POST /api/auth/refresh 400 1.914 ms 
+2026-03-17T19:48:43.750Z [error]: Missing access token {"name":"AuthenticationError","statusCode":401,"isOperational":true}
+2026-03-17T19:48:43.752Z [info]: POST /api/auth/logout 401 1.210 ms 
+2026-03-17T19:48:43.763Z [error]: Invalid refresh token or token missing {"name":"ValidationError","statusCode":400,"isOperational":true}
+2026-03-17T19:48:43.767Z [info]: POST /api/auth/refresh 400 3.090 ms 
+2026-03-17T19:52:33.589Z [error]: Missing access token {"name":"AuthenticationError","statusCode":401,"isOperational":true}
+2026-03-17T19:52:33.593Z [info]: GET /api/auth/check-auth 401 3.365 ms 
+2026-03-17T19:52:33.666Z [error]: Invalid refresh token or token missing {"name":"ValidationError","statusCode":400,"isOperational":true}
+2026-03-17T19:52:33.668Z [info]: POST /api/auth/refresh 400 1.584 ms 
+2026-03-17T19:52:39.951Z [info]: POST /api/auth/login 200 301.729 ms 
+2026-03-17T19:52:45.750Z [info]: GET /api/auth/check-auth 200 5.447 ms 
+2026-03-17T19:52:46.965Z [info]: GET /api/auth/check-auth 304 7.003 ms 
+2026-03-17T19:52:47.946Z [info]: GET /api/auth/check-auth 304 4.205 ms 
+2026-03-17T19:52:48.849Z [info]: GET /api/auth/check-auth 304 9.108 ms 
+2026-03-17T19:52:49.830Z [info]: GET /api/auth/check-auth 304 8.073 ms 
+2026-03-17T19:52:50.453Z [info]: GET /api/auth/check-auth 304 4.403 ms 
+2026-03-17T19:52:50.876Z [info]: GET /api/auth/check-auth 304 5.065 ms 
+2026-03-17T19:52:51.208Z [info]: GET /api/auth/check-auth 304 4.116 ms 
+2026-03-17T19:52:59.981Z [info]: POST /api/auth/logout 200 4.868 ms 
+2026-03-17T19:53:04.962Z [info]: POST /api/auth/login 200 291.499 ms 
+2026-03-17T19:55:05.259Z [info]: POST /api/auth/logout 200 8.896 ms 
+2026-03-17T19:55:13.342Z [info]: POST /api/auth/login 200 314.572 ms 
+2026-03-17T20:00:57.040Z [info]: GET /api/auth/check-auth 200 2.881 ms 
+2026-03-17T20:00:59.169Z [info]: GET /api/auth/check-auth 304 4.120 ms 
+2026-03-17T20:01:01.041Z [info]: GET /api/auth/check-auth 304 3.906 ms 
+2026-03-17T20:01:03.901Z [info]: GET /api/auth/check-auth 304 2.820 ms 
+2026-03-17T20:01:11.411Z [info]: GET /api/auth/check-auth 304 3.646 ms 
+2026-03-17T20:01:25.330Z [info]: GET /api/auth/check-auth 304 5.082 ms 
+2026-03-17T20:01:32.664Z [info]: POST /api/auth/logout 200 4.417 ms 
+2026-03-17T20:01:39.262Z [info]: POST /api/auth/login 200 299.765 ms 
+2026-03-17T20:01:45.328Z [info]: POST /api/auth/logout 200 3.092 ms 
+2026-03-17T20:01:49.610Z [info]: POST /api/auth/login 200 285.685 ms 
+2026-03-17T20:01:51.642Z [info]: POST /api/auth/logout 200 3.047 ms 
+2026-03-17T20:01:56.206Z [info]: POST /api/auth/login 200 274.723 ms 
+2026-03-17T20:03:57.538Z [info]: GET /api/auth/check-auth 200 5.946 ms 
+2026-03-17T20:04:01.549Z [info]: GET /api/auth/check-auth 304 4.804 ms 
+2026-03-17T20:04:15.404Z [info]: GET /api/auth/check-auth 304 4.084 ms 
+2026-03-17T20:04:19.403Z [info]: GET /api/auth/check-auth 304 5.351 ms 
+2026-03-17T20:04:23.067Z [info]: GET /api/auth/check-auth 304 5.712 ms 
+2026-03-17T20:04:27.411Z [info]: GET /api/auth/check-auth 304 3.475 ms 
+2026-03-17T20:04:30.926Z [info]: GET /api/auth/check-auth 304 4.011 ms 
+2026-03-17T20:04:34.227Z [info]: POST /api/auth/logout 200 4.981 ms 
+2026-03-17T20:04:38.597Z [info]: POST /api/auth/login 200 289.284 ms 
+2026-03-20T15:12:55.989Z [info]: Server initialization started 
+2026-03-20T15:12:56.066Z [info]: connected to MongoDB 
+2026-03-20T15:12:56.081Z [error]: AggregateError 
+2026-03-20T15:12:56.187Z [error]: AggregateError 
+2026-03-20T15:12:56.483Z [error]: AggregateError 
+2026-03-20T15:12:56.735Z [error]: AggregateError 
+2026-03-20T15:12:57.170Z [error]: AggregateError 
+2026-03-20T15:12:58.079Z [error]: AggregateError 
+2026-03-20T15:12:59.683Z [error]: AggregateError 
+2026-03-20T15:13:01.824Z [error]: AggregateError 
+2026-03-20T15:13:03.930Z [error]: AggregateError 
+2026-03-20T15:13:06.039Z [error]: AggregateError 
+2026-03-20T15:13:08.081Z [error]: AggregateError 
+2026-03-20T15:13:10.243Z [error]: AggregateError 
+2026-03-20T15:13:12.423Z [error]: AggregateError 
+2026-03-20T15:13:14.567Z [error]: AggregateError 
+2026-03-20T15:13:16.643Z [error]: AggregateError 
+2026-03-20T15:13:18.812Z [error]: AggregateError 
+2026-03-20T15:13:20.836Z [error]: AggregateError 
+2026-03-20T15:13:22.913Z [error]: AggregateError 
+2026-03-20T15:13:25.095Z [error]: AggregateError 
+2026-03-20T15:13:27.263Z [error]: AggregateError 
+2026-03-20T15:13:29.353Z [error]: AggregateError 
+2026-03-20T15:13:31.465Z [error]: AggregateError 
+2026-03-20T15:13:33.503Z [error]: AggregateError 
+2026-03-20T15:13:35.563Z [error]: AggregateError 
+2026-03-20T15:13:37.733Z [error]: AggregateError 
+2026-03-20T15:13:39.928Z [error]: AggregateError 
+2026-03-20T15:13:42.109Z [error]: AggregateError 
+2026-03-20T15:13:44.312Z [error]: AggregateError 
+2026-03-20T15:13:46.456Z [error]: AggregateError 
+2026-03-20T15:13:48.587Z [error]: AggregateError 
+2026-03-20T15:13:50.784Z [error]: AggregateError 
+2026-03-20T15:13:52.962Z [error]: AggregateError 
+2026-03-20T15:13:55.156Z [error]: AggregateError 
+2026-03-20T15:13:57.351Z [error]: AggregateError 
+2026-03-20T15:13:59.461Z [error]: AggregateError 
+2026-03-20T15:14:01.635Z [error]: AggregateError 
+2026-03-20T15:14:03.645Z [error]: AggregateError 
+2026-03-20T15:14:05.665Z [error]: AggregateError 
+2026-03-20T15:14:07.689Z [error]: AggregateError 
+2026-03-20T15:14:09.756Z [error]: AggregateError 
+2026-03-20T15:14:11.794Z [error]: AggregateError 
+2026-03-20T15:14:14.000Z [error]: AggregateError 
+2026-03-20T15:14:16.057Z [error]: AggregateError 
+2026-03-20T15:14:18.262Z [error]: AggregateError 
+2026-03-20T15:14:20.423Z [error]: AggregateError 
+2026-03-20T15:14:22.572Z [error]: AggregateError 
+2026-03-20T15:14:24.756Z [error]: AggregateError 
+2026-03-20T15:14:26.908Z [error]: AggregateError 
+2026-03-20T15:14:28.938Z [error]: AggregateError 
+2026-03-20T15:14:30.966Z [error]: AggregateError 
+2026-03-20T15:14:33.148Z [error]: AggregateError 
+2026-03-20T15:14:35.167Z [error]: AggregateError 
+2026-03-20T15:14:37.312Z [error]: AggregateError 
+2026-03-20T15:14:39.340Z [error]: AggregateError 
+2026-03-20T15:14:41.533Z [error]: AggregateError 
+2026-03-20T15:14:43.604Z [error]: AggregateError 
+2026-03-20T15:14:45.749Z [error]: AggregateError 
+2026-03-20T15:14:47.866Z [error]: AggregateError 
+2026-03-20T15:14:50.049Z [error]: AggregateError 
+2026-03-20T15:14:52.192Z [error]: AggregateError 
+2026-03-20T15:14:54.370Z [error]: AggregateError 
+2026-03-20T15:14:56.453Z [error]: AggregateError 
+2026-03-20T15:14:58.652Z [error]: AggregateError 
+2026-03-20T15:15:00.770Z [error]: AggregateError 
+2026-03-20T15:15:02.988Z [error]: AggregateError 
+2026-03-20T15:15:05.032Z [error]: AggregateError 
+2026-03-20T15:15:07.098Z [error]: AggregateError 
+2026-03-20T15:15:09.181Z [error]: AggregateError 
+2026-03-20T15:15:11.272Z [error]: AggregateError 
+2026-03-20T15:15:13.420Z [error]: AggregateError 
+2026-03-20T15:15:15.502Z [error]: AggregateError 
+2026-03-20T15:15:17.671Z [error]: AggregateError 
+2026-03-20T15:15:19.865Z [error]: AggregateError 
+2026-03-20T15:15:22.055Z [error]: AggregateError 
+2026-03-20T15:15:24.109Z [error]: AggregateError 
+2026-03-20T15:15:26.186Z [error]: AggregateError 
+2026-03-20T15:15:28.250Z [error]: AggregateError 
+2026-03-20T15:15:30.303Z [error]: AggregateError 
+2026-03-20T15:15:32.467Z [error]: AggregateError 
+2026-03-20T15:15:34.513Z [error]: AggregateError 
+2026-03-20T15:15:36.585Z [error]: AggregateError 
+2026-03-20T15:15:38.653Z [error]: AggregateError 
+2026-03-20T15:15:40.827Z [error]: AggregateError 
+2026-03-20T15:15:42.917Z [error]: AggregateError 
+2026-03-20T15:15:44.946Z [error]: AggregateError 
+2026-03-20T15:15:47.130Z [error]: AggregateError 
+2026-03-20T15:15:49.280Z [error]: AggregateError 
+2026-03-20T15:15:51.426Z [error]: AggregateError 
+2026-03-20T15:15:53.588Z [error]: AggregateError 
+2026-03-20T15:15:55.724Z [error]: AggregateError 
+2026-03-20T15:15:57.803Z [error]: AggregateError 
+2026-03-20T15:15:59.846Z [error]: AggregateError 
+2026-03-20T15:16:01.968Z [error]: AggregateError 
+2026-03-20T15:16:04.030Z [error]: AggregateError 
+2026-03-20T15:16:06.089Z [error]: AggregateError 
+2026-03-20T15:16:08.211Z [error]: AggregateError 
+2026-03-20T15:16:10.408Z [error]: AggregateError 
+2026-03-20T15:16:12.457Z [error]: AggregateError 
+2026-03-20T15:16:14.529Z [error]: AggregateError 
+2026-03-20T15:16:16.643Z [error]: AggregateError 
+2026-03-20T15:16:18.711Z [error]: AggregateError 
+2026-03-20T15:16:20.869Z [error]: AggregateError 
+2026-03-20T15:16:22.929Z [error]: AggregateError 
+2026-03-20T15:16:24.954Z [error]: AggregateError 
+2026-03-20T15:16:27.083Z [error]: AggregateError 
+2026-03-20T15:16:29.220Z [error]: AggregateError 
+2026-03-20T15:16:31.400Z [error]: AggregateError 
+2026-03-20T15:16:33.437Z [error]: AggregateError 
+2026-03-20T15:16:35.575Z [error]: AggregateError 
+2026-03-20T15:16:37.633Z [error]: AggregateError 
+2026-03-20T15:16:39.681Z [error]: AggregateError 
+2026-03-20T15:16:41.692Z [error]: AggregateError 
+2026-03-20T15:16:43.932Z [error]: AggregateError 
+2026-03-20T15:16:45.998Z [error]: AggregateError 
+2026-03-20T15:16:48.102Z [error]: AggregateError 
+2026-03-20T15:16:50.239Z [error]: AggregateError 
+2026-03-20T15:16:52.264Z [error]: AggregateError 
+2026-03-20T15:16:54.329Z [error]: AggregateError 
+2026-03-20T15:16:56.404Z [error]: AggregateError 
+2026-03-20T15:16:58.456Z [error]: AggregateError 
+2026-03-20T15:17:00.506Z [error]: AggregateError 
+2026-03-20T15:17:02.706Z [error]: AggregateError 
+2026-03-20T15:17:04.832Z [error]: AggregateError 
+2026-03-20T15:20:02.732Z [info]: Server initialization started 
+2026-03-20T15:20:02.803Z [info]: connected to MongoDB 
+2026-03-20T15:20:02.822Z [error]: AggregateError 
+2026-03-20T15:20:03.085Z [error]: AggregateError 
+2026-03-20T15:20:03.242Z [error]: AggregateError 
+2026-03-20T15:20:03.587Z [error]: AggregateError 
+2026-03-20T15:20:04.167Z [error]: AggregateError 
+2026-03-20T15:20:05.047Z [error]: AggregateError 
+2026-03-20T15:20:06.839Z [error]: AggregateError 
+2026-03-20T15:20:08.950Z [error]: AggregateError 
+2026-03-20T15:20:11.152Z [error]: AggregateError 
+2026-03-20T15:20:13.195Z [error]: AggregateError 
+2026-03-20T15:20:15.309Z [error]: AggregateError 
+2026-03-20T15:20:17.518Z [error]: AggregateError 
+2026-03-20T15:20:30.674Z [info]: Server initialization started 
+2026-03-20T15:20:30.768Z [info]: connected to MongoDB 
+2026-03-20T15:20:30.790Z [error]: AggregateError 
+2026-03-20T15:20:31.044Z [error]: AggregateError 
+2026-03-20T15:20:31.336Z [error]: AggregateError 
+2026-03-20T15:20:31.707Z [error]: AggregateError 
+2026-03-20T15:20:32.170Z [error]: AggregateError 
+2026-03-20T15:20:33.041Z [error]: AggregateError 
+2026-03-20T15:20:34.691Z [error]: AggregateError 
+2026-03-20T15:20:36.790Z [error]: AggregateError 
+2026-03-20T15:20:38.832Z [error]: AggregateError 
+2026-03-20T15:20:40.938Z [error]: AggregateError 
+2026-03-20T15:20:42.977Z [error]: AggregateError 
+2026-03-20T15:20:45.100Z [error]: AggregateError 
+2026-03-20T15:20:47.147Z [error]: AggregateError 
+2026-03-20T15:20:49.220Z [error]: AggregateError 
+2026-03-20T15:20:51.309Z [error]: AggregateError 
+2026-03-20T15:28:28.266Z [info]: Server initialization started 
+2026-03-20T15:28:28.369Z [info]: connected to MongoDB 
+2026-03-20T15:28:28.398Z [error]: AggregateError 
+2026-03-20T15:28:28.517Z [error]: AggregateError 
+2026-03-20T15:28:28.627Z [error]: AggregateError 
+2026-03-20T15:28:28.974Z [error]: AggregateError 
+2026-03-20T15:28:29.536Z [error]: AggregateError 
+2026-03-20T19:10:12.239Z [info]: Server initialization started 
+2026-03-20T19:10:12.282Z [info]: connected to MongoDB 
+2026-03-20T19:10:12.320Z [info]: Connected to Redis 
+2026-03-20T19:10:12.326Z [info]: Server running on http://localhost:8080 
+2026-03-20T19:10:30.992Z [error]: Missing access token {"name":"AuthenticationError","statusCode":401,"isOperational":true}
+2026-03-20T19:10:31.001Z [info]: GET /api/auth/check-auth 401 6.728 ms 
+2026-03-20T19:10:31.903Z [info]: POST /api/auth/refresh 200 850.901 ms 
+2026-03-20T19:10:31.923Z [info]: GET /api/auth/check-auth 200 10.956 ms 
+2026-03-20T19:11:29.203Z [info]: GET /api/auth/check-auth 304 8.091 ms 
+2026-03-20T19:11:37.175Z [info]: GET /api/client/profile 304 99.508 ms 
+2026-03-20T19:14:42.910Z [info]: GET /api/client/profile 304 10.479 ms 
+2026-03-20T19:14:50.371Z [info]: GET /api/client/profile 304 8.290 ms 
+2026-03-20T19:28:14.426Z [error]: Missing access token {"name":"AuthenticationError","statusCode":401,"isOperational":true}
+2026-03-20T19:28:14.428Z [info]: GET /api/auth/check-auth 401 2.008 ms 
+2026-03-20T19:28:14.904Z [info]: POST /api/auth/refresh 200 378.834 ms 
+2026-03-20T19:28:14.918Z [info]: GET /api/auth/check-auth 200 5.860 ms 
+2026-03-20T19:28:50.332Z [info]: GET /api/auth/check-auth 304 4.031 ms 
+2026-03-20T19:34:13.361Z [info]: GET /api/auth/check-auth 304 5.410 ms 
+2026-03-20T19:36:19.031Z [info]: GET /api/auth/check-auth 304 3.843 ms 
+2026-03-20T19:36:50.646Z [info]: GET /api/auth/check-auth 304 5.015 ms 
+2026-03-20T19:41:04.673Z [error]: jwt expired {"name":"TokenExpiredError","expiredAt":"2026-03-20T19:38:14.000Z"}
+2026-03-20T19:41:04.674Z [error]: expired token {"name":"AuthenticationError","statusCode":401,"isOperational":true}
+2026-03-20T19:41:04.676Z [info]: GET /api/client/profile 401 3.746 ms 
+2026-03-20T19:41:05.106Z [info]: POST /api/auth/refresh 200 422.235 ms 
+2026-03-20T19:41:05.125Z [info]: GET /api/client/profile 304 8.793 ms 
+2026-03-20T19:45:25.414Z [info]: GET /api/auth/check-auth 200 4.479 ms 
+2026-03-20T19:45:25.417Z [info]: GET /api/client/profile 304 11.416 ms 
+2026-03-20T19:46:04.617Z [info]: GET /api/client/profile 304 6.976 ms 
+2026-03-20T19:47:47.301Z [info]: GET /api/client/profile 304 6.981 ms 
+2026-03-20T19:49:25.545Z [info]: GET /api/auth/check-auth 304 3.549 ms 
+2026-03-20T19:49:25.717Z [info]: GET /api/client/profile 304 5.205 ms 
+2026-03-20T19:52:02.232Z [error]: jwt expired {"name":"TokenExpiredError","expiredAt":"2026-03-20T19:51:04.000Z"}
+2026-03-20T19:52:02.233Z [error]: expired token {"name":"AuthenticationError","statusCode":401,"isOperational":true}
+2026-03-20T19:52:02.236Z [info]: GET /api/auth/check-auth 401 3.832 ms 
+2026-03-20T19:52:02.740Z [info]: POST /api/auth/refresh 200 372.113 ms 
+2026-03-20T19:52:02.763Z [info]: GET /api/auth/check-auth 200 4.731 ms 
+2026-03-20T19:57:30.233Z [info]: GET /api/auth/check-auth 304 5.439 ms 
+2026-03-20T19:59:11.899Z [info]: GET /api/auth/check-auth 200 3.568 ms 
+2026-03-20T20:00:47.434Z [info]: GET /api/auth/check-auth 304 4.331 ms 
+2026-03-20T20:16:53.869Z [error]: Missing access token {"name":"AuthenticationError","statusCode":401,"isOperational":true}
+2026-03-20T20:16:53.872Z [info]: GET /api/auth/check-auth 401 2.433 ms 
+2026-03-20T20:16:54.414Z [info]: POST /api/auth/refresh 200 410.503 ms 
+2026-03-20T20:16:54.438Z [info]: GET /api/auth/check-auth 200 5.075 ms 
+2026-03-20T20:17:38.343Z [info]: GET /api/auth/check-auth 304 4.981 ms 
+2026-03-20T20:17:42.053Z [info]: GET /api/auth/check-auth 304 5.006 ms 
+2026-03-20T20:19:30.556Z [info]: POST /api/auth/logout 200 12.505 ms 
+2026-03-20T20:21:07.925Z [info]: POST /api/auth/login 200 437.131 ms 
+2026-03-20T20:24:49.782Z [info]: Server initialization started 
+2026-03-20T20:24:49.834Z [info]: connected to MongoDB 
+2026-03-20T20:24:49.859Z [info]: Connected to Redis 
+2026-03-20T20:24:49.866Z [info]: Server running on http://localhost:8080 
+2026-03-20T20:25:31.034Z [info]: Server initialization started 
+2026-03-20T20:25:31.160Z [info]: connected to MongoDB 
+2026-03-20T20:25:31.198Z [info]: Connected to Redis 
+2026-03-20T20:25:31.207Z [info]: Server running on http://localhost:8080 
+2026-03-20T20:25:43.014Z [info]: GET /api/client/profile 304 45.336 ms 
+2026-03-21T08:31:19.866Z [info]: Server initialization started 
+2026-03-21T08:31:19.939Z [info]: connected to MongoDB 
+2026-03-21T08:31:19.969Z [info]: Connected to Redis 
+2026-03-21T08:31:19.976Z [info]: Server running on http://localhost:8080 
+2026-03-21T08:32:00.453Z [error]: Missing access token {"name":"AuthenticationError","statusCode":401,"isOperational":true}
+2026-03-21T08:32:00.464Z [info]: GET /api/auth/check-auth 401 6.901 ms 
+2026-03-21T08:32:01.011Z [info]: POST /api/auth/refresh 200 466.330 ms 
+2026-03-21T08:32:01.028Z [info]: GET /api/auth/check-auth 200 8.383 ms 
+2026-03-21T08:32:01.106Z [info]: GET /api/client/profile 304 15.002 ms 
