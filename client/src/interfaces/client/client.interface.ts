@@ -20,5 +20,18 @@ export interface UpdateClientProfileRequest {
   phone?: string | null;
   email?: string | null;
   name?: string | null;
+  profilePicture?: string | null;
 }
 
+export interface ProfileUpdateUrlRequest{
+  fileType: string;
+}
+export interface ProfileUploadUrls{
+  uploadUrl: string;
+  fileUrl: string;
+}
+
+export interface UploadArgs {
+  uploadUrl: string;
+  file: File;
+}

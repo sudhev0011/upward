@@ -27,7 +27,7 @@ export class ClientProfileMapper {
       email: null,
       name: null,
       phone: profile.phone,
-      profilePicture: null,
+      profilePicture: profile.profilePicture,
       createdAt: profile.createdAt.toISOString(),
       updatedAt: profile.updatedAt.toISOString(),
     };
@@ -36,10 +36,12 @@ export class ClientProfileMapper {
   static toUpdateEntity(dto: Partial<{
     location: string | null;
     phone: string | null;
+    profilePicture: string | null;
   }>): Partial<ClientProfile> {
     const updateData: Record<string, unknown> = {};
     if (dto.location !== undefined) updateData.location = dto.location;
     if (dto.phone !== undefined) updateData.phone = dto.phone;
+    if (dto.profilePicture !== undefined) updateData.profilePicture = dto.profilePicture;
     return updateData;
   }
 

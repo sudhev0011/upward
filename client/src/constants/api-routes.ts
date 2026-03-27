@@ -16,5 +16,6 @@ export const AuthRoutes = {
 
 export const ClientRoutes = {
   PROFILE: '/api/client/profile',
+  PROFILE_UPLOAD_URL: '/api/client/profile-upload-url',
   PROFILE_AVATAR: '/api/client/profile/avatar',
 } as const;

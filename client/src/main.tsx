@@ -9,7 +9,7 @@ import { Toaster } from './components/ui/sonner.tsx'
 import { BrowserRouter } from 'react-router-dom'
 import AuthProvider from './components/common/AuthProvider.tsx'
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (failureCount, error: any) => {

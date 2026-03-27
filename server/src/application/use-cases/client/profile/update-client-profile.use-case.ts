@@ -6,11 +6,15 @@ import { ClientProfileMapper } from '../../../mapers/client/client-profile.mappe
 import { ClientProfileResponseDto } from '../../../dtos/client/profile/info/response/client-profile-response.dto';
 import { IUserRepository } from '../../../../domain/interfaces/repositories/user/IUserRepository';
 import { UpdateClientProfileRequestDto } from '../../../dtos/client/profile/info/request/update-client-profile-request.dto';
+import { IS3Service } from '../../../../domain/interfaces/services/IS3Service';
+import { ILogger } from '../../../../domain/interfaces/services/ILogger';
 
 export class UpdateClientProfileUseCase implements IUpdateClientProfileUseCase {
   constructor(
     private readonly _clientProfileRepository: IClientProfileRepository,
     private readonly _userRepository: IUserRepository,
+    private readonly _s3Service: IS3Service,
+    private readonly _logger: ILogger,
   ) {}
 
   async execute(dto: UpdateClientProfileRequestDto): Promise<ClientProfileResponseDto> {
@@ -37,6 +41,16 @@ export class UpdateClientProfileUseCase implements IUpdateClientProfileUseCase {
       if (user) {
         await this._userRepository.update(userId, { email: dto.email });
       }
+    }
+
+    if (
+      dto.profilePicture !== undefined && 
+      existingProfile.profilePicture && 
+      dto.profilePicture !== existingProfile.profilePicture
+    ) {
+      await this._s3Service.deleteFile(existingProfile.profilePicture).catch((err) => {
+        this._logger.error("Failed to delete old profile picture:", err);
+      });
     }
 
     const updateData = ClientProfileMapper.toUpdateEntity(dto);

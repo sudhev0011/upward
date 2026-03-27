@@ -13,6 +13,8 @@ import { toast } from "sonner";
 
 import { useGetProfileQuery } from "@/hooks/client/useGetProfile";
 import { useUpdateProfileMutation } from "@/hooks/client/useUpdateProfile";
+import { useGetProfileUploadUrl } from "@/hooks/client/useGetProfileUploadUrl";
+import { useUploadProfilePictureMutation } from "@/hooks/client/useUploadProfilePictureMutation";
 import {
   profileSchema,
   type ProfileFormData,
@@ -92,6 +94,8 @@ const SettingsPage = () => {
   const { data: response, isLoading } = useGetProfileQuery();
   const { mutate: updateProfile, isPending: isUpdating } =
     useUpdateProfileMutation();
+  const { mutateAsync: getUploadUrl } = useGetProfileUploadUrl();
+  const { mutateAsync: uploadToS3 } = useUploadProfilePictureMutation(); 
 
   /* ── Client State (React Hook Form) ── */
   const {
@@ -122,6 +126,40 @@ const SettingsPage = () => {
         toast.error(err.response?.data?.message || "Failed to update profile");
       },
     });
+  };
+
+  const handleAvatarUpload = async (file: File) => {
+    try {
+      // 🔹 Step 1: get presigned URL
+      const response = await getUploadUrl({
+        fileType: file.type,
+      });
+
+      if (!response.data) {
+        toast.error("Upload error, please try after some time");
+        return;
+      }
+
+      const { uploadUrl, fileUrl } = response.data;
+
+      // 🔹 Step 2: upload to S3 using Axios (React Query Mutation)
+      await uploadToS3({ uploadUrl, file });
+
+      // 🔹 Step 3: save avatar in DB
+      updateProfile(
+        { profilePicture: fileUrl },
+        {
+          onSuccess: () => {
+            toast.success("Profile picture updated!");
+          },
+          onError: () => {
+            toast.error("Failed to save profile picture");
+          },
+        }
+      );
+    } catch (err) {
+      toast.error("Upload failed");
+    }
   };
 
   if (isLoading) {
@@ -192,12 +230,30 @@ const SettingsPage = () => {
                         {getInitials(response?.data?.name)}
                       </div>
                     )}
-                    <button
+                    <input
+                      type="file"
+                      accept="image/png, image/jpeg"
+                      className="hidden"
+                      id="avatarUpload"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleAvatarUpload(file);
+                      }}
+                    />
+
+                    {/* Camera button */}
+                    <label
+                      htmlFor="avatarUpload"
+                      className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm hover:bg-gray-50 cursor-pointer"
+                    >
+                      <Camera className="h-3.5 w-3.5 text-gray-500" />
+                    </label>
+                    {/* <button
                       type="button"
                       className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm hover:bg-gray-50 transition-colors"
                     >
                       <Camera className="h-3.5 w-3.5 text-gray-500" />
-                    </button>
+                    </button> */}
                   </div>
                   <div>
                     <p className="text-sm font-bold text-gray-900">
@@ -206,12 +262,12 @@ const SettingsPage = () => {
                     <p className="text-xs text-gray-400 mt-0.5">
                       JPG or PNG. Max 5MB.
                     </p>
-                    <button
-                      type="button"
-                      className="mt-2 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+                    <label
+                      htmlFor="avatarUpload"
+                      className="mt-2 inline-block cursor-pointer rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
                     >
                       Upload Photo
-                    </button>
+                    </label>
                   </div>
                 </div>
               </Section>

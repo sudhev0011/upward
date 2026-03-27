@@ -15,7 +15,8 @@ export const UpdateClientProfileRequestDtoSchema = z.object({
     .string()
     .regex(/^\+?[\d\s\-\(\)]+$/, "Please enter a valid phone number")
     .optional(),
-  email: z.string().email('Please enter a valid email address').optional(),  
+  email: z.string().email('Please enter a valid email address').optional(),
+  profilePicture: z.string().url('Must be a valid URL').optional(),
 });
 
 export type UpdateClientProfileRequestDto = z.infer<
