@@ -15,6 +15,9 @@ export class ProviderProfileMapper {
     skills?: string[];
     languages?: string[];
     experince?: string | null;
+    ratingCount?: string | null;
+    ratingAvg?: string | null;
+    isApprovedByAdmin?: boolean | null;
     socialLinks?: SocialLink[];
   }): CreateInput<ProviderProfile> {
     return {
@@ -28,6 +31,9 @@ export class ProviderProfileMapper {
       skills: data.skills ?? [],
       languages: data.languages ?? [],
       experience: data.experince ?? null,
+      ratingCount: data.ratingCount ?? null,
+      raingAvg: data.ratingAvg ?? null,
+      isApprovedByAdmin: data.isApprovedByAdmin ?? false,
       socialLinks: data.socialLinks ?? [],
     };
   }
@@ -52,6 +58,9 @@ export class ProviderProfileMapper {
         this.socialLinkToResponse(link),
       ),
       experience: profile.experience,
+      ratingCount: profile.ratingCount,
+      ratingAvg: profile.raingAvg,
+      isApprovedByAdmin: profile.isApprovedByAdmin,
       createdAt: profile.createdAt.toISOString(),
       updatedAt: profile.updatedAt.toISOString(),
     };
@@ -75,6 +84,9 @@ export class ProviderProfileMapper {
       skills: string[];
       languages: string[];
       experience: string | null;
+      ratingCount: string | null;
+      ratingAvg: string | null;
+      isApprovedByAdmin: boolean | null;
       socialLinks: SocialLink[];
     }>,
   ): Partial<ProviderProfile> {
@@ -91,6 +103,9 @@ export class ProviderProfileMapper {
     if (dto.skills !== undefined) updateData.skills = dto.skills;
     if (dto.languages !== undefined) updateData.languages = dto.languages;
     if (dto.experience !== undefined) updateData.experience = dto.experience;
+    if(dto.ratingCount !== undefined) updateData.ratingCount = dto.ratingCount;
+    if(dto.ratingAvg !== undefined) updateData.ratingAvg = dto.ratingAvg;
+    if(dto.isApprovedByAdmin !== undefined) updateData.isApprovedByAdmin = dto.isApprovedByAdmin;
     if (dto.socialLinks !== undefined) updateData.socialLinks = dto.socialLinks;
     return updateData;
   }

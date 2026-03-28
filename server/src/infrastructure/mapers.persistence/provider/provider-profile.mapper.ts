@@ -17,6 +17,9 @@ export class ProviderProfileMapper {
       skills: doc.skills || null,
       socialLinks: doc.socialLinks || null,  
       avatarFileName: doc.avatarFileName || null,
+      ratingCount: doc.ratingCount || null,
+      ratingAvg: doc.ratingAvg || null,
+      isApprovedByAdmin: doc.isApprovedByAdmin || false,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     });
@@ -36,6 +39,9 @@ export class ProviderProfileMapper {
     if (entity.experience !== undefined) doc.experience = entity.experience || undefined;
     if (entity.skills !== undefined) doc.skills = entity.skills || undefined;
     if (entity.socialLinks !== undefined) doc.socialLinks = entity.socialLinks || undefined;
+    if (entity.ratingCount !== undefined) doc.ratingCount = entity.ratingCount || undefined;
+    if (entity.raingAvg !== undefined) doc.ratingAvg = entity.raingAvg || undefined;
+    if (entity.isApprovedByAdmin !== undefined) doc.isApprovedByAdmin = entity.isApprovedByAdmin || false;
     return doc;
   }
 }

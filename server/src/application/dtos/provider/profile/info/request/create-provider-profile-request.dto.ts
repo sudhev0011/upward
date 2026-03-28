@@ -16,6 +16,9 @@ export const CreateProviderProfileRequestDtoSchema = z.object({
   skills: z.array(z.string()).default([]),
   languages: z.array(z.string()).default([]),
   experience: z.string().min(0,'cannot have negative experince').optional(),
+  ratingCount: z.string().min(0, 'cannot be negative').optional(),
+  ratingAvg: z.string().optional(),
+  isApprovedByAdmin: z.boolean().optional(),
   socialLinks: z.array(SocialLinkSchema).default([]),
 });
 

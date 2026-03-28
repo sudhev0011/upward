@@ -16,6 +16,9 @@ export const UpdateProviderProfileRequestDtoSchema = z.object({
   skills: z.array(z.string()).optional(),
   languages: z.array(z.string()).optional(),
   experience: z.string().min(0,'cannot have negative experince').optional(),
+  ratingCount: z.string().min(0, 'cannot be negative').optional(),
+  ratingAvg: z.string().optional(),
+  isApprovedByAdmin: z.boolean().optional(),
   socialLinks: z.array(SocialLinkSchema).optional(),
   name: z.string().min(1, 'Name is required').max(100, 'Name must not exceed 100 characters').optional(),
 });

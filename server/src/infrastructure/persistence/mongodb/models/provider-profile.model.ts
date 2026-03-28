@@ -16,6 +16,9 @@ export interface ProviderProfileDocument extends Document {
   skills: string[];
   languages: string[];
   experience: string,
+  ratingCount: string,
+  ratingAvg: string,
+  isApprovedByAdmin: boolean,
   socialLinks: SocialLink[];
   createdAt: Date;
   updatedAt: Date;
@@ -42,6 +45,9 @@ const ProviderProfileSchema = new Schema<ProviderProfileDocument>(
     skills: [{ type: String, default: [] }],
     languages: [{ type: String, default: [] }],
     experience: {type: String},
+    ratingCount: {type:String},
+    ratingAvg: {type: String},
+    isApprovedByAdmin: {type: Boolean},
     socialLinks: { type: [SocialLinkSchema], default: [] },
   },
   { timestamps: true },
