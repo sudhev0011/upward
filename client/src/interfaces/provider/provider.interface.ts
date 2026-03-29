@@ -1,7 +1,7 @@
 
 export interface SocialLink {
   name: string;
-  link: string;
+  link?: string;
 }
 
 export interface ProviderProfile {
@@ -18,6 +18,9 @@ export interface ProviderProfile {
   skills: string[];
   languages: string[];
   experience: string | null;
+  ratingCount: number;
+  ratingAvg: number;
+  isApprovedByAdmin: boolean;
   socialLinks: SocialLink[];
   createdAt: string;
   updatedAt: string;
@@ -45,6 +48,7 @@ export interface UpdateProviderProfileRequest {
   skills?: string[];
   languages?: string[];
   socialLinks?: SocialLink[];
+  avatarUrl?: string;
 }
 
 

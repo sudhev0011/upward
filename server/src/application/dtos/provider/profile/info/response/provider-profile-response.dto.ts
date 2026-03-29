@@ -17,8 +17,8 @@ export interface ProviderProfileResponseDto {
   skills: string[];
   languages: string[];
   experience: string | null;
-  ratingCount: string | null;
-  ratingAvg: string | null;
+  ratingCount: number | null;
+  ratingAvg: number | null;
   isApprovedByAdmin: boolean | null;
   socialLinks: SocialLinkResponseDto[];
   createdAt: string;

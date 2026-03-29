@@ -15,8 +15,8 @@ export class ProviderProfileMapper {
     skills?: string[];
     languages?: string[];
     experince?: string | null;
-    ratingCount?: string | null;
-    ratingAvg?: string | null;
+    ratingCount?: number | null;
+    ratingAvg?: number | null;
     isApprovedByAdmin?: boolean | null;
     socialLinks?: SocialLink[];
   }): CreateInput<ProviderProfile> {
@@ -31,8 +31,8 @@ export class ProviderProfileMapper {
       skills: data.skills ?? [],
       languages: data.languages ?? [],
       experience: data.experince ?? null,
-      ratingCount: data.ratingCount ?? null,
-      raingAvg: data.ratingAvg ?? null,
+      ratingCount: data.ratingCount ?? 0,
+      raingAvg: data.ratingAvg ?? 0,
       isApprovedByAdmin: data.isApprovedByAdmin ?? false,
       socialLinks: data.socialLinks ?? [],
     };
@@ -47,7 +47,7 @@ export class ProviderProfileMapper {
       location: profile.location,
       phone: profile.phone,
       email: null,
-      avatarUrl: null,
+      avatarUrl: profile.avatarFileName || null,
       dateOfBirth: profile.dateOfBirth
         ? profile.dateOfBirth.toISOString()
         : null,
@@ -84,10 +84,11 @@ export class ProviderProfileMapper {
       skills: string[];
       languages: string[];
       experience: string | null;
-      ratingCount: string | null;
-      ratingAvg: string | null;
+      ratingCount: number | null;
+      ratingAvg: number | null;
       isApprovedByAdmin: boolean | null;
       socialLinks: SocialLink[];
+      avatarUrl: string | null;
     }>,
   ): Partial<ProviderProfile> {
     const updateData: Record<string, unknown> = {};
@@ -107,6 +108,7 @@ export class ProviderProfileMapper {
     if(dto.ratingAvg !== undefined) updateData.ratingAvg = dto.ratingAvg;
     if(dto.isApprovedByAdmin !== undefined) updateData.isApprovedByAdmin = dto.isApprovedByAdmin;
     if (dto.socialLinks !== undefined) updateData.socialLinks = dto.socialLinks;
+    if (dto.avatarUrl !== undefined) updateData.avatarFileName = dto.avatarUrl;
     return updateData;
   }
 }

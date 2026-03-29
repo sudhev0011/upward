@@ -3,8 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Bell, Lock, Globe, Trash2 } from "lucide-react";
+import { Bell, Lock, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function SettingsPage() {
@@ -62,31 +61,6 @@ export default function SettingsPage() {
             </div>
           </div>
           <Button className="rounded-xl shadow-lg shadow-primary/20" onClick={() => toast.success("Password updated!")}>Update Password</Button>
-        </CardContent>
-      </Card>
-
-      <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle className="text-card-foreground text-base flex items-center gap-2">
-            <Globe className="h-5 w-5 text-primary" /> Preferences
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Language</Label>
-              <Input defaultValue="English" className="bg-secondary/30 border-border/50 rounded-xl" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Timezone</Label>
-              <Input defaultValue="PST (UTC-8)" className="bg-secondary/30 border-border/50 rounded-xl" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Currency</Label>
-              <Input defaultValue="USD ($)" className="bg-secondary/30 border-border/50 rounded-xl" />
-            </div>
-          </div>
-          <Button className="rounded-xl shadow-lg shadow-primary/20" onClick={() => toast.success("Preferences saved!")}>Save Preferences</Button>
         </CardContent>
       </Card>
 

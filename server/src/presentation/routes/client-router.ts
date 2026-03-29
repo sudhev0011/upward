@@ -4,7 +4,6 @@ import { createClientProfileController } from "../../infrastructure/di/clientDi"
 import { getClientProfileController } from "../../infrastructure/di/clientDi";
 import { updateClientProfileController } from "../../infrastructure/di/clientDi";
 import { clientProfileController } from "../../infrastructure/di/clientDi";
-
 export class ClientRouter{
 
     public router: Router;

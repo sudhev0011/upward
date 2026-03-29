@@ -28,6 +28,7 @@ export class CreateProviderProfileUseCase implements ICreateProviderProfileUseCa
         skills: dto.skills,
         languages: dto.languages,
         socialLinks: dto.socialLinks,
+        experince: dto.experience
       }),
     );
 

@@ -19,3 +19,8 @@ export const ClientRoutes = {
   PROFILE_UPLOAD_URL: '/api/client/profile-upload-url',
   PROFILE_AVATAR: '/api/client/profile/avatar',
 } as const;
+
+export const ProviderRoutes = {
+  PROFILE: '/api/provider/profile',
+  PROFILE_UPLOAD_URL: '/api/provider/profile-upload-url',
+} as const;

@@ -4,13 +4,16 @@ import { NotFoundError } from '../../../../domain/errors/errors';
 import { ProviderProfileMapper } from '../../../mapers/provider/provider-profile.mappers';
 import { ProviderProfileResponseDto } from '../../../dtos/provider/profile/info/response/provider-profile-response.dto';
 import { IUserRepository } from '../../../../domain/interfaces/repositories/user/IUserRepository';
-
 import { UpdateProviderProfileRequestDto } from '../../../dtos/provider/profile/info/request/update-provider-profile-request.dto';
+import { IS3Service } from '../../../../domain/interfaces/services/IS3Service';
+import { ILogger } from '../../../../domain/interfaces/services/ILogger';
 
 export class UpdateProviderProfileUseCase implements IUpdateProviderProfileUseCase {
   constructor(
     private readonly _providerProfileRepository: IProviderProfileRepository,
     private readonly _userRepository: IUserRepository,
+    private readonly _s3Service: IS3Service,
+    private readonly _logger: ILogger,
   ) {}
 
   async execute(dto: UpdateProviderProfileRequestDto): Promise<ProviderProfileResponseDto> {
@@ -37,6 +40,16 @@ export class UpdateProviderProfileUseCase implements IUpdateProviderProfileUseCa
       if (user) {
         await this._userRepository.update(userId, { email: dto.email });
       }
+    }
+
+    if (
+      dto.avatarUrl !== undefined && 
+      existingProfile.avatarFileName && 
+      dto.avatarUrl !== existingProfile.avatarFileName
+    ) {
+      await this._s3Service.deleteFile(existingProfile.avatarFileName).catch((err) => {
+        this._logger.error("Failed to delete old provider avatar:", err);
+      });
     }
 
     const updateData = ProviderProfileMapper.toUpdateEntity(dto);

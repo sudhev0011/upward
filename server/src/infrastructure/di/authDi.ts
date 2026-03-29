@@ -34,7 +34,7 @@ import { PasswordResetService } from "../security/password-reset-service";
 
 
 //repo init
-const userRepository = new UserRepository();
+export const userRepository = new UserRepository();
 
 //service init
 const passwordHasher = new BcryptPasswordHasher();
@@ -58,7 +58,7 @@ const logoutUseCase = new LogoutUseCase(userRepository);
 const forgotPasswordUseCase = new ForgotPasswordUseCase(userRepository,passwordResetService)
 const resetPasswordUseCase = new ResetPasswordUseCase(passwordHasher,passwordResetService,userRepository)
 const refreshTokenUseCase = new RefreshTokenUseCase(userRepository,tokenService,passwordHasher);
-const getUserByIdUseCase = new GetUserByIdUseCase(userRepository);
+export const getUserByIdUseCase = new GetUserByIdUseCase(userRepository);
 
 //controller init
 export const registrationController = new RegistrationController(registerUserUseCase);

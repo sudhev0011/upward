@@ -14,8 +14,8 @@ export class ProviderProfile {
     public readonly skills: string[],
     public readonly languages: string[],
     public readonly experience: string | null,
-    public readonly ratingCount: string | null,
-    public readonly raingAvg: string | null,
+    public readonly ratingCount: number,
+    public readonly raingAvg: number,
     public readonly isApprovedByAdmin: boolean,
     public readonly socialLinks: SocialLink[],
     public readonly createdAt: Date,
@@ -34,8 +34,8 @@ export class ProviderProfile {
     skills?: string[];
     languages?: string[];
     experience?: string | null,
-    ratingCount?: string | null,
-    ratingAvg?: string | null,
+    ratingCount?: number | null,
+    ratingAvg?: number | null,
     isApprovedByAdmin?: boolean,
     socialLinks?: SocialLink[];
     createdAt?: Date;
@@ -54,8 +54,8 @@ export class ProviderProfile {
       data.skills ?? [],
       data.languages ?? [],
       data.experience ?? null,
-      data.ratingCount ?? null,
-      data.ratingAvg ?? null,
+      data.ratingCount ?? 0,
+      data.ratingAvg ?? 0,
       data.isApprovedByAdmin ?? false, 
       data.socialLinks ?? [],
       data.createdAt ?? now,

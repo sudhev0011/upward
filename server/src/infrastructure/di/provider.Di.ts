@@ -8,19 +8,29 @@ import { GetProviderProfileController } from "../../presentation/controllers/pro
 import { UpdateProviderProfileController } from "../../presentation/controllers/provider/profile/update-provider-profile.controller";
 import { ProviderProfileRepository } from "../persistence/mongodb/repositories/provider-profile.repository";
 import { UserRepository } from "../persistence/mongodb/repositories/user.repository";
+import { UploadAvatarUseCase } from "../../application/use-cases/provider/media/upload-avatar.use-case";
+import { ProviderProfileController } from "../../presentation/controllers/provider/profile/provider-profile.controller";
+import { S3Service } from "../external-services/s3/s3.service";
+import { WinstonLogger } from "../services/logger.service";
 
 
 //repo init
 const userRepository = new UserRepository() 
 const providerProfileRepository = new ProviderProfileRepository()
 
+// service init
+const logger = new WinstonLogger();
+const s3Service = new S3Service(logger);
+
 
 // useCase init
 const getProviderProfileUseCase = new GetProviderProfileUseCase(providerProfileRepository,userRepository)
-const updateProviderProfileUseCase = new UpdateProviderProfileUseCase(providerProfileRepository,userRepository)
+const updateProviderProfileUseCase = new UpdateProviderProfileUseCase(providerProfileRepository,userRepository,s3Service,logger)
 const createProviderProfileUseCase = new CreateProviderProfileUseCase(providerProfileRepository)
+const uploadAvatarUseCase = new UploadAvatarUseCase(s3Service);
 
 // contrller init
 export const getProviderProfileController = new GetProviderProfileController(getProviderProfileUseCase)
 export const updateProviderProfileController = new UpdateProviderProfileController(updateProviderProfileUseCase)
 export const createProviderProfileController = new CreateProviderProfileController(createProviderProfileUseCase)
+export const providerProfileController = new ProviderProfileController(uploadAvatarUseCase);
