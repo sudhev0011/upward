@@ -12,25 +12,50 @@ import { UploadAvatarUseCase } from "../../application/use-cases/provider/media/
 import { ProviderProfileController } from "../../presentation/controllers/provider/profile/provider-profile.controller";
 import { S3Service } from "../external-services/s3/s3.service";
 import { WinstonLogger } from "../services/logger.service";
-
+import { ProviderKycRepository } from "../persistence/mongodb/repositories/provider-kyc.repository";
+import { ProviderBankRepository } from "../persistence/mongodb/repositories/provider-bank.repository";
+import { SubmitProviderKycUseCase } from "../../application/use-cases/provider/kyc/submit-provider-kyc.use-case";
+import { SaveProviderBankUseCase } from "../../application/use-cases/provider/kyc/save-provider-bank.use-case";
+import { UploadKycDocumentUseCase } from "../../application/use-cases/provider/media/upload-kyc-document.use-case";
+import { SubmitProviderKycController } from "../../presentation/controllers/provider/kyc/submit-provider-kyc.controller";
+import { SaveProviderBankController } from "../../presentation/controllers/provider/kyc/save-provider-bank.controller";
+import { UploadKycDocumentController } from "../../presentation/controllers/provider/media/upload-kyc-document.controller";
+import { GetProviderKycController } from "../../presentation/controllers/provider/kyc/get-provider-kyc.controller";
+import { GetProviderKycUseCase } from "../../application/use-cases/provider/kyc/get-provider-kyc.use-case";
+import { EncryptionService } from "../security/encryption-service";
+import { GetProviderBankController } from "../../presentation/controllers/provider/kyc/get-provider-bank.controller";
+import { GetProviderBankUseCase } from "../../application/use-cases/provider/kyc/get-provider-bank.use.case";
 
 //repo init
-const userRepository = new UserRepository() 
-const providerProfileRepository = new ProviderProfileRepository()
+const userRepository = new UserRepository(); 
+const providerProfileRepository = new ProviderProfileRepository();
+const providerKycRepository = new ProviderKycRepository();
+const providerBankRepository = new ProviderBankRepository();
 
 // service init
 const logger = new WinstonLogger();
 const s3Service = new S3Service(logger);
+const encryptionService = new EncryptionService();
 
 
 // useCase init
-const getProviderProfileUseCase = new GetProviderProfileUseCase(providerProfileRepository,userRepository)
-const updateProviderProfileUseCase = new UpdateProviderProfileUseCase(providerProfileRepository,userRepository,s3Service,logger)
-const createProviderProfileUseCase = new CreateProviderProfileUseCase(providerProfileRepository)
+const getProviderProfileUseCase = new GetProviderProfileUseCase(providerProfileRepository,userRepository);
+const updateProviderProfileUseCase = new UpdateProviderProfileUseCase(providerProfileRepository,userRepository,s3Service,logger);
+const createProviderProfileUseCase = new CreateProviderProfileUseCase(providerProfileRepository);
 const uploadAvatarUseCase = new UploadAvatarUseCase(s3Service);
+const submitProviderKycUseCase = new SubmitProviderKycUseCase(providerKycRepository, s3Service,encryptionService);
+const saveProviderBankUseCase = new SaveProviderBankUseCase(providerBankRepository, s3Service,encryptionService);
+const uploadKycDocumentUseCase = new UploadKycDocumentUseCase(s3Service);
+const getProviderKycUseCase = new GetProviderKycUseCase(providerKycRepository,s3Service,encryptionService);
+const getProviderBankUseCase = new GetProviderBankUseCase(providerBankRepository,s3Service,encryptionService)
 
 // contrller init
-export const getProviderProfileController = new GetProviderProfileController(getProviderProfileUseCase)
-export const updateProviderProfileController = new UpdateProviderProfileController(updateProviderProfileUseCase)
-export const createProviderProfileController = new CreateProviderProfileController(createProviderProfileUseCase)
+export const getProviderProfileController = new GetProviderProfileController(getProviderProfileUseCase);
+export const updateProviderProfileController = new UpdateProviderProfileController(updateProviderProfileUseCase);
+export const createProviderProfileController = new CreateProviderProfileController(createProviderProfileUseCase);
 export const providerProfileController = new ProviderProfileController(uploadAvatarUseCase);
+export const submitProviderKycController = new SubmitProviderKycController(submitProviderKycUseCase);
+export const saveProviderBankController = new SaveProviderBankController(saveProviderBankUseCase);
+export const uploadKycDocumentController = new UploadKycDocumentController(uploadKycDocumentUseCase);
+export const getProviderKycController = new GetProviderKycController(getProviderKycUseCase);
+export const getProviderBankController = new GetProviderBankController(getProviderBankUseCase)

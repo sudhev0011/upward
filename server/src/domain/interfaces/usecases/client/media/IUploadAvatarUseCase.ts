@@ -1,5 +1,5 @@
-import { UploadAvatarDto } from '../../../../../application/dtos/client/media/upload-avatar.dto';
-import { UploadAvatarResponseDto } from '../../../../../application/dtos/client/media/upload-avatar-response.dto';
+import { UploadDto } from "../../../../../application/dtos/common/media/upload-avatar.dto";
+import { UploadResponseDto } from "../../../../../application/dtos/common/media/upload.dto";
 export interface IUploadAvatarUseCase {
-  execute(dto: UploadAvatarDto): Promise<UploadAvatarResponseDto>;
+  execute(dto: UploadDto): Promise<UploadResponseDto>;
 }

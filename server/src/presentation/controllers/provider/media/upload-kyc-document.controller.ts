@@ -6,14 +6,16 @@ import {
   sendSuccessResponse,
   validateUserId,
 } from "../../../../shared/utils/presentation/controller.utils";
-import { IUploadAvatarUseCase } from "../../../../domain/interfaces/usecases/client/media/IUploadAvatarUseCase";
+import { IUploadKycDocumentUseCase } from "../../../../domain/interfaces/usecases/provider/media/IUploadKycDocumentUseCase";
 import { UploadDtoSchema } from "../../../../application/dtos/common/media/upload-avatar.dto";
 import { formatZodErrors } from "../../../../shared/utils/presentation/zod-error-formatter.utils";
 
-export class ClientProfileController {
-  constructor(private readonly _uploadAvatarUseCase: IUploadAvatarUseCase) {}
+export class UploadKycDocumentController {
+  constructor(
+    private readonly _uploadKycDocumentUseCase: IUploadKycDocumentUseCase,
+  ) {}
 
-  uploadAvatar = async (
+  execute = async (
     req: AuthenticatedRequest,
     res: Response,
     next: NextFunction,
@@ -21,19 +23,18 @@ export class ClientProfileController {
     try {
       const userId = validateUserId(req);
 
-      const parsed = UploadDtoSchema.safeParse(req.body);
-      if (!parsed.success) {
-        return handleValidationError(formatZodErrors(parsed.error), next);
-      }
-      
       const { fileType } = req.body;
 
-      const url = await this._uploadAvatarUseCase.execute({
+      if (!fileType) {
+        return handleValidationError("fileType is required", next);
+      }
+
+      const response = await this._uploadKycDocumentUseCase.execute({
         userId,
         fileType,
       });
 
-      sendSuccessResponse(res, "upload url sent successfully", url);
+      sendSuccessResponse(res, "Upload URL generated successfully", response);
     } catch (error) {
       handleAsyncError(error, next);
     }

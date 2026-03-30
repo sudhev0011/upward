@@ -1,12 +1,12 @@
 import { IS3Service } from "../../../../domain/interfaces/services/IS3Service";
 import { IUploadAvatarUseCase } from "../../../../domain/interfaces/usecases/provider/media/IUploadAvatarUseCase";
-import { UploadAvatarResponseDto } from "../../../dtos/provider/media/upload-avatar-response.dto";
-import { UploadAvatarDto } from "../../../dtos/provider/media/upload-avatar.dto";
+import { UploadResponseDto } from "../../../dtos/common/media/upload.dto";
+import { UploadDto } from "../../../dtos/common/media/upload-avatar.dto";
 
 export class UploadAvatarUseCase implements IUploadAvatarUseCase {
   constructor(private readonly _s3Service: IS3Service) {}
 
-  async execute(dto: UploadAvatarDto): Promise<UploadAvatarResponseDto> {
+  async execute(dto: UploadDto): Promise<UploadResponseDto> {
     const { userId, fileType } = dto;
     const allowedTypes = ["image/jpeg", "image/png"];
 

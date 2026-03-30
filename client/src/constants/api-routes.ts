@@ -23,4 +23,9 @@ export const ClientRoutes = {
 export const ProviderRoutes = {
   PROFILE: '/api/provider/profile',
   PROFILE_UPLOAD_URL: '/api/provider/profile-upload-url',
+  KYC_IDENTITY: '/api/provider/kyc/identity',
+  KYC_BANK: '/api/provider/kyc/bank',
+  KYC_DOCUMENT_UPLOAD: '/api/provider/media/kyc-document',
+  GET_KYC_DOCUMENT: '/api/provider/kyc/identity',
+  GET_BANK_DOCUMENT: '/api/provider/kyc/bank'
 } as const;
