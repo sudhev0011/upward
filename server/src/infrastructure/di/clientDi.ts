@@ -33,7 +33,7 @@ const s3Service = new S3Service(logger);
 
 //useCase init
 const createClientProfileUseCase = new CreateClientProfileUseCase(clientProfileRepository)
-const getClientProfileUseCase = new GetClientProfileUseCase(clientProfileRepository,userRepository)
+export const getClientProfileUseCase = new GetClientProfileUseCase(clientProfileRepository,userRepository)
 const updateClientProfileUseCase = new UpdateClientProfileUseCase(clientProfileRepository,userRepository,s3Service,logger)
 const uploadAvatarUseCase = new UploadAvatarUseCase(s3Service)
 

@@ -11,7 +11,7 @@ export const UserResponseDto = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
   avatar: z.string().optional(),
-  seekerProfile: z.custom<ClientProfileResponseDto>().optional(),
+  clientProfile: z.custom<ClientProfileResponseDto>().optional(),
 });
 
 export type UserResponseDto = z.infer<typeof UserResponseDto>;
