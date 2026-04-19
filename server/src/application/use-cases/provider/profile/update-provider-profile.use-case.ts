@@ -35,19 +35,13 @@ export class UpdateProviderProfileUseCase implements IUpdateProviderProfileUseCa
         await this._userRepository.update(userId, { name: dto.name });
       }
     }
-    
-    if (dto?.email !== undefined) {
-      if (user) {
-        await this._userRepository.update(userId, { email: dto.email });
-      }
-    }
 
     if (
       dto.avatarUrl !== undefined && 
-      existingProfile.avatarFileName && 
-      dto.avatarUrl !== existingProfile.avatarFileName
+      existingProfile.avatarUrl && 
+      dto.avatarUrl !== existingProfile.avatarUrl
     ) {
-      await this._s3Service.deleteFile(existingProfile.avatarFileName).catch((err) => {
+      await this._s3Service.deleteFile(existingProfile.avatarUrl).catch((err) => {
         this._logger.error("Failed to delete old provider avatar:", err);
       });
     }
@@ -61,14 +55,7 @@ export class UpdateProviderProfileUseCase implements IUpdateProviderProfileUseCa
     }
     
 
-    const profileDto = ProviderProfileMapper.toResponse(updatedProfile);
-    
-    return {
-      ...profileDto,
-      name: user.name || '', 
-      email: user.email || '', 
-    };
-    
+    return ProviderProfileMapper.toResponse(updatedProfile,user);
   }
 }
 

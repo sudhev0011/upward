@@ -27,13 +27,7 @@ export class GetProviderProfileUseCase implements IGetProviderProfileUseCase {
       );
     }
 
-    const profileDto = ProviderProfileMapper.toResponse(profile);
-    
-    return {
-      ...profileDto,
-      name: user.name || '', 
-      email: user.email || '', 
-    };
+    return ProviderProfileMapper.toResponse(profile,user);
   }
 }
 

@@ -14,6 +14,7 @@ export class ProviderBankMapper {
       branchName: doc.branchName,
       passbookUrl: doc.passbookUrl,
       status: doc.status,
+      reason: doc.reason,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     });
@@ -30,6 +31,7 @@ export class ProviderBankMapper {
     if(entity.branchName !== undefined) doc.branchName= entity.branchName
     if(entity.passbookUrl !== undefined) doc.passbookUrl= entity.passbookUrl
     if(entity.status !== undefined) doc.status = entity.status
+    if (entity.reason !== undefined) doc.reason = entity.reason
 
     return doc;
   }

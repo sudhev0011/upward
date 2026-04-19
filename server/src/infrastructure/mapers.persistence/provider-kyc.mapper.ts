@@ -14,6 +14,7 @@ export class ProviderKycMapper {
       aadhaarFrontUrl: doc.aadhaarFrontUrl,
       aadhaarBackUrl: doc.aadhaarBackUrl,
       status: doc.status,
+      reason: doc.reason,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     });
@@ -33,6 +34,7 @@ export class ProviderKycMapper {
     if(entity.aadhaarFrontUrl !== undefined) doc.aadhaarFrontUrl = entity.aadhaarFrontUrl
     if(entity.aadhaarBackUrl !== undefined) doc.aadhaarBackUrl = entity.aadhaarBackUrl
     if(entity.status !== undefined) doc.status = entity.status
+    if (entity.reason !== undefined) doc.reason = entity.reason
 
     return doc;
   }

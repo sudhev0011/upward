@@ -1,0 +1,71 @@
+import { NextFunction, Request, Response } from "express";
+import { IAdminGetClientByIdUseCase } from "../../../domain/interfaces/usecases/admin/client/IAdminGetClientByIdUseCase";
+import { IBlockClientUseCase } from "../../../domain/interfaces/usecases/admin/client/IBlockUserUseCase";
+import { IGetAllClientsUseCase } from "../../../domain/interfaces/usecases/admin/client/IGetAllClientsUseCase";
+import { BlockClientRequestDtoSchema } from "../../../application/dtos/admin/user/request/block-client-request.dto";
+import { GetClientsQueryDtoSchema } from "../../../application/dtos/admin/user/request/get-clients-query.dto";
+import { formatZodErrors } from "../../../shared/utils/presentation/zod-error-formatter.utils";
+import {
+  handleAsyncError,
+  handleValidationError,
+  sendSuccessResponse,
+} from "../../../shared/utils/presentation/controller.utils";
+
+export class AdminClientController {
+  constructor(
+    private readonly _getAllClientsUseCase: IGetAllClientsUseCase,
+    private readonly _getClientByIdUseCase: IAdminGetClientByIdUseCase,
+    private readonly _blockUserUseCase: IBlockClientUseCase,
+  ) {}
+
+  getAllClients = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    const parsed = GetClientsQueryDtoSchema.safeParse(req.query);
+    if (!parsed.success) {
+      return handleValidationError(formatZodErrors(parsed.error), next);
+    }
+
+    try {
+      const result = await this._getAllClientsUseCase.execute(parsed.data);
+      sendSuccessResponse(res, "Users retrieved successfully", result);
+    } catch (error) {
+      handleAsyncError(error, next);
+    }
+  };
+
+  getClientById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const user = await this._getClientByIdUseCase.execute(id as string);
+      sendSuccessResponse(res, "User retrieved successfully", user);
+    } catch (error) {
+      handleAsyncError(error, next);
+    }
+  };
+
+  blockClient = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    const parsed = BlockClientRequestDtoSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return handleValidationError(formatZodErrors(parsed.error), next);
+    }
+
+    try {
+      await this._blockUserUseCase.execute(parsed.data);
+      const message = `User ${parsed.data.isBlocked ? "blocked" : "unblocked"} successfully`;
+      sendSuccessResponse(res, message, null);
+    } catch (error) {
+      handleAsyncError(error, next);
+    }
+  };
+}

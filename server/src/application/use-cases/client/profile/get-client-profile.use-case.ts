@@ -27,13 +27,7 @@ export class GetClientProfileUseCase implements IGetClientProfileUseCase {
       );
     }
 
-    const profileDto = ClientProfileMapper.toResponse(profile);
-    
-    return {
-      ...profileDto,
-      name: user.name || '', 
-      email: user.email || '', 
-    };
+    return ClientProfileMapper.toResponse(profile,user);
   }
 }
 

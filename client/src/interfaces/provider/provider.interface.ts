@@ -21,6 +21,8 @@ export interface ProviderProfile {
   ratingCount: number;
   ratingAvg: number;
   isApprovedByAdmin: boolean;
+  isBlocked: boolean | null;
+  isVerified: boolean |  null;
   socialLinks: SocialLink[];
   createdAt: string;
   updatedAt: string;

@@ -31,6 +31,7 @@ export interface ProviderKycDocument {
   aadhaarFrontUrl: string;
   aadhaarBackUrl: string;
   status: string;
+  reason: string;
   createdAt: Date;
   updatedAt: Date;
 }

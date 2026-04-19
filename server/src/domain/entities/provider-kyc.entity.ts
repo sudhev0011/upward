@@ -9,6 +9,7 @@ export class ProviderKyc {
     public readonly aadhaarFrontUrl: string,
     public readonly aadhaarBackUrl: string,
     public readonly status: 'pending' | 'approved' | 'rejected',
+    public readonly reason: string,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
   ) {}
@@ -23,6 +24,7 @@ export class ProviderKyc {
     aadhaarFrontUrl: string;
     aadhaarBackUrl: string;
     status?: 'pending' | 'approved' | 'rejected';
+    reason?: string;
     createdAt?: Date;
     updatedAt?: Date;
   }): ProviderKyc {
@@ -37,6 +39,7 @@ export class ProviderKyc {
       data.aadhaarFrontUrl,
       data.aadhaarBackUrl,
       data.status || 'pending',
+      data.reason || "",
       data.createdAt || now,
       data.updatedAt || now,
     );

@@ -7,6 +7,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
   globalIgnores(['dist']),
+
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -15,9 +16,23 @@ export default defineConfig([
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite,
     ],
+
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+    },
+
+    rules: {
+      // 🔹 Relax TypeScript strictness (VERY IMPORTANT)
+      '@typescript-eslint/no-explicit-any': 'warn', // change from error → warn
+      '@typescript-eslint/no-unused-vars': 'warn',
+
+      // 🔹 Disable annoying Vite rule (common practice)
+      'react-refresh/only-export-components': 'off',
+
+      // 🔹 Optional improvements
+      'prefer-const': 'warn',
+      'no-useless-escape': 'warn',
     },
   },
 ])

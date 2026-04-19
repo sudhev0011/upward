@@ -6,6 +6,8 @@ export interface ClientProfile {
   phone: string | null;
   email: string;
   profilePicture: string | null;
+  isBlocked: boolean;
+  isVerified: boolean;
   createdAt: string;
   updatedAt: string;
 }

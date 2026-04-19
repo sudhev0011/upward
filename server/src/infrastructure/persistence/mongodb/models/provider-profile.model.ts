@@ -10,7 +10,7 @@ export interface ProviderProfileDocument extends Document {
   bio?: string;
   location?: string;
   phone?: string;
-  avatarFileName?: string; 
+  avatarUrl?: string; 
   dateOfBirth?: Date;
   gender?: string;
   skills: string[];
@@ -39,7 +39,7 @@ const ProviderProfileSchema = new Schema<ProviderProfileDocument>(
     bio: { type: String },
     location: { type: String },
     phone: { type: String },
-    avatarFileName: { type: String }, 
+    avatarUrl: { type: String }, 
     dateOfBirth: { type: Date },
     gender: { type: String },
     skills: [{ type: String, default: [] }],

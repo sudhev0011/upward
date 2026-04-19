@@ -8,14 +8,14 @@ export class ProviderProfile {
     public readonly bio: string | null,
     public readonly location: string | null,
     public readonly phone: string | null,
-    public readonly avatarFileName: string | null, 
+    public readonly avatarUrl: string | null, 
     public readonly dateOfBirth: Date | null,
     public readonly gender: string | null,
     public readonly skills: string[],
     public readonly languages: string[],
     public readonly experience: string | null,
     public readonly ratingCount: number,
-    public readonly raingAvg: number,
+    public readonly ratingAvg: number,
     public readonly isApprovedByAdmin: boolean,
     public readonly socialLinks: SocialLink[],
     public readonly createdAt: Date,
@@ -28,7 +28,7 @@ export class ProviderProfile {
     bio?: string;
     location?: string;
     phone?: string;
-    avatarFileName?: string | null; 
+    avatarUrl?: string | null; 
     dateOfBirth?: Date | null;
     gender?: string | null;
     skills?: string[];
@@ -48,7 +48,7 @@ export class ProviderProfile {
       data.bio ?? null,
       data.location ?? null,
       data.phone ?? null,
-      data.avatarFileName ?? null,
+      data.avatarUrl ?? null,
       data.dateOfBirth ?? null,
       data.gender ?? null,
       data.skills ?? [],

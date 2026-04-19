@@ -9,6 +9,7 @@ export interface ProviderKycDocument extends Document {
   aadhaarFrontUrl: string;
   aadhaarBackUrl: string;
   status: 'pending' | 'approved' | 'rejected';
+  reason: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -23,6 +24,7 @@ const ProviderKycSchema = new Schema<ProviderKycDocument>(
     aadhaarFrontUrl: { type: String, required: true },
     aadhaarBackUrl: { type: String, required: true },
     status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+    reason: {type: String, required: false}
   },
   { timestamps: true },
 );

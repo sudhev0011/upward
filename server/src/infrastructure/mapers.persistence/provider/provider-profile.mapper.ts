@@ -16,7 +16,7 @@ export class ProviderProfileMapper {
       languages: doc.languages || null,
       skills: doc.skills || null,
       socialLinks: doc.socialLinks || null,  
-      avatarFileName: doc.avatarFileName || null,
+      avatarUrl: doc.avatarUrl || null,
       ratingCount: doc.ratingCount || 0,
       ratingAvg: doc.ratingAvg || 0,
       isApprovedByAdmin: doc.isApprovedByAdmin || false,
@@ -31,7 +31,7 @@ export class ProviderProfileMapper {
     if (entity.userId !== undefined) doc.userId = new Types.ObjectId(entity.userId);
     if (entity.location !== undefined) doc.location = entity.location || undefined;
     if (entity.phone !== undefined) doc.phone = entity.phone || undefined;
-    if (entity.avatarFileName !== undefined) doc.avatarFileName = entity.avatarFileName || undefined;
+    if (entity.avatarUrl !== undefined) doc.avatarUrl = entity.avatarUrl || undefined;
     if (entity.bio !== undefined) doc.bio = entity.bio || undefined;
     if (entity.dateOfBirth !== undefined) doc.dateOfBirth = entity.dateOfBirth || undefined;
     if (entity.gender !== undefined) doc.gender = entity.gender || undefined;
@@ -40,7 +40,7 @@ export class ProviderProfileMapper {
     if (entity.skills !== undefined) doc.skills = entity.skills || undefined;
     if (entity.socialLinks !== undefined) doc.socialLinks = entity.socialLinks || undefined;
     if (entity.ratingCount !== undefined) doc.ratingCount = entity.ratingCount || 0;
-    if (entity.raingAvg !== undefined) doc.ratingAvg = entity.raingAvg || 0;
+    if (entity.ratingAvg !== undefined) doc.ratingAvg = entity.ratingAvg || 0;
     if (entity.isApprovedByAdmin !== undefined) doc.isApprovedByAdmin = entity.isApprovedByAdmin || false;
     return doc;
   }

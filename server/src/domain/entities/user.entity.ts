@@ -20,7 +20,7 @@ export class User {
     name: string;
     email: string;
     password: string;
-    roles?: UserRole[]; // Change from 'role' to 'roles'
+    roles?: UserRole[]; 
     avatarFileName?: string | null;
     isVerified?: boolean;
     isBlocked?: boolean;
@@ -29,13 +29,12 @@ export class User {
     updatedAt?: Date;
   }): User {
     const now = new Date();
-    // Default to client role if no roles are provided
     return new User(
       data.id,
       data.name,
       data.email,
       data.password,
-      data.roles ?? [UserRole.CLIENT], // Ensure at least one role (default to 'client')
+      data.roles ?? [UserRole.CLIENT], 
       data.avatarFileName ?? null,
       data.isVerified ?? false,
       data.isBlocked ?? false,

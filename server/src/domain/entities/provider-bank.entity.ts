@@ -9,6 +9,7 @@ export class ProviderBank {
     public readonly branchName: string,
     public readonly passbookUrl: string,
     public readonly status: 'pending' | 'approved' | 'rejected',
+    public readonly reason: string,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
   ) {}
@@ -23,6 +24,7 @@ export class ProviderBank {
     branchName: string;
     passbookUrl: string;
     status?: 'pending' | 'approved' | 'rejected';
+    reason?: string;
     createdAt?: Date;
     updatedAt?: Date;
   }): ProviderBank {
@@ -37,6 +39,7 @@ export class ProviderBank {
       data.branchName,
       data.passbookUrl,
       data.status || 'pending',
+      data.reason || '',
       data.createdAt || now,
       data.updatedAt || now,
     );

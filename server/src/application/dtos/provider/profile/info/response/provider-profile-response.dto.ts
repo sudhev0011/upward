@@ -6,11 +6,11 @@ export interface SocialLinkResponseDto {
 export interface ProviderProfileResponseDto {
   id: string;
   userId: string;
-  name: string;
+  name: string | null;
   bio: string | null;
   location: string | null;
   phone: string | null;
-  email: string | null; 
+  email: string | null;
   avatarUrl: string | null; 
   dateOfBirth: string | null;
   gender: string | null;
@@ -20,6 +20,8 @@ export interface ProviderProfileResponseDto {
   ratingCount: number | null;
   ratingAvg: number | null;
   isApprovedByAdmin: boolean | null;
+  isBlocked: boolean | null;
+  isVerified: boolean |  null;
   socialLinks: SocialLinkResponseDto[];
   createdAt: string;
   updatedAt: string;

@@ -30,7 +30,7 @@ const AuthRedirect: React.FC<AuthRedirectProps> = ({ children }) => {
     const role = activeRole ?? user.roles[0];
 
     if (role === UserRole.ADMIN) {
-      return <Navigate to="/admin/dashboard" replace />;
+      return <Navigate to="/admin" replace />;
     }
 
     if (role === UserRole.PROVIDER) {

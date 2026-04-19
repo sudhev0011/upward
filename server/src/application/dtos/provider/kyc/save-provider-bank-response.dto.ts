@@ -8,6 +8,7 @@ export interface SaveProviderBankResponseDto {
   branchName: string;
   passbookUrl: string;
   status: string;
+  reason: string;
   createdAt: Date;
   updatedAt: Date;
 }

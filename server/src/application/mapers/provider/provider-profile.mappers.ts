@@ -1,7 +1,11 @@
 import { ProviderProfile } from "../../../domain/entities/provider-profile.entity";
 import { SocialLink } from "../../../domain/entities/provider-profile.entity";
-import { ProviderProfileResponseDto,SocialLinkResponseDto } from "../../dtos/provider/profile/info/response/provider-profile-response.dto";
+import {
+  ProviderProfileResponseDto,
+  SocialLinkResponseDto,
+} from "../../dtos/provider/profile/info/response/provider-profile-response.dto";
 import { CreateInput } from "../../../domain/types/common.types";
+import { User } from "../../../domain/entities/user.entity";
 
 export class ProviderProfileMapper {
   static toEntity(data: {
@@ -9,7 +13,7 @@ export class ProviderProfileMapper {
     bio?: string | null;
     location?: string | null;
     phone?: string | null;
-    avatarFileName?: string | null;
+    avatarUrl?: string | null;
     dateOfBirth?: Date | null;
     gender?: string | null;
     skills?: string[];
@@ -25,29 +29,32 @@ export class ProviderProfileMapper {
       bio: data.bio ?? null,
       location: data.location ?? null,
       phone: data.phone ?? null,
-      avatarFileName: data.avatarFileName ?? null,
+      avatarUrl: data.avatarUrl ?? null,
       dateOfBirth: data.dateOfBirth ?? null,
       gender: data.gender ?? null,
       skills: data.skills ?? [],
       languages: data.languages ?? [],
       experience: data.experince ?? null,
       ratingCount: data.ratingCount ?? 0,
-      raingAvg: data.ratingAvg ?? 0,
+      ratingAvg: data.ratingAvg ?? 0,
       isApprovedByAdmin: data.isApprovedByAdmin ?? false,
       socialLinks: data.socialLinks ?? [],
     };
   }
 
-  static toResponse(profile: ProviderProfile): ProviderProfileResponseDto {
+  static toResponse(
+    profile: ProviderProfile,
+    user?: User,
+  ): ProviderProfileResponseDto {
     return {
       id: profile.id,
       userId: profile.userId,
-      name: "",
+      name: user?.name ?? null,
+      email: user?.email ?? null,
       bio: profile.bio,
       location: profile.location,
       phone: profile.phone,
-      email: null,
-      avatarUrl: profile.avatarFileName || null,
+      avatarUrl: profile.avatarUrl || null,
       dateOfBirth: profile.dateOfBirth
         ? profile.dateOfBirth.toISOString()
         : null,
@@ -59,8 +66,10 @@ export class ProviderProfileMapper {
       ),
       experience: profile.experience,
       ratingCount: profile.ratingCount,
-      ratingAvg: profile.raingAvg,
+      ratingAvg: profile.ratingAvg,
       isApprovedByAdmin: profile.isApprovedByAdmin,
+      isBlocked: user?.isBlocked ?? null,
+      isVerified: user?.isVerified ?? null,
       createdAt: profile.createdAt.toISOString(),
       updatedAt: profile.updatedAt.toISOString(),
     };
@@ -104,11 +113,12 @@ export class ProviderProfileMapper {
     if (dto.skills !== undefined) updateData.skills = dto.skills;
     if (dto.languages !== undefined) updateData.languages = dto.languages;
     if (dto.experience !== undefined) updateData.experience = dto.experience;
-    if(dto.ratingCount !== undefined) updateData.ratingCount = dto.ratingCount;
-    if(dto.ratingAvg !== undefined) updateData.ratingAvg = dto.ratingAvg;
-    if(dto.isApprovedByAdmin !== undefined) updateData.isApprovedByAdmin = dto.isApprovedByAdmin;
+    if (dto.ratingCount !== undefined) updateData.ratingCount = dto.ratingCount;
+    if (dto.ratingAvg !== undefined) updateData.ratingAvg = dto.ratingAvg;
+    if (dto.isApprovedByAdmin !== undefined)
+      updateData.isApprovedByAdmin = dto.isApprovedByAdmin;
     if (dto.socialLinks !== undefined) updateData.socialLinks = dto.socialLinks;
-    if (dto.avatarUrl !== undefined) updateData.avatarFileName = dto.avatarUrl;
+    if (dto.avatarUrl !== undefined) updateData.avatarUrl = dto.avatarUrl;
     return updateData;
   }
 }

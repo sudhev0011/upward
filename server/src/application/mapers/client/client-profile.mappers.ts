@@ -1,6 +1,7 @@
 import { ClientProfile } from '../../../domain/entities/client-profile.entity';
 import { ClientProfileResponseDto } from '../../dtos/client/profile/info/response/client-profile-response.dto';
 import { CreateInput } from '../../../domain/types/common.types';
+import { User } from '../../../domain/entities/user.entity';
 
 export class ClientProfileMapper {
   static toEntity(data: {
@@ -18,16 +19,19 @@ export class ClientProfileMapper {
   }
 
   static toResponse(
-    profile: ClientProfile, 
+    profile: ClientProfile,
+    user?: User 
   ): ClientProfileResponseDto {
     return {
       id: profile.id,
       userId: profile.userId,
+      email: user?.email ?? null,
+      name: user?.name ?? null,
       location: profile.location,
-      email: null,
-      name: null,
       phone: profile.phone,
       profilePicture: profile.profilePicture,
+      isBlocked: user?.isBlocked ?? null,
+      isVerified: user?.isVerified ?? null,
       createdAt: profile.createdAt.toISOString(),
       updatedAt: profile.updatedAt.toISOString(),
     };

@@ -6,6 +6,8 @@ export interface ClientProfileResponseDto {
   email: string | null;
   phone: string | null;
   profilePicture: string | null; 
+  isBlocked: boolean | null;
+  isVerified: boolean | null;
   createdAt: string;
   updatedAt: string;
 }

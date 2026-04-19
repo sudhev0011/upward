@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Login from '@/pages/auth/Login';
 import Register from '@/pages/auth/Register';
+import AdminLogin from '@/pages/admin/AdminLogin';
 import LandingPage from '@/pages/public/Landing';
 import VerifyOtp from '@/pages/auth/VerifyOtp';
 import ResetPassword from '@/pages/auth/ResetPassword';
@@ -19,6 +20,10 @@ const PublicRoutes = () => {
           <Route
             path="/login"
             element={<AuthRedirect> <Login /> </AuthRedirect>}
+          />
+          <Route
+            path="/login/admin"
+            element={<AuthRedirect> <AdminLogin /> </AuthRedirect>}
           />
           <Route
             path="/register"

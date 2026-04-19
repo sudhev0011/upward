@@ -9,6 +9,7 @@ export interface ProviderBankDocument extends Document {
   branchName: string;
   passbookUrl: string;
   status: 'pending' | 'approved' | 'rejected';
+  reason: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -23,6 +24,7 @@ const ProviderBankSchema = new Schema<ProviderBankDocument>(
     branchName: { type: String, required: true },
     passbookUrl: { type: String, required: true },
     status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+    reason: {type: String, required: false}
   },
   { timestamps: true },
 );

@@ -18,7 +18,7 @@ interface AuthState {
   user: User | null;  
   isAuthenticated: boolean;
   isAuthChecked: boolean;
-  activeRole: string | null;
+  activeRole: UserRole | null;
 }
 
 const initialState: AuthState = {

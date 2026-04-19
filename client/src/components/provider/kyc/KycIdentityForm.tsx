@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { ShieldCheck, Pencil, Loader2 } from "lucide-react";
+import { ShieldCheck, Pencil, Loader2, AlertCircle } from "lucide-react"; // Added AlertCircle
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,7 +16,6 @@ import { useUploadKycToS3Mutation } from "@/hooks/provider/useUploadKycToS3Mutat
 import { kycIdentitySchema, type KycIdentityFormValues } from "@/utils/validations/provider/kyc.schema";
 import type { ProviderKycDocument } from "@/interfaces/provider/kyc.interface";
 
-// Import all the split components
 import { 
   FileUploadSlot, 
   StatusBadge, 
@@ -44,7 +43,7 @@ export function KycIdentityForm({ existingData }: { existingData: ProviderKycDoc
     defaultValues: {
       fullName: existingData?.fullName ?? "",
       aadhaarNumber: existingData?.aadhaarNumber ?? "",
-      dateOfBirth: existingData?.dateOfBirth,
+      dateOfBirth: existingData?.dateOfBirth ? format(new Date(existingData.dateOfBirth), "yyyy-MM-dd") : "",
       address: existingData?.address ?? "",
     },
   });
@@ -131,25 +130,36 @@ export function KycIdentityForm({ existingData }: { existingData: ProviderKycDoc
 
       <CardContent className="space-y-6">
         {showReadOnly ? (
-           <div className="space-y-6 animate-in fade-in duration-300">
-             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-               {/* RESTORED ALL MISSING READ-ONLY DATA */}
-               <InfoRow label="Full Name (as on Aadhaar)" value={existingData.fullName} />
-               <InfoRow label="Aadhaar Number" value={existingData.aadhaarNumber} />
-               <InfoRow 
-                 label="Date of Birth" 
-                 value={existingData.dateOfBirth ? format(new Date(existingData.dateOfBirth), "yyyy-MM-dd") : ""} 
-               />
-               <InfoRow label="Address" value={existingData.address} />
-             </div>
-             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-               {/* RESTORED DOC PREVIEWS */}
-               <DocPreview label="Aadhaar Front" url={existingData.aadhaarFrontUrl} />
-               <DocPreview label="Aadhaar Back" url={existingData.aadhaarBackUrl} />
-             </div>
-           </div>
+          <div className="space-y-6 animate-in fade-in duration-300">
+            {existingData.reason && !isEditing && (
+              <div className="flex items-start gap-3 p-4 rounded-xl border border-destructive/20 bg-destructive/5">
+                <AlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-destructive">Verification Issue</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {existingData.reason}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+              <InfoRow label="Full Name (as on Aadhaar)" value={existingData.fullName} />
+              <InfoRow label="Aadhaar Number" value={existingData.aadhaarNumber} />
+              <InfoRow 
+                label="Date of Birth" 
+                value={existingData.dateOfBirth ? format(new Date(existingData.dateOfBirth), "yyyy-MM-dd") : ""} 
+              />
+              <InfoRow label="Address" value={existingData.address} />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <DocPreview label="Aadhaar Front" url={existingData.aadhaarFrontUrl} />
+              <DocPreview label="Aadhaar Back" url={existingData.aadhaarBackUrl} />
+            </div>
+          </div>
         ) : (
           <form onSubmit={kycForm.handleSubmit(onKycSubmit)} className="space-y-6">
+            {/* Form Fields remain exactly as they were */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
               <div className="space-y-2">
                 <Label className="text-xs font-semibold uppercase text-muted-foreground">Full Name</Label>

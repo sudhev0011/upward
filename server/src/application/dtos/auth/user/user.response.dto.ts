@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { ClientProfileResponseDto } from '../../client/profile/info/response/client-profile-response.dto';
 import { UserRole } from '../../../../domain/enums/user-role.enum';
 export const UserResponseDto = z.object({
   id: z.string(),
@@ -11,7 +10,6 @@ export const UserResponseDto = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
   avatar: z.string().optional(),
-  clientProfile: z.custom<ClientProfileResponseDto>().optional(),
 });
 
 export type UserResponseDto = z.infer<typeof UserResponseDto>;

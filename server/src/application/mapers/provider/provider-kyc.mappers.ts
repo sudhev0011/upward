@@ -22,7 +22,8 @@ export class ProviderKycMapper {
         address : data.address,
         aadhaarFrontUrl : data.aadhaarFrontUrl,
         aadhaarBackUrl : data.aadhaarBackUrl,
-        status : data.status
+        status : data.status,
+        reason: "",
     }
   }
 
@@ -37,6 +38,7 @@ export class ProviderKycMapper {
         aadhaarFrontUrl: data.aadhaarFrontUrl,
         aadhaarBackUrl: data.aadhaarBackUrl,
         status: data.status,
+        reason: data.reason,
         createdAt: data.createdAt,
         updatedAt: data.updatedAt
     }

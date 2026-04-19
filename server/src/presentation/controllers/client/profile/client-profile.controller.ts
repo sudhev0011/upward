@@ -3,15 +3,26 @@ import { AuthenticatedRequest } from "../../../middleware/auth.middleware";
 import {
   handleAsyncError,
   handleValidationError,
+  sendCreatedResponse,
   sendSuccessResponse,
   validateUserId,
 } from "../../../../shared/utils/presentation/controller.utils";
 import { IUploadAvatarUseCase } from "../../../../domain/interfaces/usecases/client/media/IUploadAvatarUseCase";
 import { UploadDtoSchema } from "../../../../application/dtos/common/media/upload-avatar.dto";
 import { formatZodErrors } from "../../../../shared/utils/presentation/zod-error-formatter.utils";
+import { ICreateClientProfileUseCase } from "../../../../domain/interfaces/usecases/client/profile/ICreateClientProfileUseCase";
+import { CreateClientProfileRequestDtoSchema } from "../../../../application/dtos/client/profile/info/request/create-client-profile-request.dto";
+import { IGetClientProfileUseCase } from "../../../../domain/interfaces/usecases/client/profile/IGetClientProfileUseCase";
+import { UpdateClientProfileRequestDtoSchema } from "../../../../application/dtos/client/profile/info/request/update-client-profile-request.dto";
+import { IUpdateClientProfileUseCase } from "../../../../domain/interfaces/usecases/client/profile/IUpdateClientProfileUseCase";
 
 export class ClientProfileController {
-  constructor(private readonly _uploadAvatarUseCase: IUploadAvatarUseCase) {}
+  constructor(
+    private readonly _uploadAvatarUseCase: IUploadAvatarUseCase,
+    private readonly _createClientProfileUseCase: ICreateClientProfileUseCase,
+    private readonly _getClientProfileUseCase: IGetClientProfileUseCase,
+    private readonly _updateClientProfileUseCase: IUpdateClientProfileUseCase
+  ) {}
 
   uploadAvatar = async (
     req: AuthenticatedRequest,
@@ -21,12 +32,18 @@ export class ClientProfileController {
     try {
       const userId = validateUserId(req);
 
-      const parsed = UploadDtoSchema.safeParse(req.body);
+      if (!userId) {
+        throw new Error(
+          "User ID is required but was not found on the request.",
+        );
+      }
+      const { fileType } = req.body;
+
+      const parsed = UploadDtoSchema.safeParse({ fileType, userId });
+
       if (!parsed.success) {
         return handleValidationError(formatZodErrors(parsed.error), next);
       }
-      
-      const { fileType } = req.body;
 
       const url = await this._uploadAvatarUseCase.execute({
         userId,
@@ -38,4 +55,69 @@ export class ClientProfileController {
       handleAsyncError(error, next);
     }
   };
+
+  createClientProfile = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const userId = validateUserId(req);
+
+      const bodySchema = CreateClientProfileRequestDtoSchema.omit({
+        userId: true,
+      });
+      const parsed = bodySchema.safeParse(req.body);
+
+      if (!parsed.success) {
+        return handleValidationError(formatZodErrors(parsed.error), next);
+      }
+
+      const profile = await this._createClientProfileUseCase.execute({
+        ...parsed.data,
+        userId,
+      });
+
+      sendCreatedResponse(res, "Client profile created successfully", profile);
+    } catch (error) {
+      handleAsyncError(error, next);
+    }
+  };
+
+  getClientProfile = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const userId = validateUserId(req);
+      const profile = await this._getClientProfileUseCase.execute(userId);
+      sendSuccessResponse(
+        res,
+        "Client profile retrieved successfully",
+        profile,
+      );
+    } catch (error) {
+      handleAsyncError(error, next);
+    }
+  };
+
+  updateClientProfile = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+      try {
+        const userId = validateUserId(req);
+  
+        const bodySchema = UpdateClientProfileRequestDtoSchema.omit({ userId: true });
+        const parsed = bodySchema.safeParse(req.body);
+  
+        if (!parsed.success) {
+          return handleValidationError(formatZodErrors(parsed.error), next);
+        }
+  
+        const profile = await this._updateClientProfileUseCase.execute({ ...parsed.data, userId });
+  
+        sendSuccessResponse(res, 'Seeker profile updated successfully', profile);
+      } catch (error) {
+        handleAsyncError(error, next);
+      }
+    };
 }

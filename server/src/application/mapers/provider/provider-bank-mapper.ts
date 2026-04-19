@@ -21,7 +21,8 @@ export class ProviderBankMapper {
       ifscCode: data.ifscCode,
       branchName: data.branchName,
       passbookUrl: data.passbookUrl,
-      status : data.status
+      status : data.status,
+      reason: "",
     };
   }
 
@@ -36,6 +37,7 @@ export class ProviderBankMapper {
       branchName: data.branchName,
       passbookUrl: data.passbookUrl,
       status: data.status,
+      reason: data.reason,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt
     };

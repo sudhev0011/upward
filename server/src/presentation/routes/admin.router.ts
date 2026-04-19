@@ -3,7 +3,7 @@ import {
   authenticateToken,
   authorizeRoles,
 } from "../middleware/auth.middleware";
-import { adminUserController } from "../../infrastructure/di/adminDi";
+import { adminProviderController, adminClientController } from "../../infrastructure/di/adminDi";
 
 export class AdminRouter {
   public router: Router;
@@ -17,8 +17,15 @@ export class AdminRouter {
     this.router.use(authenticateToken);
     // this.router.use(authorizeRoles('provider'));
 
-    this.router.get("/users", adminUserController.getAllUsers);
-    this.router.patch("/users/block", adminUserController.blockUser);
-    this.router.get("/users/:id", adminUserController.getUserById);
+    this.router.get("/clients", adminClientController.getAllClients);
+    this.router.patch("/client/block", adminClientController.blockClient);
+    this.router.get("/client/:id", adminClientController.getClientById);
+
+    this.router.get("/providers",adminProviderController.getAllProviders);
+    this.router.get("/provider/:id",adminProviderController.getProviderById);
+    this.router.patch("/provider/approve",adminProviderController.approveProvider);
+    this.router.put("/provider/reject",adminProviderController.rejectProvider);
+    this.router.patch("/provider/block",adminProviderController.blockProvider);
+    this.router.get('/kyc/identity/:userId', adminProviderController.getProviderKyc);
   }
 }

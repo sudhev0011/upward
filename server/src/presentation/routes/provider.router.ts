@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authenticateToken, authorizeRoles } from "../middleware/auth.middleware";
-import { createProviderProfileController, getProviderProfileController, updateProviderProfileController, providerProfileController, submitProviderKycController, saveProviderBankController, uploadKycDocumentController, getProviderKycController, getProviderBankController } from "../../infrastructure/di/provider.Di";
+import { providerProfileController, kycController } from "../../infrastructure/di/provider.Di";
 import { UserBlockedMiddleware } from "../middleware/user-blocked.middleware";
 import { getUserByIdUseCase } from "../../infrastructure/di/authDi";
 export class ProviderRouter{
@@ -20,16 +20,16 @@ export class ProviderRouter{
         this.router.use(userBlockedMiddleware.checkUserBlocked);
 
 
-        this.router.post('/profile', createProviderProfileController.execute);
-        this.router.get('/profile', getProviderProfileController.execute);
-        this.router.put('/profile', updateProviderProfileController.execute);
+        this.router.post('/profile', providerProfileController.createProviderProfile);
+        this.router.get('/profile', providerProfileController.getProviderProfile);
+        this.router.put('/profile', providerProfileController.updateProviderProfile);
         this.router.post('/profile-upload-url', providerProfileController.uploadAvatar);
 
-        this.router.post('/kyc/identity', submitProviderKycController.execute);
-        this.router.get('/kyc/identity', getProviderKycController.execute);
-        this.router.post('/kyc/bank', saveProviderBankController.execute);// bacnk info saving to db after document upload
-        this.router.get('/kyc/bank', getProviderBankController.execute);
-        this.router.post('/media/kyc-document', uploadKycDocumentController.execute);// uploading url generating controller
+        this.router.post('/kyc/identity', kycController.submitProviderKyc);
+        this.router.get('/kyc/identity', kycController.getProviderKyc);
+        this.router.post('/kyc/bank', kycController.saveProviderBank);// bacnk info saving to db after document upload
+        this.router.get('/kyc/bank', kycController.getProviderBank);
+        this.router.post('/media/kyc-document', kycController.uploadProviderKyc);// uploading url generating controller
 
 
     }
