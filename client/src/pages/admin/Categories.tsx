@@ -1,173 +1,504 @@
-import { useState } from "react";
-import { Plus, MoreHorizontal, Home, GraduationCap, Palette, Trees, Truck, Heart, X } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { Plus, Loader2, MoreHorizontal, AlertTriangle } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+
+// UI Components
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-export interface Category {
-  id: string;
-  name: string;
-  icon: string;
-  serviceCount: number;
-  description: string;
-  isActive: boolean;
-  color: string;
-}
+// Validation
+import {
+  categorySchema,
+  CategoryFormData,
+} from "@/utils/validations/admin/add-category.schema";
 
+// Hooks
+import { usePaginatedCategories } from "@/hooks/admin/category/useGetAllPaginatedCategories";
+import { useCreateCategoryMutation } from "@/hooks/admin/category/useCreateCategory";
+import { useUpdateCategoryMutation } from "@/hooks/admin/category/useUpdateCategory";
 
-export const categories: Category[] = [
-  { id: "cat1", name: "Home Services", icon: "Home", serviceCount: 4, description: "Cleaning, repairs and maintenance", isActive: true, color: "hsl(217 91% 53%)" },
-  { id: "cat2", name: "Education", icon: "GraduationCap", serviceCount: 1, description: "Tutoring and learning services", isActive: true, color: "hsl(142 71% 45%)" },
-  { id: "cat3", name: "Creative", icon: "Palette", serviceCount: 1, description: "Photography, design and arts", isActive: true, color: "hsl(280 65% 60%)" },
-  { id: "cat4", name: "Outdoor", icon: "Trees", serviceCount: 1, description: "Landscaping and outdoor work", isActive: true, color: "hsl(38 92% 50%)" },
-  { id: "cat5", name: "Logistics", icon: "Truck", serviceCount: 1, description: "Moving and delivery services", isActive: false, color: "hsl(0 72% 51%)" },
-  { id: "cat6", name: "Health & Wellness", icon: "Heart", serviceCount: 0, description: "Fitness, spa, and health services", isActive: true, color: "hsl(340 82% 52%)" },
-];
-interface SubCategory {
-  id: string;
-  name: string;
-}
-
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Home, GraduationCap, Palette, Trees, Truck, Heart,
-};
+// Types
+import { CategoryResponse } from "@/interfaces/admin/category.interface";
+import { UpdateCategoryRequest } from "@/interfaces/admin/category.interface";
 
 export default function Categories() {
+  const queryClient = useQueryClient();
+
+  // State
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editing, setEditing] = useState<Category | null>(null);
-  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
-  const [newSubName, setNewSubName] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingToggle, setPendingToggle] =
+    useState<UpdateCategoryRequest | null>(null);
 
-  const openEdit = (c: Category) => {
-    setEditing(c);
-    setSubCategories([]);
-    setDialogOpen(true);
-  };
-  const openNew = () => {
-    setEditing(null);
-    setSubCategories([]);
-    setDialogOpen(true);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [mode, setMode] = useState<"onsite" | "offsite" | "both" | undefined>(
+    undefined,
+  );
+  const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
+  const [sortBy, setSortBy] = useState<"name" | "createdAt">("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  const limit = 6;
+
+  // Search Debounce
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 500);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  const params = useMemo(
+    () => ({
+      page,
+      limit,
+      search: debouncedSearch,
+      mode,
+      isActive,
+      sortBy,
+      sortOrder,
+    }),
+    [page, limit, debouncedSearch, mode, isActive, sortBy, sortOrder],
+  );
+
+  const { data: response, isLoading } = usePaginatedCategories(params);
+  const createMutation = useCreateCategoryMutation();
+  const updateMutation = useUpdateCategoryMutation();
+
+  const categories = response?.data?.data || [];
+  const totalPages = response?.data?.totalPages || 1;
+
+  const form = useForm<CategoryFormData>({
+    resolver: zodResolver(categorySchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      mode: "onsite",
+      isActive: true,
+    },
+  });
+
+  const triggerStatusToggle = (id: string, currentStatus: boolean) => {
+    setPendingToggle({ id, isActive: !currentStatus });
+    setConfirmOpen(true);
   };
 
-  const addSubCategory = () => {
-    if (!newSubName.trim()) return;
-    setSubCategories((prev) => [...prev, { id: crypto.randomUUID(), name: newSubName.trim() }]);
-    setNewSubName("");
+  const handleConfirmToggle = () => {
+    if (!pendingToggle) return;
+
+    updateMutation.mutate(pendingToggle, {
+      onSuccess: () => {
+        setConfirmOpen(false);
+      },
+      onError: (err) => toast.error(err.message),
+    });
   };
 
-  const removeSubCategory = (id: string) => {
-    setSubCategories((prev) => prev.filter((s) => s.id !== id));
+  const onSubmit = (values: CategoryFormData) => {
+    createMutation.mutate(values, {
+      onSuccess: (res) => {
+        queryClient.invalidateQueries({ queryKey: ["categoriesAdmin"] });
+        setDialogOpen(false);
+        toast.success(res.message);
+        form.reset();
+      },
+      onError: (error) => toast.error(error.message),
+    });
   };
 
   return (
     <div className="space-y-6">
+      {/* HEADER */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Categories</h1>
-          <p className="text-muted-foreground text-sm mt-1">Organize services into categories</p>
+          <h1 className="text-2xl font-bold">Categories</h1>
+          <p className="text-muted-foreground text-sm">
+            Organize services into categories
+          </p>
         </div>
-        <Button onClick={openNew}><Plus className="h-4 w-4 mr-2" />Add Category</Button>
+        <Button onClick={() => setDialogOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Add Category
+        </Button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {categories.map((c) => {
-          const Icon = iconMap[c.icon] || Home;
-          return (
-            <Card key={c.id} className="shadow-sm hover:shadow-md transition-shadow">
-              <CardContent className="p-5">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="p-2.5 rounded-lg" style={{ backgroundColor: `${c.color}15` }}>
-                    <Icon className="h-5 w-5" style={{ color: c.color }} />
+      {/* FILTERS */}
+      <div className="flex flex-col lg:flex-row gap-3 justify-between">
+        <Input
+          placeholder="Search categories..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
+          className="max-w-sm"
+        />
+
+        <div className="flex flex-wrap gap-2">
+          {/* Mode Filter */}
+          <Select
+            value={mode || "all"}
+            onValueChange={(value) => {
+              setMode(value === "all" ? undefined : (value as any));
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-[130px]">
+              <SelectValue placeholder="All Modes" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Modes</SelectItem>
+              <SelectItem value="onsite">Onsite</SelectItem>
+              <SelectItem value="offsite">Offsite</SelectItem>
+              <SelectItem value="both">Both</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Status Filter */}
+          <Select
+            value={isActive === undefined ? "all" : String(isActive)}
+            onValueChange={(value) => {
+              setIsActive(value === "all" ? undefined : value === "true");
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-[130px]">
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="true">Active</SelectItem>
+              <SelectItem value="false">Inactive</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Sort By Filter */}
+          <Select
+            value={sortBy}
+            onValueChange={(value) => {
+              setSortBy(value as "name" | "createdAt");
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-[140px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="createdAt">Sort by Date</SelectItem>
+              <SelectItem value="name">Sort by Name</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Sort Order Filter */}
+          <Select
+            value={sortOrder}
+            onValueChange={(value) => {
+              setSortOrder(value as "asc" | "desc");
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-[130px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="desc">Descending</SelectItem>
+              <SelectItem value="asc">Ascending</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* CONTENT */}
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin mb-2" />
+          <p className="text-muted-foreground">Loading categories...</p>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {categories.map((c: CategoryResponse) => (
+              <Card key={c.id}>
+                <CardContent className="p-5 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-semibold text-sm capitalize">
+                      {c.name}
+                    </h3>
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => triggerStatusToggle(c.id, c.isActive)}
+                          className="cursor-pointer"
+                        >
+                          {c.isActive ? "Set Inactive" : "Set Active"}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive cursor-pointer"
+                          onClick={() => console.log("Delete logic later")}
+                        >
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-7 w-7"><MoreHorizontal className="h-4 w-4" /></Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => openEdit(c)}>Edit</DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-                <h3 className="font-semibold text-sm">{c.name}</h3>
-                <p className="text-xs text-muted-foreground mt-1 mb-3">{c.description}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">{c.serviceCount} services</span>
-                  <span className={`text-xs font-medium ${c.isActive ? "text-success" : "text-muted-foreground"}`}>
-                    {c.isActive ? "Active" : "Inactive"}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-h-[85vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{editing ? "Edit Category" : "Create Category"}</DialogTitle>
-            <DialogDescription>{editing ? "Update category details" : "Add a new category"}</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="space-y-2">
-              <Label>Name</Label>
-              <Input defaultValue={editing?.name || ""} placeholder="Category name" />
-            </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Textarea defaultValue={editing?.description || ""} placeholder="Describe the category..." />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label>Active</Label>
-              <Switch defaultChecked={editing?.isActive ?? true} />
-            </div>
+                  <p className="text-xs text-muted-foreground line-clamp-2 h-8">
+                    {c.description}
+                  </p>
 
-            <Separator />
+                  <div className="flex justify-between items-center pt-2 border-t">
+                    <span className="text-[10px] bg-muted px-2 py-0.5 rounded text-muted-foreground">
+                      ID: {c.id.slice(-6).toUpperCase()}
+                    </span>
 
-            <div className="space-y-3">
-              <Label className="text-sm font-semibold">Sub-Categories</Label>
-              <p className="text-xs text-muted-foreground">Add sub-categories to organize services further</p>
-
-              {subCategories.length > 0 && (
-                <div className="space-y-2">
-                  {subCategories.map((sub) => (
-                    <div key={sub.id} className="flex items-center justify-between rounded-md border border-border bg-muted/30 px-3 py-2">
-                      <span className="text-sm">{sub.name}</span>
-                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeSubCategory(sub.id)}>
-                        <X className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <div className="flex gap-2 rounded-md border border-dashed border-border p-3">
-                <Input
-                  placeholder="Sub-category name"
-                  value={newSubName}
-                  onChange={(e) => setNewSubName(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSubCategory())}
-                  className="flex-1"
-                />
-                <Button variant="outline" size="sm" onClick={addSubCategory} className="shrink-0">
-                  <Plus className="h-4 w-4 mr-1" />Add
-                </Button>
-              </div>
-            </div>
+                    <span
+                      className={`text-xs font-bold ${c.isActive ? "text-emerald-600" : "text-orange-500"}`}
+                    >
+                      {c.isActive ? "ACTIVE" : "INACTIVE"}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-            <Button onClick={() => setDialogOpen(false)}>{editing ? "Save Changes" : "Create Category"}</Button>
-          </DialogFooter>
+
+          {/* PAGINATION */}
+          {categories.length > 0 && totalPages > 1 && (
+            <Pagination className="mt-6">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setPage((p) => p - 1)}
+                    className={
+                      page === 1
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+
+                {Array.from({ length: totalPages }, (_, i) => {
+                  const pageNumber = i + 1;
+
+                  // Show first page, last page, current page, and pages around current page
+                  if (
+                    pageNumber === 1 ||
+                    pageNumber === totalPages ||
+                    (pageNumber >= page - 1 && pageNumber <= page + 1)
+                  ) {
+                    return (
+                      <PaginationItem key={i}>
+                        <PaginationLink
+                          onClick={() => setPage(pageNumber)}
+                          isActive={page === pageNumber}
+                        >
+                          {pageNumber}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  }
+
+                  // Show ellipsis for gaps
+                  if (
+                    (pageNumber === page - 2 && pageNumber > 1) ||
+                    (pageNumber === page + 2 && pageNumber < totalPages)
+                  ) {
+                    return <PaginationEllipsis key={i} />;
+                  }
+
+                  return null;
+                })}
+
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => setPage((p) => p + 1)}
+                    className={
+                      page === totalPages
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
+        </>
+      )}
+
+      {/* CREATE DIALOG */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New Category</DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="mode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Service Mode</FormLabel>
+                    <select
+                      className="w-full border rounded px-3 py-2 text-sm bg-background"
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.target.value)}
+                    >
+                      <option value="onsite">Onsite</option>
+                      <option value="offsite">Offsite</option>
+                      <option value="both">Both</option>
+                    </select>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="isActive"
+                render={({ field }) => (
+                  <FormItem className="flex items-center justify-between border p-3 rounded">
+                    <FormLabel className="m-0">Active by default</FormLabel>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button type="submit" disabled={createMutation.isPending}>
+                  {createMutation.isPending && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Save Category
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
+
+      {/* CONFIRMATION DIALOG */}
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <div className="flex items-center gap-2 text-orange-600 mb-2">
+              <AlertTriangle className="h-5 w-5" />
+              <AlertDialogTitle>Change Category Status?</AlertDialogTitle>
+            </div>
+            <AlertDialogDescription>
+              Are you sure you want to set this category to{" "}
+              <span className="font-bold">
+                {pendingToggle?.isActive ? "Active" : "Inactive"}
+              </span>
+              ?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmToggle}
+              className={
+                pendingToggle?.isActive
+                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  : "bg-orange-600 hover:bg-orange-700"
+              }
+            >
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

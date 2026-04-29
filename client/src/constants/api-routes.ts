@@ -27,7 +27,11 @@ export const ProviderRoutes = {
   KYC_BANK: '/api/provider/kyc/bank',
   KYC_DOCUMENT_UPLOAD: '/api/provider/media/kyc-document',
   GET_KYC_DOCUMENT: '/api/provider/kyc/identity',
-  GET_BANK_DOCUMENT: '/api/provider/kyc/bank'
+  GET_BANK_DOCUMENT: '/api/provider/kyc/bank',
+  CREATE_PROVIDE_SERVICE: '/api/provider/providerService',
+  GET_ALL_PROVIDER_SERVICE_BY_CATEGORY: '/api/provider/providerServices',
+  SET_PROVIDER_SERVICE_PRICE: '/api/provider/providerService',
+  DELETE_PROVIDER_SERVICE: '/api/provider/providerService/:id'
 } as const;
 
 export const AdminRoutes = {
@@ -39,6 +43,22 @@ export const AdminRoutes = {
   GET_CLIENT_PROFILES: '/api/admin/clients',
   GET_CLIENT_PROFILE_BY_ID: '/api/admin/client/:id',
   BLOCK_CLIENT: '/api/admin/client/block',
-  GET_KYC_DOCUMENT: '/api/admin/kyc/identity/:userId'
+  GET_KYC_DOCUMENT: '/api/admin/kyc/identity/:userId',
+  CREATE_CATEGORY: '/api/admin/category',
+  CREATE_SERVICE: '/api/admin/service',
+  DELETE_SERVICE: '/api/admin/service/:serviceId',
+  GET_ALL_CATEGORIES: '/api/admin/categories/all',
+  UPDATE_CATEGORY: '/api/admin/category/update',
+  GET_ALL_PAGINATED_CATEGORIES: '/api/admin/categories',
+  GET_ALL_SERVICES: '/api/admin/services/all',
+  GET_ALL_PAGINATED_SERVICES: '/api/admin/services',
+  TOGGLE_SERVICE: '/api/admin/service/toggle',
 
+
+} as const;
+
+export const PublicRoutes = {
+  GET_SERVICES: 'api/public/services',
+  GET_CATEGORIES: '/api/public/categories',
+  GET_SERVICES_BY_CATEGORY: '/api/public/services/:categoryId'
 } as const;

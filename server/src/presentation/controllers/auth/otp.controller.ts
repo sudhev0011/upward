@@ -6,6 +6,7 @@ import { IVerifyOtpUseCase } from '../../../domain/interfaces/usecases/auth/veri
 import { ICookieService } from '../../services/ICookieService';
 import { handleValidationError, handleAsyncError, sendSuccessResponse, sendErrorResponse } from '../../../shared/utils/presentation/controller.utils';
 import { formatZodErrors } from '../../../shared/utils/presentation/zod-error-formatter.utils';
+import { successResponse } from '../../../shared/constants';
 
 export class OtpController {
   constructor(
@@ -22,7 +23,7 @@ export class OtpController {
 
     try {
       await this._requestOtpUseCase.execute(parsed.data);
-      sendSuccessResponse(res, 'OTP sent successfully', null);
+      sendSuccessResponse(res, successResponse.OTP_CONTROLLER_CRAETE, null);
     } catch (error: unknown) {
       if (error instanceof Error && error.message.includes('Please wait before requesting another OTP')) {
         sendErrorResponse(res, 'Please wait 30 seconds before requesting another OTP', null, 429);
@@ -48,7 +49,7 @@ export class OtpController {
       if (result.tokens) {
         this._cookieService.setRefreshToken(res, result.tokens.refreshToken);
         this._cookieService.setAccessToken(res, result.tokens.accessToken);
-        sendSuccessResponse(res, 'OTP verified successfully', result.user);
+        sendSuccessResponse(res, successResponse.VERYFY_OTP, result.user);
       }
     } catch (error) {
       handleAsyncError(error, next);

@@ -1,3 +1,4 @@
+import { PaginatedResult } from "../../../common.types";
 import { CreateInput } from "../../../types/common.types";
 
 export interface IBaseRepository<T> {
@@ -20,11 +21,5 @@ export interface IBaseRepository<T> {
       sortBy?: string;
       sortOrder?: 'asc' | 'desc';
     },
-  ): Promise<{
-    data: T[];
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  }>;
+  ): Promise<PaginatedResult<T>>;
 }

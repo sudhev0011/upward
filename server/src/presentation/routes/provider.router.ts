@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authenticateToken, authorizeRoles } from "../middleware/auth.middleware";
-import { providerProfileController, kycController } from "../../infrastructure/di/provider.Di";
+import { providerProfileController, kycController, providerServiceController } from "../../infrastructure/di/provider.Di";
 import { UserBlockedMiddleware } from "../middleware/user-blocked.middleware";
 import { getUserByIdUseCase } from "../../infrastructure/di/authDi";
 export class ProviderRouter{
@@ -30,6 +30,11 @@ export class ProviderRouter{
         this.router.post('/kyc/bank', kycController.saveProviderBank);// bacnk info saving to db after document upload
         this.router.get('/kyc/bank', kycController.getProviderBank);
         this.router.post('/media/kyc-document', kycController.uploadProviderKyc);// uploading url generating controller
+
+        this.router.post('/providerService', providerServiceController.createProviderService);
+        this.router.get('/providerServices', providerServiceController.getProviderServicesByCategory);
+        this.router.patch('/providerService', providerServiceController.setProviderServicePrice);
+        this.router.delete('/providerService/:id', providerServiceController.deleteProviderService);
 
 
     }

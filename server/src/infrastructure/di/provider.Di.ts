@@ -16,12 +16,19 @@ import { GetProviderKycUseCase } from "../../application/use-cases/provider/kyc/
 import { EncryptionService } from "../security/encryption-service";
 import { GetProviderBankUseCase } from "../../application/use-cases/provider/kyc/get-provider-bank.use.case";
 import { KycController } from "../../presentation/controllers/provider/kyc/kyc.controller";
+import { ProviderServiceController } from "../../presentation/controllers/provider/providerService/provider-service.controller";
+import { CreateProviderServiceUseCase } from "../../application/use-cases/provider/providerService/create-provider-service.use-case";
+import { GetProviderServicesByCategoryUseCase } from "../../application/use-cases/provider/providerService/get-provider-services-by-category.use-case";
+import { ProviderServiceRepository } from "../persistence/mongodb/repositories/provider-service.repository";
+import { SetProviderServicePriceUseCase } from "../../application/use-cases/provider/providerService/set-provider-service-price.use-case";
+import { DeleteProviderServiceUseCase } from "../../application/use-cases/provider/providerService/delete-provider-service.use-case";
 
 //repo init
 const userRepository = new UserRepository(); 
 const providerProfileRepository = new ProviderProfileRepository();
 export const providerKycRepository = new ProviderKycRepository();
 const providerBankRepository = new ProviderBankRepository();
+const providerServiceRepository = new ProviderServiceRepository()
 
 // service init
 const logger = new WinstonLogger();
@@ -39,8 +46,13 @@ const submitProviderKycUseCase = new SubmitProviderKycUseCase(providerKycReposit
 const saveProviderBankUseCase = new SaveProviderBankUseCase(providerBankRepository, s3Service,encryptionService);
 const uploadKycDocumentUseCase = new UploadKycDocumentUseCase(s3Service);
 export const getProviderKycUseCase = new GetProviderKycUseCase(providerKycRepository,s3Service,encryptionService);
-const getProviderBankUseCase = new GetProviderBankUseCase(providerBankRepository,s3Service,encryptionService)
+const getProviderBankUseCase = new GetProviderBankUseCase(providerBankRepository,s3Service,encryptionService);
+const createProviderServiceUseCase = new CreateProviderServiceUseCase(providerServiceRepository);
+const getProviderServicesByCategoryUseCase = new GetProviderServicesByCategoryUseCase(userRepository,providerServiceRepository)
+const setProviderServicePriceUseCase = new SetProviderServicePriceUseCase(providerServiceRepository);
+const deleteProviderServiceUseCase = new DeleteProviderServiceUseCase(providerServiceRepository)
 
 // contrller init
 export const providerProfileController = new ProviderProfileController(uploadAvatarUseCase,createProviderProfileUseCase,getProviderProfileUseCase,updateProviderProfileUseCase);
 export const kycController = new KycController(submitProviderKycUseCase,saveProviderBankUseCase,getProviderKycUseCase,getProviderBankUseCase,uploadKycDocumentUseCase)
+export const providerServiceController = new ProviderServiceController(createProviderServiceUseCase,getProviderServicesByCategoryUseCase,setProviderServicePriceUseCase, deleteProviderServiceUseCase)

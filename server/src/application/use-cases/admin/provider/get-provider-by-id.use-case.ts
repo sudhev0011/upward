@@ -1,9 +1,7 @@
 import { IProviderProfileRepository } from '../../../../domain/interfaces/repositories/provider/IProviderProfileRepository';
 import { IUserRepository } from '../../../../domain/interfaces/repositories/user/IUserRepository';
 import { IAdminGetProviderByIdUseCase } from '../../../../domain/interfaces/usecases/admin/provider/IAdminGetProviderByIdUseCase';
-import { ProviderDetailsResultDto } from '../../../dtos/admin/provider/response/provider-details-result.dto';
 import { NotFoundError } from '../../../../domain/errors/errors';
-import { UserMapper } from '../../../mapers/auth/user.mapper';
 import { ProviderProfileMapper } from '../../../mapers/provider/provider-profile.mappers';
 import { ProviderProfileResponseDto } from '../../../dtos/provider/profile/info/response/provider-profile-response.dto';
 export class AdminGetProviderByIdUseCase implements IAdminGetProviderByIdUseCase {

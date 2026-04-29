@@ -15,6 +15,8 @@ import { IBlockProviderUseCase } from "../../../domain/interfaces/usecases/admin
 import { RejectProviderDtoSchema } from "../../../application/dtos/admin/provider/request/reject-provider-request.dto";
 import { IRejectProviderUseCase } from "../../../domain/interfaces/usecases/admin/provider/IRejectProviderUseCase";
 import { IGetProviderKycUseCase } from "../../../domain/interfaces/usecases/provider/kyc/IGetProviderKycUseCase";
+import { success } from "zod";
+import { successResponse } from "../../../shared/constants";
 
 export class AdminProviderController {
   constructor(
@@ -38,7 +40,7 @@ export class AdminProviderController {
 
     try {
       const result = await this._getAllProvidersUseCase.execute(parsed.data);
-      sendSuccessResponse(res, "Providers retrieved successfully", result);
+      sendSuccessResponse(res, successResponse.GET_ALL_PROVIDERS, result);
     } catch (error) {
       handleAsyncError(error, next);
     }
@@ -52,7 +54,7 @@ export class AdminProviderController {
     try {
       const { id } = req.params;
       const data = await this._getProviderByIdUseCase.execute(id as string);
-      sendSuccessResponse(res, "Provider retrieved successfully", data);
+      sendSuccessResponse(res, successResponse.GET_PROVIDER, data);
     } catch (error) {
       handleAsyncError(error, next);
     }
@@ -127,7 +129,7 @@ export class AdminProviderController {
 
         const kycData = await this._getProviderKycUseCase.execute(userId as string);
   
-        sendSuccessResponse(res, "kycData successfully retrived", kycData);
+        sendSuccessResponse(res, successResponse.GET_KYC_DATA, kycData);
       } catch (error) {
         handleAsyncError(error, next);
       }

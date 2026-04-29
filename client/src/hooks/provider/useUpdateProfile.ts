@@ -16,8 +16,8 @@ export const useUpdateProfileMutation = () => {
                 toast.error(response.message || "Failed to update profile");
             }
         },
-        onError: (error: any) => {
-            const message = error.response?.data?.message || "Failed to update profile. Please try again.";
+        onError: (error) => {
+            const message = error.message || "Failed to update profile. Please try again.";
             toast.error(message);
         }
     });

@@ -15,6 +15,7 @@ import { CreateClientProfileRequestDtoSchema } from "../../../../application/dto
 import { IGetClientProfileUseCase } from "../../../../domain/interfaces/usecases/client/profile/IGetClientProfileUseCase";
 import { UpdateClientProfileRequestDtoSchema } from "../../../../application/dtos/client/profile/info/request/update-client-profile-request.dto";
 import { IUpdateClientProfileUseCase } from "../../../../domain/interfaces/usecases/client/profile/IUpdateClientProfileUseCase";
+import { successResponse } from "../../../../shared/constants";
 
 export class ClientProfileController {
   constructor(
@@ -23,7 +24,7 @@ export class ClientProfileController {
     private readonly _getClientProfileUseCase: IGetClientProfileUseCase,
     private readonly _updateClientProfileUseCase: IUpdateClientProfileUseCase
   ) {}
-
+  // This method creates a presigned url to upload the image from frontend itself
   uploadAvatar = async (
     req: AuthenticatedRequest,
     res: Response,
@@ -50,12 +51,12 @@ export class ClientProfileController {
         fileType,
       });
 
-      sendSuccessResponse(res, "upload url sent successfully", url);
+      sendSuccessResponse(res, successResponse.UPLOAD_URL_CREATED_SUCCESS, url);
     } catch (error) {
       handleAsyncError(error, next);
     }
   };
-
+  // This method is used to create the profile of the client
   createClientProfile = async (
     req: AuthenticatedRequest,
     res: Response,
@@ -78,12 +79,12 @@ export class ClientProfileController {
         userId,
       });
 
-      sendCreatedResponse(res, "Client profile created successfully", profile);
+      sendCreatedResponse(res, successResponse.CLIENT_PROFILE_CREATED_SUCCESS, profile);
     } catch (error) {
       handleAsyncError(error, next);
     }
   };
-
+  // This method fetches the profile of the client
   getClientProfile = async (
     req: AuthenticatedRequest,
     res: Response,
@@ -94,14 +95,14 @@ export class ClientProfileController {
       const profile = await this._getClientProfileUseCase.execute(userId);
       sendSuccessResponse(
         res,
-        "Client profile retrieved successfully",
+        successResponse.GET_CLIENT_PROFILE_SUCCESS,
         profile,
       );
     } catch (error) {
       handleAsyncError(error, next);
     }
   };
-
+  // This method is used to update the contents of the client profile
   updateClientProfile = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
       try {
         const userId = validateUserId(req);
@@ -115,7 +116,7 @@ export class ClientProfileController {
   
         const profile = await this._updateClientProfileUseCase.execute({ ...parsed.data, userId });
   
-        sendSuccessResponse(res, 'Seeker profile updated successfully', profile);
+        sendSuccessResponse(res, successResponse.UPDATE_CLIENT_PROFILE_SUCCESS, profile);
       } catch (error) {
         handleAsyncError(error, next);
       }

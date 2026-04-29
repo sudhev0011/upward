@@ -5,6 +5,7 @@ import { ICookieService } from '../../services/ICookieService';
 import { AuthenticatedRequest } from '../../../shared/types/authenticated-request';
 import { handleValidationError, handleAsyncError,validateUserId,sendSuccessResponse,sendErrorResponse } from '../../../shared/utils/presentation/controller.utils';
 import { env } from '../../../infrastructure/config/env';
+import { successResponse } from '../../../shared/constants';
 
 export class TokenController {
   constructor(
@@ -27,9 +28,9 @@ export class TokenController {
       if (result.tokens) {
         this._cookieService.setAccessToken(res, result.tokens.accessToken);
         this._cookieService.setRefreshToken(res, result.tokens.refreshToken);
-        sendSuccessResponse(res, 'Token refreshed', result.user, result.tokens.accessToken);
+        sendSuccessResponse(res, successResponse.REFRESH_TOKEN_SUCCESS, result.user, result.tokens.accessToken);
       } else {
-        sendSuccessResponse(res, 'Token refreshed', result.user, undefined);
+        sendSuccessResponse(res, successResponse.REFRESH_TOKEN_SUCCESS, result.user, undefined);
       }
     } catch (error) {
       handleAsyncError(error, next);
@@ -49,7 +50,7 @@ export class TokenController {
         return sendErrorResponse(res, 'User account is blocked', null, 403);
       }
 
-      sendSuccessResponse(res, 'Authenticated', user);
+      sendSuccessResponse(res, successResponse.CHECK_aUTH_SUCCESS, user);
     } catch (error) {
       handleAsyncError(error, next);
     }

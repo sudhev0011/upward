@@ -68,6 +68,12 @@ export class InternalServerError extends AppError {
   }
 }
 
+export class EntityNotPersistedError extends AppError {
+  constructor(entityName: string) {
+    super(`${entityName} must be persisted before this operation`,HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+}
+
 export class ServiceUnavailableError extends AppError {
   constructor(message = 'Service unavailable') {
     super(message, HttpStatus.SERVICE_UNAVAILABLE);

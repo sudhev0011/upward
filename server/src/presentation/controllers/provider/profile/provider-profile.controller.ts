@@ -15,6 +15,7 @@ import { CreateProviderProfileRequestDtoSchema } from "../../../../application/d
 import { IGetProviderProfileUseCase } from "../../../../domain/interfaces/usecases/provider/profile/IGetProviderProfileUseCase";
 import { UpdateProviderProfileRequestDtoSchema } from "../../../../application/dtos/provider/profile/info/request/update-provider-profile-request.dto";
 import { IUpdateProviderProfileUseCase } from "../../../../domain/interfaces/usecases/provider/profile/IUpdateProviderProfileUseCase";
+import { successResponse } from "../../../../shared/constants";
 
 export class ProviderProfileController {
   constructor(
@@ -49,7 +50,7 @@ export class ProviderProfileController {
 
       res.status(200).json({
         success: true,
-        message: "Upload URL generated successfully",
+        message: successResponse.UPLOAD_URL_CREATED_SUCCESS,
         data: result,
       });
     } catch (error) {
@@ -81,7 +82,7 @@ export class ProviderProfileController {
 
       sendCreatedResponse(
         res,
-        "provider profile created successfully",
+        successResponse.CREATE_PROVIDER_PROFILE_SUCCESS,
         profile,
       );
     } catch (error) {
@@ -99,7 +100,7 @@ export class ProviderProfileController {
       const profile = await this._getProviderProfileUseCase.execute(userId);
       sendSuccessResponse(
         res,
-        "provider profile retrieved successfully",
+        successResponse.GET_PROVIDER_PROFILE,
         profile,
       );
     } catch (error) {
@@ -129,7 +130,7 @@ export class ProviderProfileController {
         userId,
       });
 
-      sendSuccessResponse(res, "Seeker profile updated successfully", profile);
+      sendSuccessResponse(res, successResponse.PROVIDER_PROFILE_UPDATE, profile);
     } catch (error) {
       handleAsyncError(error, next);
     }

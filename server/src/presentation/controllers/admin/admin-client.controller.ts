@@ -10,6 +10,7 @@ import {
   handleValidationError,
   sendSuccessResponse,
 } from "../../../shared/utils/presentation/controller.utils";
+import { successResponse } from "../../../shared/constants";
 
 export class AdminClientController {
   constructor(
@@ -30,7 +31,7 @@ export class AdminClientController {
 
     try {
       const result = await this._getAllClientsUseCase.execute(parsed.data);
-      sendSuccessResponse(res, "Users retrieved successfully", result);
+      sendSuccessResponse(res, successResponse.GET_ALL_CLIENTS, result);
     } catch (error) {
       handleAsyncError(error, next);
     }
@@ -44,7 +45,7 @@ export class AdminClientController {
     try {
       const { id } = req.params;
       const user = await this._getClientByIdUseCase.execute(id as string);
-      sendSuccessResponse(res, "User retrieved successfully", user);
+      sendSuccessResponse(res, successResponse.GET_CLIENT, user);
     } catch (error) {
       handleAsyncError(error, next);
     }

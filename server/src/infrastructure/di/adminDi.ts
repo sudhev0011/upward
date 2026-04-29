@@ -17,12 +17,26 @@ import { AdminProviderController } from "../../presentation/controllers/admin/ad
 import { BlockProviderUseCase } from "../../application/use-cases/admin/provider/block-provider.use-case";
 import { RejectProviderUseCase } from "../../application/use-cases/admin/provider/reject-provider.use-case";
 import { getProviderKycUseCase, providerKycRepository } from "./provider.Di";
-
+import { AdminCategoryController } from "../../presentation/controllers/admin/admin-category.controller";
+import { CreateCategoryUseCase } from "../../application/use-cases/admin/category/create-category.use-case";
+import { CategoryRepository } from "../persistence/mongodb/repositories/category.repository";
+import { AdminServiceController } from "../../presentation/controllers/admin/admin-service.controller";
+import { CreateServiceUseCase } from "../../application/use-cases/service/create-service.use-case";
+import { ServiceRepository } from "../persistence/mongodb/repositories/service.repository";
+import { DeleteServiceUseCase } from "../../application/use-cases/service/delete-service.use-case";
+import { GetAllCategoriesUseCase } from "../../application/use-cases/admin/category/get-all-categories.use-case";
+import { GetAllServicesUseCase } from "../../application/use-cases/service/get-all-servies.use-case";
+import { GetAllCategoriesWithPaginationUseCase } from "../../application/use-cases/admin/category/get-all-categories-with-pagination.use-case";
+import { UpdateCategoryUseCase } from "../../application/use-cases/admin/category/update-category-use.case";
+import { GetAllServicesWithPaginationUseCase } from "../../application/use-cases/service/get-all-services-with-pagination.use-case";
+import { ToggleServiceUseCase } from "../../application/use-cases/service/toggle-service.use-case";
 
 // repo init
 const userRepository = new UserRepository();
 const clientProfileRepository = new ClientProfileRepository()
 const providerProfileRepository = new ProviderProfileRepository()
+export const categoryRepository = new CategoryRepository()
+export const serviceRespository = new ServiceRepository();
 
 // service
 const logger = new WinstonLogger();
@@ -38,7 +52,19 @@ const adminGetProviderByIdUseCase = new ProviderGetByIdUseCase(userRepository, p
 const approveProviderUseCase = new ApproveProviderUseCase(providerProfileRepository,providerKycRepository);
 const rejectProviderUseCase = new RejectProviderUseCase(providerKycRepository,providerProfileRepository)
 const blockProviderUseCase = new BlockProviderUseCase(userRepository)
+const createCategoryUseCase = new CreateCategoryUseCase(categoryRepository)
+const createServiceUseCase = new CreateServiceUseCase(serviceRespository)
+const deleteServiceUseCase = new DeleteServiceUseCase(serviceRespository,userRepository)
+const getAllCategoriesUseCase = new GetAllCategoriesUseCase(categoryRepository)
+const getAllServicesUseCase = new GetAllServicesUseCase(serviceRespository)
+const getAllCategoriesWithPaginationUseCase = new GetAllCategoriesWithPaginationUseCase(categoryRepository)
+const updateCategoryUseCase = new UpdateCategoryUseCase(categoryRepository)
+const getAllServicesWithPagination = new GetAllServicesWithPaginationUseCase(serviceRespository);
+const toggleServiceUseCase = new ToggleServiceUseCase(serviceRespository);
+
 
 // cntrl init
 export const adminClientController = new AdminClientController(getAllUsersUseCase,adminGetUserByIdUseCase,blockUserUseCase,)
 export const adminProviderController = new AdminProviderController(getAllProvidersUseCase, adminGetProviderByIdUseCase, approveProviderUseCase,rejectProviderUseCase, blockProviderUseCase, getProviderKycUseCase);
+export const adminCategoryController = new AdminCategoryController(createCategoryUseCase,getAllCategoriesUseCase, getAllCategoriesWithPaginationUseCase, updateCategoryUseCase)
+export const adminServiceController = new AdminServiceController(createServiceUseCase,deleteServiceUseCase,getAllServicesUseCase, getAllServicesWithPagination, toggleServiceUseCase)

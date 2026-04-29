@@ -4,6 +4,7 @@ import { IResetPasswordUseCase } from '../../../domain/interfaces/usecases/auth/
 import { IForgotPasswordUseCase } from '../../../domain/interfaces/usecases/auth/password/IForgotPasswordUseCase';
 import { handleValidationError, sendSuccessResponse,handleAsyncError } from '../../../shared/utils/presentation/controller.utils';
 import { formatZodErrors } from '../../../shared/utils/presentation/zod-error-formatter.utils';
+import { successResponse } from '../../../shared/constants';
 
 export class PasswordController {
   constructor(
@@ -22,7 +23,7 @@ export class PasswordController {
 
     try {
       await this._forgotPasswordUseCase.execute(parsed.data.email);
-      sendSuccessResponse(res, 'Password reset link has been sent to your email.', null);
+      sendSuccessResponse(res, successResponse.FORGOT_PASSWORD, null);
     } catch (error) {
       handleAsyncError(error, next);
     }
@@ -40,7 +41,7 @@ export class PasswordController {
 
     try {
       await this._resetPasswordUseCase.execute(parsed.data.token, parsed.data.newPassword);
-      sendSuccessResponse(res, 'Password has been reset successfully', null);
+      sendSuccessResponse(res, successResponse.RESET_PASSWORD, null);
     } catch (error) {
       handleAsyncError(error, next);
     }

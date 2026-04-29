@@ -14,6 +14,7 @@ import {
 } from "../../../shared/utils/presentation/controller.utils";
 import { formatZodErrors } from "../../../shared/utils/presentation/zod-error-formatter.utils";
 import { AuthenticatedRequest } from "../../../shared/types/authenticated-request";
+import { successResponse } from "../../../shared/constants";
 
 export class LoginController {
   constructor(
@@ -44,7 +45,7 @@ export class LoginController {
       } else {
         sendSuccessResponse(
           res,
-          "Login successful, verification required",
+          successResponse.SUCCESSFULL_LOGIN,
           result.user,
         );
       }
@@ -95,9 +96,9 @@ export class LoginController {
       if (result.tokens) {
         this._cookieService.setRefreshToken(res, result.tokens.refreshToken);
         this._cookieService.setAccessToken(res, result.tokens.accessToken);
-        sendSuccessResponse(res, 'Login successful', result.user, result.tokens.accessToken);
+        sendSuccessResponse(res, successResponse.GOOGLE_LOGIN_SUCCESS, result.user, result.tokens.accessToken);
       } else {
-        sendSuccessResponse(res, 'Login successful', result.user);
+        sendSuccessResponse(res, successResponse.GOOGLE_LOGIN_SUCCESS, result.user);
       }
     } catch (error) {
       handleAsyncError(error, next);
@@ -111,7 +112,7 @@ export class LoginController {
       await this._logoutUseCase.execute(userId);
       this._cookieService.clearAccessToken(res);
       this._cookieService.clearRefreshToken(res);
-      sendSuccessResponse(res, 'Logged out', null);
+      sendSuccessResponse(res, successResponse.LOG_OUT, null);
     } catch (error) {
       handleAsyncError(error, next);
     }

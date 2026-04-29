@@ -3,6 +3,7 @@ import { RegisterDto } from '../../../application/dtos/auth/registration/registe
 import { IRegisterUserUseCase } from '../../../domain/interfaces/usecases/auth/registration/IRegisterUserUseCase';
 import { handleAsyncError, handleValidationError, sendCreatedResponse } from '../../../shared/utils/presentation/controller.utils';
 import { formatZodErrors } from '../../../shared/utils/presentation/zod-error-formatter.utils';
+import { successResponse } from '../../../shared/constants';
 
 export class RegistrationController {
   constructor(private readonly _registerUserUseCase: IRegisterUserUseCase) { }
@@ -14,7 +15,7 @@ export class RegistrationController {
     }
     try {
       const { user } = await this._registerUserUseCase.execute(parsed.data);
-      sendCreatedResponse(res, 'User registered successfully. Please verify your email.', user);
+      sendCreatedResponse(res, successResponse.REGISTER_SUCCESS, user);
     } catch (error) {
       handleAsyncError(error, next);
     }

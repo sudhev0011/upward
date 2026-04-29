@@ -14,6 +14,7 @@ import { ISaveProviderBankUseCase } from "../../../../domain/interfaces/usecases
 import { IGetProviderKycUseCase } from "../../../../domain/interfaces/usecases/provider/kyc/IGetProviderKycUseCase";
 import { IGetProviderBankUseCase } from "../../../../domain/interfaces/usecases/provider/kyc/IGetProviderBankUseCase";
 import { IUploadKycDocumentUseCase } from "../../../../domain/interfaces/usecases/provider/media/IUploadKycDocumentUseCase";
+import { successResponse } from "../../../../shared/constants";
 
 export class KycController {
   constructor(
@@ -45,7 +46,7 @@ export class KycController {
         providerId,
       });
 
-      sendSuccessResponse(res, "KYC details submitted successfully.", null);
+      sendSuccessResponse(res, successResponse.KYC_DETAILS_SUBMIT_SUCCESS, null);
     } catch (error) {
       handleAsyncError(error, next);
     }
@@ -73,7 +74,7 @@ export class KycController {
         providerId,
       });
 
-      sendSuccessResponse(res, "Bank details uploaded successfully", response);
+      sendSuccessResponse(res, successResponse.BANK_DETAILS_UPLOAD_SUCCESS, response);
     } catch (error) {
       handleAsyncError(error, next);
     }
@@ -88,7 +89,7 @@ export class KycController {
       const providerId = validateUserId(req);
       const kycData = await this._getProviderKycUseCase.execute(providerId);
 
-      sendSuccessResponse(res, "kycData successfully retrived", kycData);
+      sendSuccessResponse(res, successResponse.GET_KYC_SUCCESS, kycData);
     } catch (error) {
       handleAsyncError(error, next);
     }
@@ -103,7 +104,7 @@ export class KycController {
       const providerId = validateUserId(req);
       const kycData = await this._getProviderBankUseCase.execute(providerId);
 
-      sendSuccessResponse(res, "Bank data successfully retrived", kycData);
+      sendSuccessResponse(res, successResponse.GET_BANK_SUCCESS, kycData);
     } catch (error) {
       handleAsyncError(error, next);
     }
@@ -128,7 +129,7 @@ export class KycController {
         fileType,
       });
 
-      sendSuccessResponse(res, "Upload URL generated successfully", response);
+      sendSuccessResponse(res, successResponse.UPLOAD_KYC_URL_SUCCESS, response);
     } catch (error) {
       handleAsyncError(error, next);
     }

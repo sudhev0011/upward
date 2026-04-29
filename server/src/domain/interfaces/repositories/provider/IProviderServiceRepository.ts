@@ -1,0 +1,31 @@
+import { ProviderService } from "../../../entities/provider-service.entity";
+import { ProviderServicesGroupedData } from "../../../queries/provider/ProviderServicesQueryModel";
+import { IBaseRepository } from "../base/IBaseRepository";
+import { PaginatedResult } from "../../../common.types";
+
+export interface IProviderServiceRepository extends IBaseRepository<ProviderService>{
+
+  findByProvider(providerId: string): Promise<ProviderService[]>;
+
+  findByProviderAndService(
+    providerId: string,
+    serviceId: string
+  ): Promise<ProviderService | null>;
+
+  // findGroupedByCategory(
+  //   providerId: string
+  // ): Promise<ProviderServicesGroupedData[]>;
+  
+  findGroupedByCategory(
+    providerId: string,
+    params: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    isActive?: boolean;
+    mode?: "onsite" | "offsite" | "both";
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+  }
+  ): Promise<PaginatedResult<ProviderServicesGroupedData>>;
+}

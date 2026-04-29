@@ -13,6 +13,7 @@ import { AdminRouter } from "../routes/admin.router";
 import { errorHandler } from "../middleware/error-handler";
 import { requestLogger } from "../middleware/logger.middleware";
 import { winstonLogger } from "../../infrastructure/config/logger";
+import { PublicRouter } from "../routes/public-router";
 
 export class AppServer {
   private _app: express.Application;
@@ -51,6 +52,7 @@ export class AppServer {
     this._app.use("/api/client", new ClientRouter().router);
     this._app.use("/api/provider", new ProviderRouter().router);
     this._app.use("/api/admin", new AdminRouter().router)
+    this._app.use("/api/public", new PublicRouter().router)
 
     this._app.use(errorHandler);
   }

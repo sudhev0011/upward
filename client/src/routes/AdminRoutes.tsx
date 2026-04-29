@@ -4,6 +4,8 @@ import Dashboard from "@/pages/admin/Dashboard";
 import Providers from "@/pages/admin/Providers";
 import Clients from "@/pages/admin/Clients";
 import Settings from "@/pages/admin/Settings";
+import Categories from "@/pages/admin/Categories";
+import Services from "@/pages/admin/Services";
 
 // These pages don't exist yet — create them as stubs when ready
 // import Services from "@/pages/admin/Services";
@@ -21,8 +23,8 @@ const AdminRoutes = () => {
         <Route path="settings" element={<Settings />} />
 
         {/* Uncomment as you build each page */}
-        {/* <Route path="services" element={<Services />} /> */}
-        {/* <Route path="categories" element={<Categories />} /> */}
+        <Route path="services" element={<Services />} />
+        <Route path="categories" element={<Categories />} />
         {/* <Route path="subscriptions" element={<Subscriptions />} /> */}
         {/* <Route path="payments" element={<Payments />} /> */}
       </Route>

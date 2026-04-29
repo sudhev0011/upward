@@ -1,13 +1,13 @@
-import { Model, Document as MongooseDocument, QueryFilter } from 'mongoose';
-import { Types } from 'mongoose';
-import { CreateInput } from '../../../../domain/types/common.types';
+import { Model, Document as MongooseDocument, QueryFilter } from "mongoose";
+import { Types } from "mongoose";
+import { CreateInput } from "../../../../domain/types/common.types";
 
 export abstract class RepositoryBase<T, TDocument extends MongooseDocument> {
   constructor(protected model: Model<TDocument>) {}
 
   async create(data: CreateInput<T>): Promise<T> {
     const documentData = this.mapToDocument(data as Partial<T>);
-    
+
     const document = new this.model({
       ...documentData,
       createdAt: new Date(),
@@ -52,17 +52,23 @@ export abstract class RepositoryBase<T, TDocument extends MongooseDocument> {
     return result !== null;
   }
 
-  async findOne(filter: QueryFilter<TDocument> | Record<string, unknown>): Promise<T | null> {
+  async findOne(
+    filter: QueryFilter<TDocument> | Record<string, unknown>,
+  ): Promise<T | null> {
     const document = await this.model.findOne(filter as QueryFilter<TDocument>);
     return document ? this.mapToEntity(document) : null;
   }
 
-  async findMany(filter: QueryFilter<TDocument> | Record<string, unknown>): Promise<T[]> {
+  async findMany(
+    filter: QueryFilter<TDocument> | Record<string, unknown>,
+  ): Promise<T[]> {
     const documents = await this.model.find(filter as QueryFilter<TDocument>);
     return documents.map((doc) => this.mapToEntity(doc));
   }
 
-  async countDocuments(filter: QueryFilter<TDocument> | Record<string, unknown>): Promise<number> {
+  async countDocuments(
+    filter: QueryFilter<TDocument> | Record<string, unknown>,
+  ): Promise<number> {
     return await this.model.countDocuments(filter as QueryFilter<TDocument>);
   }
 
@@ -72,7 +78,7 @@ export abstract class RepositoryBase<T, TDocument extends MongooseDocument> {
       page?: number;
       limit?: number;
       sortBy?: string;
-      sortOrder?: 'asc' | 'desc';
+      sortOrder?: "asc" | "desc";
     } = {},
   ): Promise<{
     data: T[];
@@ -83,18 +89,21 @@ export abstract class RepositoryBase<T, TDocument extends MongooseDocument> {
   }> {
     const page = options.page || 1;
     const limit = options.limit || 10;
-    const sortBy = options.sortBy || 'createdAt';
-    const sortOrder = options.sortOrder === 'asc' ? 1 : -1;
+    const sortBy = options.sortBy || "createdAt";
+    const sortOrder = options.sortOrder === "asc" ? 1 : -1;
 
     const skip = (page - 1) * limit;
     const documents = await this.model
       .find(filter as QueryFilter<TDocument>)
+      .collation({ locale: "en", strength: 2 })
       .sort({ [sortBy]: sortOrder })
       .skip(skip)
       .limit(limit)
       .exec();
 
-    const total = await this.model.countDocuments(filter as QueryFilter<TDocument>);
+    const total = await this.model.countDocuments(
+      filter as QueryFilter<TDocument>,
+    );
     const data = documents.map((doc) => this.mapToEntity(doc));
 
     return {

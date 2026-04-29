@@ -1,0 +1,1 @@
+export type ServiceMode = "onsite" | "offsite" | "both" ;

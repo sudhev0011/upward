@@ -3,7 +3,7 @@ import {
   authenticateToken,
   authorizeRoles,
 } from "../middleware/auth.middleware";
-import { adminProviderController, adminClientController } from "../../infrastructure/di/adminDi";
+import { adminProviderController, adminClientController, adminCategoryController, adminServiceController } from "../../infrastructure/di/adminDi";
 
 export class AdminRouter {
   public router: Router;
@@ -27,5 +27,20 @@ export class AdminRouter {
     this.router.put("/provider/reject",adminProviderController.rejectProvider);
     this.router.patch("/provider/block",adminProviderController.blockProvider);
     this.router.get('/kyc/identity/:userId', adminProviderController.getProviderKyc);
+
+    this.router.post("/category", adminCategoryController.createCategory);
+    this.router.get("/categories/all", adminCategoryController.getAllCategories);
+    this.router.get("/categories", adminCategoryController.getAllPaginatedCategories);
+    this.router.patch("/category/update", adminCategoryController.updateCategory);
+
+    
+    
+    this.router.post("/service", adminServiceController.createService);
+    this.router.delete("/service/:serviceId", adminServiceController.deleteService);
+    this.router.get("/services/all", adminServiceController.getAllService)
+    this.router.get("/services", adminServiceController.getAllServicesWithPagination);
+    this.router.patch("/service/toggle", adminServiceController.toggleService);
+
+    
   }
 }

@@ -4,6 +4,7 @@ import type { ProviderProfile, UpdateProviderProfileRequest, CreateProviderProfi
 import type { SubmitKycIdentityRequest, SaveKycBankRequest, UploadKycDocumentResponse, ProviderKycDocument, providerBankDocument } from '@/interfaces/provider/kyc.interface';
 
 import { ProviderRoutes } from '@/constants/api-routes';
+import { CreateProviderServiceResponse, PaginatedProviderServicesGroupedByCategory, SetProviderServicePriceRequest } from '@/interfaces/admin/provider-service.interface';
 
 export const providerApi = {
   
@@ -41,5 +42,29 @@ export const providerApi = {
 
   async getBankDocument(): Promise<ApiEnvelope<providerBankDocument>>{
     return (await api.get<ApiEnvelope<providerBankDocument>>(ProviderRoutes.GET_BANK_DOCUMENT)).data
+  },
+
+  async createProviderService(data: {serviceId: string}): Promise<ApiEnvelope<CreateProviderServiceResponse>>{
+    return (await api.post<ApiEnvelope<CreateProviderServiceResponse>>(ProviderRoutes.CREATE_PROVIDE_SERVICE, data) ).data
+  },
+
+  async setProviderServicePrice(data: SetProviderServicePriceRequest): Promise<ApiEnvelope<CreateProviderServiceResponse>>{
+    return (await api.patch<ApiEnvelope<CreateProviderServiceResponse>>(ProviderRoutes.SET_PROVIDER_SERVICE_PRICE, data)).data
+  },
+
+  async getProviderServiceGroupedByCategory(params: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    isActive?: boolean;
+    mode?: "onsite" | "offsite" | "both";
+    sortBy?: "name" | "createdAt";
+    sortOrder?: "asc" | "desc";
+  }):Promise<ApiEnvelope<PaginatedProviderServicesGroupedByCategory>>{
+    return (await api.get<ApiEnvelope<PaginatedProviderServicesGroupedByCategory>>(ProviderRoutes.GET_ALL_PROVIDER_SERVICE_BY_CATEGORY,{params})).data
+  },
+
+  async deleteProviderServiceById(id: string):Promise<ApiEnvelope<void>>{
+    return (await api.delete<ApiEnvelope<void>>(ProviderRoutes.DELETE_PROVIDER_SERVICE.replace(':id', id))).data
   }
 };
