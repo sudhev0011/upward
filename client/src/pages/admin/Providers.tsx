@@ -39,6 +39,7 @@ import { useBlockProviderMutation } from "@/hooks/admin/useBlockProvider";
 import { useApproveProviderMutation } from "@/hooks/admin/useApproveProvider";
 import { useRejectProviderMutation } from "@/hooks/admin/useRejectProvider";
 import { format } from "date-fns";
+import { ProviderProfile } from "@/interfaces/provider/provider.interface";
 
 export default function Providers() {
   // ─── STATE ──────────────────────────────────────────────────────────────────
@@ -90,10 +91,10 @@ export default function Providers() {
   const columns = [
     {
       header: "Provider",
-      cell: (p: any) => (
+      cell: (p: ProviderProfile) => (
         <div className="flex items-center gap-3">
           <Avatar className="h-9 w-9 border">
-            <img src={p.avatarUrl} alt="" className="object-cover" />
+            <img src={p.avatarUrl ?? ""} alt="" className="object-cover" />
             <AvatarFallback className="bg-primary/5 text-primary text-xs">
               {p.name?.[0]}
             </AvatarFallback>
@@ -107,7 +108,7 @@ export default function Providers() {
     },
     {
       header: "Status",
-      cell: (p: any) => (
+      cell: (p: ProviderProfile) => (
         <Badge
           variant={p.isApprovedByAdmin ? "default" : "secondary"}
           className="text-[10px]"
@@ -118,10 +119,10 @@ export default function Providers() {
     },
     {
       header: "Account",
-      cell: (p: any) => (
+      cell: (p: ProviderProfile) => (
         <div className="flex items-center gap-2">
           <Switch
-            checked={p.isBlocked}
+            checked={p.isBlocked ?? undefined}
             onCheckedChange={(checked) =>
               blockMutation.mutate({ userId: p.userId, isBlocked: checked })
             }
@@ -135,7 +136,7 @@ export default function Providers() {
     },
     {
       header: "Joined",
-      cell: (p: any) => (
+      cell: (p: ProviderProfile) => (
         <span className="text-sm text-muted-foreground">
           {p.createdAt ? new Date(p.createdAt).toLocaleDateString() : "N/A"}
         </span>

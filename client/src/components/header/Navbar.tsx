@@ -61,7 +61,7 @@ const Navbar = () => {
         navigate("/login");
       },
 
-      onError: (error: any) => toast.error(error.message),
+      onError: (error) => toast.error(error.message),
     });
   };
 

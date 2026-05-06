@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { useGetClientProfileById } from "@/hooks/admin/useGetClientProfileById";
 import { useGetClientsProfile } from "@/hooks/admin/useGetClientsProfiles";
 import { useBlockClientMutation } from "@/hooks/admin/useBlockClient";
+import { ClientProfile } from "@/interfaces/client/client.interface";
 
 export default function Clients() {
   const queryClient = useQueryClient();
@@ -56,10 +57,10 @@ export default function Clients() {
   const columns = [
     {
       header: "Client",
-      cell: (c: any) => (
+      cell: (c: ClientProfile) => (
         <div className="flex items-center gap-3">
           <Avatar className="h-9 w-9 border">
-            <img src={c.profilePicture} alt="" className="object-cover" />
+            <img src={c.profilePicture ?? ""} alt="" className="object-cover" />
             <AvatarFallback className="bg-primary/5 text-primary text-xs">
               {c.name?.[0] || <User className="h-4 w-4" />}
             </AvatarFallback>
@@ -73,7 +74,7 @@ export default function Clients() {
     },
     {
       header: "Status",
-      cell: (c: any) => (
+      cell: (c: ClientProfile) => (
         <Badge variant={c.isVerified ? "default" : "secondary"} className="text-[10px] font-normal">
           {c.isVerified ? "Verified" : "Standard"}
         </Badge>
@@ -81,7 +82,7 @@ export default function Clients() {
     },
     {
       header: "Account Control",
-      cell: (c: any) => (
+      cell: (c: ClientProfile) => (
         <div className="flex items-center gap-3">
           <Switch
             checked={c.isBlocked}
@@ -96,7 +97,7 @@ export default function Clients() {
     },
     {
       header: "Joined",
-      cell: (c: any) => (
+      cell: (c: ClientProfile) => (
         <span className="text-sm text-muted-foreground">
           {c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "N/A"}
         </span>

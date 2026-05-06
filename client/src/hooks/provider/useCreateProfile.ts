@@ -16,9 +16,8 @@ export const useCreateProfileMutation = () => {
                 toast.error(response.message || "Failed to create profile");
             }
         },
-        onError: (error: any) => {
-            const message = error.response?.data?.message || "Failed to create profile. Please try again.";
-            toast.error(message);
+        onError: (error) => {
+            toast.error(error.message);
         }
     });
 };

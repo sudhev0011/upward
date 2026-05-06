@@ -1,16 +1,27 @@
-import axios from "axios";
+import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { store } from "../store/store";
 import { logout } from "../store/slices/authSlice";
+import { ApiErrorResponse } from "@/interfaces/auth";
+interface FailedRequest {
+  resolve: (value: AxiosResponse | Promise<AxiosResponse>) => void;
+  reject: (reason: AxiosError) => void;
+}
+
+interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
 
 let isRefreshing = false;
-let failedQueue: any[] = [];
+let failedQueue: FailedRequest[] = [];
 
-const processQueue = (error: any) => {
+const processQueue = (error: AxiosError | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
     } else {
-      prom.resolve();
+      // In a success case, we don't pass anything here because 
+      // the resolve() call inside the interceptor handles the retry
+      prom.resolve(null as unknown as AxiosResponse); 
     }
   });
 
@@ -27,27 +38,34 @@ export const api = axios.create({
 
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const original = error.config;
-    const status = error?.response?.status;
-    const message = error?.response?.data?.message || "";
+  async (error: AxiosError<ApiErrorResponse>): Promise<AxiosResponse> => {
+    const original = error.config as CustomAxiosRequestConfig;
 
-    if (!status) {
-      console.log(message)
-      return Promise.reject(error?.response?.data);
+    // A. Handle cases where the request never reached the server (Network Error)
+    if (!error.response) {
+      return Promise.reject(error);
     }
 
+    const status = error.response.status;
+    const message = error.response.data?.message || "";
+
+    // B. Re-inserting the 403 / Refresh Token Failure logic
+    // If the refresh token itself is dead, we must log out.
     if (status === 403 || message.includes("Invalid refresh token")) {
       store.dispatch(logout());
-      return Promise.reject(error?.response?.data);
+      return Promise.reject(error);
     }
 
-    if (status === 401 && (message.includes('Missing access token') || message.includes('expired token')) && !original._retry) {
+    // C. Handle 401 Unauthorized / Token Expiration
+    const isAuthError = status === 401 && 
+      (message.includes('Missing access token') || message.includes('expired token'));
+
+    if (isAuthError && !original?._retry) {
       if (isRefreshing) {
-        return new Promise((resolve, reject) => {
+        return new Promise<AxiosResponse>((resolve, reject) => {
           failedQueue.push({
             resolve: () => resolve(api(original)),
-            reject,
+            reject: (err: AxiosError) => reject(err),
           });
         });
       }
@@ -57,18 +75,23 @@ api.interceptors.response.use(
 
       try {
         await api.post("/api/auth/refresh");
-
         processQueue(null);
         return api(original);
       } catch (err) {
-        processQueue(err);
+        // Ensure the error we pass to the queue is an AxiosError
+        const refreshError = axios.isAxiosError(err) 
+          ? err 
+          : new AxiosError("Refresh process failed");
+          
+        processQueue(refreshError);
         store.dispatch(logout());
         return Promise.reject(err);
       } finally {
         isRefreshing = false;
       }
     }
-    
-    return Promise.reject(error?.response?.data);
+
+    // Default rejection for all other errors (400, 404, 500, etc.)
+    return Promise.reject(error);
   }
 );

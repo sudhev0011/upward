@@ -5,6 +5,21 @@ import type { SubmitKycIdentityRequest, SaveKycBankRequest, UploadKycDocumentRes
 
 import { ProviderRoutes } from '@/constants/api-routes';
 import { CreateProviderServiceResponse, PaginatedProviderServicesGroupedByCategory, SetProviderServicePriceRequest } from '@/interfaces/admin/provider-service.interface';
+import type {
+  SetAvailabilityRequest,
+  AvailabilityResponse
+} from '@/interfaces/provider/availability.interface';
+
+import type {
+  CreateUnavailabilityRequest,
+  Unavailability
+} from '@/interfaces/provider/unavailability.interface';
+
+import type {
+  SetAvailabilityOverrideRequest,
+  AvailabilityOverride
+} from '@/interfaces/provider/availability-override.interface';
+
 
 export const providerApi = {
   
@@ -66,5 +81,87 @@ export const providerApi = {
 
   async deleteProviderServiceById(id: string):Promise<ApiEnvelope<void>>{
     return (await api.delete<ApiEnvelope<void>>(ProviderRoutes.DELETE_PROVIDER_SERVICE.replace(':id', id))).data
-  }
+  },
+
+
+
+  async setAvailability(
+  data: SetAvailabilityRequest
+): Promise<ApiEnvelope<AvailabilityResponse>> {
+  return (
+    await api.put<ApiEnvelope<AvailabilityResponse>>(
+      ProviderRoutes.SET_AVAILABILITY,
+      data
+    )
+  ).data;
+},
+
+async getAvailability(): Promise<ApiEnvelope<AvailabilityResponse>> {
+  return (
+    await api.get<ApiEnvelope<AvailabilityResponse>>(
+      ProviderRoutes.GET_AVAILABILITY
+    )
+  ).data;
+},
+
+async createUnavailability(
+  data: CreateUnavailabilityRequest
+): Promise<ApiEnvelope<Unavailability>> {
+  return (
+    await api.post<ApiEnvelope<Unavailability>>(
+      ProviderRoutes.CREATE_UNAVAILABILITY,
+      data
+    )
+  ).data;
+},
+
+
+
+async deleteUnavailability(id: string): Promise<ApiEnvelope<void>> {
+  return (
+    await api.delete<ApiEnvelope<void>>(
+      ProviderRoutes.DELETE_UNAVAILABILITY.replace(':id', id)
+    )
+  ).data;
+},
+
+
+async getUnavailability(): Promise<ApiEnvelope<Unavailability[]>> {
+  return (
+    await api.get<ApiEnvelope<Unavailability[]>>(
+      ProviderRoutes.GET_UNAVAILABILITY
+    )
+  ).data;
+},
+
+
+async getAvailabilityOverrides(): Promise<ApiEnvelope<AvailabilityOverride[]>> {
+  return (
+    await api.get<ApiEnvelope<AvailabilityOverride[]>>(
+      ProviderRoutes.GET_AVAILABILITY_OVERRIDES
+    )
+  ).data;
+},
+
+
+async setAvailabilityOverride(
+  data: SetAvailabilityOverrideRequest
+): Promise<ApiEnvelope<AvailabilityOverride>> {
+  return (
+    await api.put<ApiEnvelope<AvailabilityOverride>>(
+      ProviderRoutes.SET_AVAILABILITY_OVERRIDE,
+      data
+    )
+  ).data;
+},
+
+
+async deleteAvailabilityOverride(date: string): Promise<ApiEnvelope<void>> {
+  return (
+    await api.delete<ApiEnvelope<void>>(
+      ProviderRoutes.DELETE_AVAILABILITY_OVERRIDE.replace(':date', date)
+    )
+  ).data;
+},
+
 };

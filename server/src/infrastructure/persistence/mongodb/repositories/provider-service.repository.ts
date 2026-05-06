@@ -137,7 +137,7 @@ async findGroupedByCategory(
   const skip = (page - 1) * limit;
 
   // 1. Build Initial Match (Filters on ProviderService collection)
-  const matchQuery: any = {
+  const matchQuery: Record<string, unknown> = {
     providerId: new Types.ObjectId(providerId),
   };
 

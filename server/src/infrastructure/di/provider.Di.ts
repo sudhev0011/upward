@@ -22,6 +22,20 @@ import { GetProviderServicesByCategoryUseCase } from "../../application/use-case
 import { ProviderServiceRepository } from "../persistence/mongodb/repositories/provider-service.repository";
 import { SetProviderServicePriceUseCase } from "../../application/use-cases/provider/providerService/set-provider-service-price.use-case";
 import { DeleteProviderServiceUseCase } from "../../application/use-cases/provider/providerService/delete-provider-service.use-case";
+import { AvailabilityController } from "../../presentation/controllers/provider/availability/avaliability.controller";
+import { SetAvailabilityUseCase } from "../../application/use-cases/provider/availability/setAvailability.use-case";
+import { AvailabilityRepository } from "../persistence/mongodb/repositories/availability.repository";
+import { GetAvailabilityUseCase } from "../../application/use-cases/provider/availability/getAvailability.use-case";
+import { UnavailabilityController } from "../../presentation/controllers/provider/unavaliability/unavaliability.controller";
+import { GetUnavailabilitiesUseCase } from "../../application/use-cases/provider/unavaialbility/get-unavailability.use-case";
+import { UnavailabilityRepository } from "../persistence/mongodb/repositories/unavailability.repository";
+import { CreateUnavailabilityUseCase } from "../../application/use-cases/provider/unavaialbility/create-unavailability.use-case";
+import { DeleteUnavailabilityUseCase } from "../../application/use-cases/provider/unavaialbility/delete-unavaliability.use-case";
+import { AvailabilityOverrideRepository } from "../persistence/mongodb/repositories/availability-override.repository";
+import { SetAvailabilityOverrideUseCase } from "../../application/use-cases/provider/availability-override/set-availability-override.use-case";
+import { GetAvailabilityOverridesUseCase } from "../../application/use-cases/provider/availability-override/get-avaliability-overrides.use-case";
+import { DeleteAvailabilityOverrideUseCase } from "../../application/use-cases/provider/availability-override/delete-availability-overrides.use-case";
+import { AvailabilityOverrideController } from "../../presentation/controllers/provider/avaliability-override/avaliability-override.controller";
 
 //repo init
 const userRepository = new UserRepository(); 
@@ -29,6 +43,9 @@ const providerProfileRepository = new ProviderProfileRepository();
 export const providerKycRepository = new ProviderKycRepository();
 const providerBankRepository = new ProviderBankRepository();
 const providerServiceRepository = new ProviderServiceRepository()
+const avaliabilityRepository = new AvailabilityRepository()
+const unavailabilityRepository = new UnavailabilityRepository()
+const availabilityOverrideRepository = new AvailabilityOverrideRepository();
 
 // service init
 const logger = new WinstonLogger();
@@ -51,8 +68,22 @@ const createProviderServiceUseCase = new CreateProviderServiceUseCase(providerSe
 const getProviderServicesByCategoryUseCase = new GetProviderServicesByCategoryUseCase(userRepository,providerServiceRepository)
 const setProviderServicePriceUseCase = new SetProviderServicePriceUseCase(providerServiceRepository);
 const deleteProviderServiceUseCase = new DeleteProviderServiceUseCase(providerServiceRepository)
+const setAvailabilityUseCase = new SetAvailabilityUseCase(avaliabilityRepository)
+const getAvailabilityUseCase = new GetAvailabilityUseCase(avaliabilityRepository)
+const getUnavailabilitiesUseCase = new GetUnavailabilitiesUseCase(unavailabilityRepository)
+const createUnavailabilityUseCase = new CreateUnavailabilityUseCase(unavailabilityRepository)
+const deleteUnavailabilityUseCase = new DeleteUnavailabilityUseCase(unavailabilityRepository)
+const setAvailabilityOverrideUseCase = new SetAvailabilityOverrideUseCase(availabilityOverrideRepository,unavailabilityRepository);
+const getAvailabilityOverridesUseCase = new GetAvailabilityOverridesUseCase(availabilityOverrideRepository);
+const deleteAvailabilityOverrideUseCase = new DeleteAvailabilityOverrideUseCase(availabilityOverrideRepository);
+
+
 
 // contrller init
 export const providerProfileController = new ProviderProfileController(uploadAvatarUseCase,createProviderProfileUseCase,getProviderProfileUseCase,updateProviderProfileUseCase);
 export const kycController = new KycController(submitProviderKycUseCase,saveProviderBankUseCase,getProviderKycUseCase,getProviderBankUseCase,uploadKycDocumentUseCase)
 export const providerServiceController = new ProviderServiceController(createProviderServiceUseCase,getProviderServicesByCategoryUseCase,setProviderServicePriceUseCase, deleteProviderServiceUseCase)
+
+export const availabilityController = new AvailabilityController(setAvailabilityUseCase,getAvailabilityUseCase)
+export const unavaliabilityController = new UnavailabilityController(createUnavailabilityUseCase, getUnavailabilitiesUseCase,deleteUnavailabilityUseCase)
+export const availabilityOverrideController = new AvailabilityOverrideController(setAvailabilityOverrideUseCase, getAvailabilityOverridesUseCase, deleteAvailabilityOverrideUseCase);

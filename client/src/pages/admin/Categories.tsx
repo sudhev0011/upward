@@ -91,6 +91,8 @@ export default function Categories() {
   const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
   const [sortBy, setSortBy] = useState<"name" | "createdAt">("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const limit = 6;
 
@@ -131,6 +133,35 @@ export default function Categories() {
     },
   });
 
+  const handleEditClick = (category: CategoryResponse) => {
+    setIsEditing(true);
+    setSelectedId(category.id);
+
+    // Set form values to the selected category data
+    form.reset({
+      name: category.name,
+      description: category.description,
+      mode: category.mode as "onsite" | "offsite" | "both",
+      isActive: category.isActive,
+    });
+
+    setDialogOpen(true);
+  };
+
+  const onOpenChange = (open: boolean) => {
+    setDialogOpen(open);
+    if (!open) {
+      setIsEditing(false);
+      setSelectedId(null);
+      form.reset({
+        name: "",
+        description: "",
+        mode: "onsite",
+        isActive: true,
+      });
+    }
+  };
+
   const triggerStatusToggle = (id: string, currentStatus: boolean) => {
     setPendingToggle({ id, isActive: !currentStatus });
     setConfirmOpen(true);
@@ -148,15 +179,32 @@ export default function Categories() {
   };
 
   const onSubmit = (values: CategoryFormData) => {
-    createMutation.mutate(values, {
-      onSuccess: (res) => {
-        queryClient.invalidateQueries({ queryKey: ["categoriesAdmin"] });
-        setDialogOpen(false);
-        toast.success(res.message);
-        form.reset();
-      },
-      onError: (error) => toast.error(error.message),
-    });
+    if (isEditing && selectedId) {
+      // UPDATE LOGIC
+      updateMutation.mutate(
+        { id: selectedId, ...values },
+        {
+          onSuccess: (res) => {
+            queryClient.invalidateQueries({ queryKey: ["categoriesAdmin"] });
+            setDialogOpen(false);
+            toast.success(res.message || "Category updated successfully");
+            onOpenChange(false);
+          },
+          onError: (error) => toast.error(error.message),
+        },
+      );
+    } else {
+      // CREATE LOGIC
+      createMutation.mutate(values, {
+        onSuccess: (res) => {
+          queryClient.invalidateQueries({ queryKey: ["categoriesAdmin"] });
+          setDialogOpen(false);
+          toast.success(res.message);
+          onOpenChange(false);
+        },
+        onError: (error) => toast.error(error.message),
+      });
+    }
   };
 
   return (
@@ -192,7 +240,7 @@ export default function Categories() {
           <Select
             value={mode || "all"}
             onValueChange={(value) => {
-              setMode(value === "all" ? undefined : (value as any));
+              setMode(value === "all" ? undefined : (value as typeof mode));
               setPage(1);
             }}
           >
@@ -297,9 +345,9 @@ export default function Categories() {
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-destructive focus:text-destructive cursor-pointer"
-                          onClick={() => console.log("Delete logic later")}
+                          onClick={() => handleEditClick(c)}
                         >
-                          Delete
+                          Edit
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -389,10 +437,12 @@ export default function Categories() {
       )}
 
       {/* CREATE DIALOG */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={dialogOpen} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create New Category</DialogTitle>
+            <DialogTitle>
+              {isEditing ? "Edit Category" : "Create New Category"}
+            </DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -428,15 +478,23 @@ export default function Categories() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Service Mode</FormLabel>
-                    <select
-                      className="w-full border rounded px-3 py-2 text-sm bg-background"
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
                       value={field.value}
-                      onChange={(e) => field.onChange(e.target.value)}
                     >
-                      <option value="onsite">Onsite</option>
-                      <option value="offsite">Offsite</option>
-                      <option value="both">Both</option>
-                    </select>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select mode" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="onsite">Onsite</SelectItem>
+                        <SelectItem value="offsite">Offsite</SelectItem>
+                        <SelectItem value="both">Both</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -456,11 +514,16 @@ export default function Categories() {
                 )}
               />
               <DialogFooter>
-                <Button type="submit" disabled={createMutation.isPending}>
-                  {createMutation.isPending && (
+                <Button
+                  type="submit"
+                  disabled={
+                    createMutation.isPending || updateMutation.isPending
+                  }
+                >
+                  {(createMutation.isPending || updateMutation.isPending) && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  Save Category
+                  {isEditing ? "Update Category" : "Save Category"}
                 </Button>
               </DialogFooter>
             </form>

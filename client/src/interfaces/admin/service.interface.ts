@@ -7,6 +7,16 @@ export interface CreateServiceRequest {
   isActive: boolean;
 }
 
+export interface UpdateServiceRequest{
+  id: string;
+  categoryId: string;
+  name?: string;
+  description?: string;
+  maxHour?: number | null;
+  mode?: "onsite" | "offsite" | "both";
+  isActive?: boolean;
+}
+
 export interface ServiceResponse {
   id: string;
   categoryId: string;

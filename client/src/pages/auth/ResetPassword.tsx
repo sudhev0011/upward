@@ -12,6 +12,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useResetPasswordMutation } from "@/hooks/auth/useResetPassword";
+import { AxiosError } from "axios";
 
 const PasswordStrength = ({ password }: { password: string }) => {
   const checks = [
@@ -96,11 +97,12 @@ const ResetPassword = () => {
       await resetPassword({ token, newPassword });
       toast.success("Password reset successfully!");
       setIsReset(true);
-    } catch (err: any) {
-      const msg =
-        err?.response?.data?.message ||
-        err?.message ||
-        "Failed to reset password.";
+    } catch (err) {
+      let msg = "Failed to reset password.";
+
+      if (err instanceof AxiosError) {
+        msg = err.response?.data?.message ?? msg;
+      }
       setFieldError(msg);
       toast.error(msg);
     }

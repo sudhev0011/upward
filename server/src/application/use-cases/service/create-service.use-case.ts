@@ -12,7 +12,7 @@ export class CreateServiceUseCase implements ICreateServiceUseCase {
 
 
   async execute(data: CreateServiceRequestDto): Promise<ServiceResponseDto> {
-    const existing = await this._serviceRepository.findOne({ name: data.name });
+    const existing = await this._serviceRepository.findOne({ name: data.name, categoryId: data.categoryId });
 
     if (existing) {
       throw new ConflictError("A service in the same name exists");

@@ -10,7 +10,7 @@ export const providerProfileSchema = z.object({
   bio: z.string().max(2000, 'Summary must not exceed 2000 characters').optional(),
   location: z.string().trim().min(3, 'Enter a valid location').max(100, 'Location must not exceed 100 characters').optional(),
   phone: z.string().regex(/^\+?[\d\s\-\(\)]+$/, 'Please enter a valid phone number').optional(),
-  email: z.string().email('Please enter a valid email address').optional(),
+  email: z.string().email('Please enter a valid email address'),
   dateOfBirth: z.string().date('Please enter a valid date of birth').optional(),
   gender: z.string().max(50, 'Gender must not exceed 50 characters').optional(),
   skills: z.array(z.string()).optional(),

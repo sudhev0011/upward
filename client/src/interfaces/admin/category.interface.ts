@@ -7,7 +7,10 @@ export interface CreateCategoryRequest {
 
 export interface UpdateCategoryRequest {
   id: string;
-  isActive: boolean;
+  name?: string;
+  description?: string;
+  mode?: "onsite" | "offsite" | "both";
+  isActive?: boolean;
 }
 
 export interface CategoryResponse {

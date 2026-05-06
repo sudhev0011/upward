@@ -4,7 +4,7 @@ import {
   ProviderProfilesResponse,
   RejectProviderRequest,
 } from "@/interfaces/admin/provider.interface";
-import { ApiEnvelope } from "@/interfaces/auth";
+import { ApiEnvelope, RequestParams } from "@/interfaces/auth";
 import { api } from "./axios";
 import { AdminRoutes } from "@/constants/api-routes";
 import { ProviderProfile } from "@/interfaces/provider/provider.interface";
@@ -24,12 +24,11 @@ import {
   CreateServiceRequest,
   PaginatedServicesResponse,
   ServiceResponse,
+  UpdateServiceRequest,
 } from "@/interfaces/admin/service.interface";
 
 export const adminApi = {
-  async getAllProviders(
-    params: any,
-  ): Promise<ApiEnvelope<ProviderProfilesResponse>> {
+  async getAllProviders(params: RequestParams&{isApprovedByAdmin?: boolean;}): Promise<ApiEnvelope<ProviderProfilesResponse>> {
     return (
       await api.get<ApiEnvelope<ProviderProfilesResponse>>(
         AdminRoutes.GET_PROVIDER_PROFILES,
@@ -67,9 +66,7 @@ export const adminApi = {
     ).data;
   },
 
-  async getAllClients(
-    params: any,
-  ): Promise<ApiEnvelope<ClientProfilesResponse>> {
+  async getAllClients(params: RequestParams): Promise<ApiEnvelope<ClientProfilesResponse>> {
     return (
       await api.get<ApiEnvelope<ClientProfilesResponse>>(
         AdminRoutes.GET_CLIENT_PROFILES,
@@ -110,7 +107,6 @@ export const adminApi = {
       )
     ).data;
   },
-
 
   async updateCategory(
     data: UpdateCategoryRequest,
@@ -160,7 +156,8 @@ export const adminApi = {
   }): Promise<ApiEnvelope<PaginatedCategoryResponse>> {
     return (
       await api.get<ApiEnvelope<PaginatedCategoryResponse>>(
-        AdminRoutes.GET_ALL_PAGINATED_CATEGORIES, {params}
+        AdminRoutes.GET_ALL_PAGINATED_CATEGORIES,
+        { params },
       )
     ).data;
   },
@@ -175,7 +172,8 @@ export const adminApi = {
   }): Promise<ApiEnvelope<PaginatedServicesResponse>> {
     return (
       await api.get<ApiEnvelope<PaginatedServicesResponse>>(
-        AdminRoutes.GET_ALL_PAGINATED_SERVICES, {params}
+        AdminRoutes.GET_ALL_PAGINATED_SERVICES,
+        { params },
       )
     ).data;
   },
@@ -188,7 +186,25 @@ export const adminApi = {
     ).data;
   },
 
-  async toggleService(data: {serviceId: string; isActive: boolean}): Promise<ApiEnvelope<ServiceResponse>>{
-    return (await api.patch<ApiEnvelope<ServiceResponse>>(AdminRoutes.TOGGLE_SERVICE, data)).data;
-  }
+  async toggleService(data: {
+    serviceId: string;
+    isActive: boolean;
+  }): Promise<ApiEnvelope<ServiceResponse>> {
+    return (
+      await api.patch<ApiEnvelope<ServiceResponse>>(
+        AdminRoutes.TOGGLE_SERVICE,
+        data,
+      )
+    ).data;
+  },
+  async updateService(
+    data: UpdateServiceRequest,
+  ): Promise<ApiEnvelope<ServiceResponse>> {
+    return (
+      await api.patch<ApiEnvelope<ServiceResponse>>(
+        AdminRoutes.TOGGLE_SERVICE,
+        data,
+      )
+    ).data;
+  },
 };

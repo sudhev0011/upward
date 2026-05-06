@@ -16,6 +16,7 @@ import { useVerifyOtpMutation } from "@/hooks/auth/useVerifyOtp";
 import { setActiveRole, setCredentials } from "@/store/slices/authSlice";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { useRequestOtpMutation } from "@/hooks/auth/useRequestOtp";
+import { AxiosError } from "axios";
 
 /* ─── OTP input hook (unchanged logic) ─── */
 const useOtpInput = (length: number = 6) => {
@@ -104,17 +105,6 @@ const useCountdown = () => {
   return { countdown, start, formatTime };
 };
 
-/* ─── Helpers (unchanged) ─── */
-const extractErrorMessage = (error: unknown, fallback: string): string => {
-  if (error && typeof error === "object" && "res" in error) {
-    const r = (error as any).res;
-    if (r?.status === 429)
-      return "Please wait 30 seconds before requesting another OTP";
-    if (r?.data?.message) return r.data.message;
-  }
-  return fallback;
-};
-
 const navigateByRole = (role: UserRole, navigate: (path: string) => void) => {
   const routes: Record<UserRole, string> = {
     [UserRole.PROVIDER]: "/provider/dashboard",
@@ -166,7 +156,10 @@ const VerifyOtp = () => {
         toast.error(msg);
       }
     } catch (err) {
-      const msg = extractErrorMessage(err, "Verification failed");
+      let msg = "Verification failed";
+      if (err instanceof AxiosError) {
+        msg = err.response?.data?.message ?? msg;
+      }
       setError(msg);
       otp.reset();
     }
@@ -187,9 +180,17 @@ const VerifyOtp = () => {
         setError(res.message || "Failed to send OTP");
       }
     } catch (err) {
-      const msg = extractErrorMessage(err, "Failed to send OTP");
+      let msg = "Failed to send OTP";
+
+      if (err instanceof AxiosError) {
+        msg = err.response?.data?.message ?? msg;
+
+        if (err.response?.status === 429) {
+          countdown.start(30);
+        }
+      }
+
       setError(msg);
-      if ((err as any)?.res?.status === 429) countdown.start(30);
     }
   };
 

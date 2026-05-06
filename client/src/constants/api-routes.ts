@@ -31,7 +31,23 @@ export const ProviderRoutes = {
   CREATE_PROVIDE_SERVICE: '/api/provider/providerService',
   GET_ALL_PROVIDER_SERVICE_BY_CATEGORY: '/api/provider/providerServices',
   SET_PROVIDER_SERVICE_PRICE: '/api/provider/providerService',
-  DELETE_PROVIDER_SERVICE: '/api/provider/providerService/:id'
+  DELETE_PROVIDER_SERVICE: '/api/provider/providerService/:id',
+
+    // ─── Availability ────────────────────────────────────────────────────────────
+  SET_AVAILABILITY: "/api/provider/availability",
+  GET_AVAILABILITY: "/api/provider/availability",
+ 
+  // ─── Unavailability ──────────────────────────────────────────────────────────
+  GET_UNAVAILABILITY: "/api/provider/unavailability",
+  CREATE_UNAVAILABILITY: "/api/provider/unavailability",
+  DELETE_UNAVAILABILITY: "/api/provider/unavailability/:id",
+ 
+  // ─── Availability Overrides ──────────────────────────────────────────────────
+  SET_AVAILABILITY_OVERRIDE: "/api/provider/availability/overrides",
+  GET_AVAILABILITY_OVERRIDES: "/api/provider/availability/overrides",
+  DELETE_AVAILABILITY_OVERRIDE: "/api/provider/availability/overrides/:date",
+
+
 } as const;
 
 export const AdminRoutes = {
@@ -53,6 +69,7 @@ export const AdminRoutes = {
   GET_ALL_SERVICES: '/api/admin/services/all',
   GET_ALL_PAGINATED_SERVICES: '/api/admin/services',
   TOGGLE_SERVICE: '/api/admin/service/toggle',
+  UPDATE_SERVICE: '/api/admin/service/toggle',
 
 
 } as const;

@@ -25,6 +25,7 @@ import {
   type FileState,
 } from "./KycSubComponents";
 import type { providerBankDocument } from "@/interfaces/provider/kyc.interface";
+import axios from "axios";
 
 export function KycBankForm({
   existingData,
@@ -48,7 +49,7 @@ export function KycBankForm({
       accountHolderName: existingData?.accountHolderName ?? "",
       bankName: existingData?.bankName ?? "",
       accountNumber: existingData?.accountNumber ?? "",
-      confirmAccountNumber: existingData?.accountNumber ?? "", 
+      confirmAccountNumber: existingData?.accountNumber ?? "",
       ifscCode: existingData?.ifscCode ?? "",
       branchName: existingData?.branchName ?? "",
     },
@@ -97,7 +98,7 @@ export function KycBankForm({
       } else if (existingData?.passbookUrl) {
         fileUrl = existingData.passbookUrl;
       } else {
-        throw new Error("Passbook URL missing"); 
+        throw new Error("Passbook URL missing");
       }
 
       await saveKycBank({
@@ -110,12 +111,17 @@ export function KycBankForm({
       });
 
       toast.success("Bank details saved successfully!");
-      setIsEditing(false); 
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || "Failed to save bank details",
-      );
-      console.error(error);
+      setIsEditing(false);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        // TypeScript now knows 'error' is an AxiosError
+        toast.error(error.response?.data?.message || "Server error occurred");
+      } else if (error instanceof Error) {
+        // Handle standard JS errors (like the "Passbook URL missing" one you throw)
+        toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred");
+      }
     } finally {
       setIsUploading(false);
     }

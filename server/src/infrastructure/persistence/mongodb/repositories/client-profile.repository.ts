@@ -27,80 +27,6 @@ export class ClientProfileRepository
     return ClientProfileMapper.toDocument(entity);
   }
 
-  // async getAll(options: {
-  //   page: number;
-  //   limit: number;
-  //   search?: string;
-  //   location?: string;
-  // }): Promise<{ clients: ClientQueryModel[]; total: number }> {
-  //   const { page, limit, search, location } = options;
-  //   const skip = (page - 1) * limit;
-
-  //   const pipeline: PipelineStage[] = [];
-
-  //   pipeline.push({
-  //     $lookup: {
-  //       from: "users",
-  //       localField: "userId",
-  //       foreignField: "_id",
-  //       as: "user",
-  //     },
-  //   });
-
-  //   pipeline.push({ $unwind: "$user" });
-
-  //   const match: Record<string, unknown> = {};
-
-  //   if (search) {
-  //     match.$or = [{ "user.name": { $regex: search, $options: "i" } }];
-  //   }
-
-  //   if (location) {
-  //     match.location = { $regex: location, $options: "i" };
-  //   }
-
-  //   if (Object.keys(match).length > 0) {
-  //     pipeline.push({ $match: match });
-  //   }
-
-  //   const facetStage = {
-  //     $facet: {
-  //       docs: [{ $skip: skip }, { $limit: limit }],
-  //       totalCount: [{ $count: "count" }],
-  //     },
-  //   };
-  //   pipeline.push(facetStage);
-
-  //   const result = await ClientProfileModel.aggregate(pipeline);
-
-  //   const docs = result[0].docs;
-  //   const total = result[0].totalCount[0] ? result[0].totalCount[0].count : 0;
-
-  //   const clients = docs.map(
-  //     (
-  //       doc: ModelDocument & {
-  //         user: {
-  //           name: string;
-  //           email: string;
-  //           isBlocked: boolean;
-  //           isVerified: boolean;
-  //         };
-  //       },
-  //     ) => {
-  //       const entity = this.mapToEntity(doc);
-  //       return {
-  //         ...entity,
-  //         name: doc.user.name,
-  //         email: doc.user.email,
-  //         isBlocked: doc.user.isBlocked,
-  //         isVerified: doc.user.isVerified,
-  //       };
-  //     },
-  //   );
-
-  //   return { clients, total };
-  // }
-
   async getAll(options: {
   page: number;
   limit: number;
@@ -119,7 +45,7 @@ export class ClientProfileRepository
   } = options;
 
   const skip = (page - 1) * limit;
-  const pipeline: any[] = [];
+  const pipeline: PipelineStage[] = [];
 
   // 1. Join with User Collection
   pipeline.push({
@@ -134,7 +60,7 @@ export class ClientProfileRepository
   pipeline.push({ $unwind: "$user" });
 
   // 2. Build Match Object
-  const match: Record<string, any> = {};
+  const match: Record<string, unknown> = {};
 
   // Filter by Blocked status
   if (isBlocked !== undefined) {

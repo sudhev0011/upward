@@ -21,7 +21,7 @@ export class AdminCategoryController {
     private readonly _getAllCategoriesWithPaginationUseCase: IGetAllCategoriesWithPagination,
     private readonly _updateCategoryUseCase: IUpdateCategoryUseCase,
   ) {}
-
+  // create category in admin page
   createCategory = async (req: Request, res: Response, next: NextFunction) => {
     const parsed = CreateCategoryRequestDtoSchema.safeParse(req.body);
 
@@ -36,7 +36,12 @@ export class AdminCategoryController {
       handleAsyncError(error, next);
     }
   };
-
+/**
+ * this method is used to fetc all the categoreis for admin without pagination data
+ * @param req not data is injected in the req body
+ * @param res response is a collection of all the categories
+ * @param next 
+ */
   getAllCategories = async (
     req: Request,
     res: Response,
@@ -50,6 +55,13 @@ export class AdminCategoryController {
     }
   };
 
+  /**
+   * this mehods provides all the categories with pagination, filtering, sorting metadatas
+   * @param req req include query params like isActive, search, sordBy,sortOrder, etc..
+   * @param res res is a collection of all the categories with proper pagination
+   * @param next 
+   * @returns 
+   */
   getAllPaginatedCategories = async (
     req: Request,
     res: Response,
@@ -72,7 +84,13 @@ export class AdminCategoryController {
     }
   };
 
-
+  /**
+   * this method is used to update the category fully or partially
+   * @param req the req.body may contail name,description, isActive, and mode of the category
+   * @param res the response is the full data of the updated category
+   * @param next 
+   * @returns 
+   */
   updateCategory = async(req: Request, res: Response, next: NextFunction)=>{
 
     const parsed = UpdateCategoryRequestSchema.safeParse(req.body);

@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "../ui/button";
+import { useEffect, useState } from "react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -67,6 +68,21 @@ export function DataTable<TRow>({
   totalPages = 1,
   onPageChange,
 }: DataTableProps<TRow>) {
+
+  const [localSearch, setLocalSearch] = useState(search);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onSearchChange(localSearch);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [localSearch, onSearchChange]);
+
+  useEffect(() => {
+    setLocalSearch(search);
+  }, [search]);
+
   return (
     <Card className="shadow-sm">
       {/* ── Toolbar ── */}
@@ -77,8 +93,8 @@ export function DataTable<TRow>({
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={searchPlaceholder}
-              value={search}
-              onChange={(e) => onSearchChange(e.target.value)}
+              value={localSearch}
+              onChange={(e) => setLocalSearch(e.target.value)}
               className="pl-9 h-9"
             />
           </div>

@@ -10,14 +10,15 @@ export class UpdateCategoryUseCase implements IUpdateCategoryUseCase {
   async execute(
     dto: UpdateCategoryRequestDto,
   ): Promise<CreateCategoryReponseDto> {
-
-
     const result = await this._categoryRepository.update(dto.id, {
-        isActive: dto.isActive
+      name: dto.name,
+      description: dto.description,
+      mode: dto.mode,
+      isActive: dto.isActive,
     });
 
-    if(!result){
-        throw new ValidationError("category id is invalid");
+    if (!result) {
+      throw new ValidationError("category id is invalid");
     }
 
     return CategoryMapper.toResponse(result);

@@ -8,6 +8,7 @@ import {
 import { RepositoryBase } from "./base.repository";
 import { ProviderProfileMapper } from "../../../mapers.persistence/provider/provider-profile.mapper";
 import { ProviderListItem } from "../../../../domain/queries/provider/ProviderQueryModel";
+import { string } from "zod";
 
 export class ProviderProfileRepository
   extends RepositoryBase<ProviderProfile, ModelDocument>
@@ -53,7 +54,7 @@ export class ProviderProfileRepository
   const pipeline: PipelineStage[] = [];
 
   // 1. Initial Match for Provider-specific filters (Performance: filter before lookup)
-  const providerMatch: any = {};
+  const providerMatch: Record<string, unknown> = {};
   if (isApprovedByAdmin !== undefined) {
     providerMatch.isApprovedByAdmin = isApprovedByAdmin;
   }
@@ -74,7 +75,7 @@ export class ProviderProfileRepository
   pipeline.push({ $unwind: "$user" });
 
   // 3. Match for User-specific filters and Global Search
-  const secondaryMatch: any = {};
+  const secondaryMatch: Record<string, unknown> = {};
 
   if (isBlocked !== undefined) {
     secondaryMatch["user.isBlocked"] = isBlocked;
