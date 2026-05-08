@@ -36,6 +36,14 @@ import { SetAvailabilityOverrideUseCase } from "../../application/use-cases/prov
 import { GetAvailabilityOverridesUseCase } from "../../application/use-cases/provider/availability-override/get-avaliability-overrides.use-case";
 import { DeleteAvailabilityOverrideUseCase } from "../../application/use-cases/provider/availability-override/delete-availability-overrides.use-case";
 import { AvailabilityOverrideController } from "../../presentation/controllers/provider/avaliability-override/avaliability-override.controller";
+import { PortfolioController } from "../../presentation/controllers/provider/portfolio/portfolio.controller";
+import { GetUploadUrlUseCase } from "../../application/use-cases/provider/portfolio/getUploadUrl.use-case";
+import { CreatePortfolioItemUseCase } from "../../application/use-cases/provider/portfolio/createPortfolioItem.use-case";
+import { PortfolioRepository } from "../persistence/mongodb/repositories/portfolio.repository";
+import { GetPortfolioUseCase } from "../../application/use-cases/provider/portfolio/getPortfolio.use-case";
+import { DeletePortfolioItemUseCase } from "../../application/use-cases/provider/portfolio/deletePortfolioItem.use-case";
+import { UpdatePortfolioItemUseCase } from "../../application/use-cases/provider/portfolio/updatePortfolioItem.use-case";
+import { RemovePortfolioImageUseCase } from "../../application/use-cases/provider/portfolio/removePortfolioItem.use-case";
 
 //repo init
 const userRepository = new UserRepository(); 
@@ -46,6 +54,7 @@ const providerServiceRepository = new ProviderServiceRepository()
 const avaliabilityRepository = new AvailabilityRepository()
 const unavailabilityRepository = new UnavailabilityRepository()
 const availabilityOverrideRepository = new AvailabilityOverrideRepository();
+const portfolioRepository = new PortfolioRepository()
 
 // service init
 const logger = new WinstonLogger();
@@ -77,7 +86,12 @@ const setAvailabilityOverrideUseCase = new SetAvailabilityOverrideUseCase(availa
 const getAvailabilityOverridesUseCase = new GetAvailabilityOverridesUseCase(availabilityOverrideRepository);
 const deleteAvailabilityOverrideUseCase = new DeleteAvailabilityOverrideUseCase(availabilityOverrideRepository);
 
-
+const getUploadUrlUseCase = new GetUploadUrlUseCase(s3Service)
+const createPortfolioItemUseCase = new CreatePortfolioItemUseCase(portfolioRepository)
+const getPortfolioUseCase = new GetPortfolioUseCase(portfolioRepository)
+const deletePortfolioItemUseCase = new DeletePortfolioItemUseCase(portfolioRepository, s3Service)
+const updatePortfolioItemUseCase = new UpdatePortfolioItemUseCase(portfolioRepository)
+const removePortfolioImageUseCase = new RemovePortfolioImageUseCase(portfolioRepository,s3Service)
 
 // contrller init
 export const providerProfileController = new ProviderProfileController(uploadAvatarUseCase,createProviderProfileUseCase,getProviderProfileUseCase,updateProviderProfileUseCase);
@@ -87,3 +101,5 @@ export const providerServiceController = new ProviderServiceController(createPro
 export const availabilityController = new AvailabilityController(setAvailabilityUseCase,getAvailabilityUseCase)
 export const unavaliabilityController = new UnavailabilityController(createUnavailabilityUseCase, getUnavailabilitiesUseCase,deleteUnavailabilityUseCase)
 export const availabilityOverrideController = new AvailabilityOverrideController(setAvailabilityOverrideUseCase, getAvailabilityOverridesUseCase, deleteAvailabilityOverrideUseCase);
+
+export const portfolioController = new PortfolioController(getUploadUrlUseCase, createPortfolioItemUseCase, getPortfolioUseCase, updatePortfolioItemUseCase, removePortfolioImageUseCase, deletePortfolioItemUseCase)

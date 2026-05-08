@@ -66,4 +66,11 @@ export const successResponse = {
     "Avaliability override fetched successfully",
   DELETE_AVAILABILITY_OVERRIDE_SUCCESS:
     "Avaliability override deleted successfully",
+  GET_UPLOAD_URL_SUCCESS: "Portfolio upload url sent successfully",
+  CREATE_PORTFOLIO_ITEM_SUCCESS: "Portfolio Item created successfully",
+  GET_PORTFOLIO_SUCCESS: "Portfolio item sent successfully",
+  DELETE_PORTFOLIO_ITEM_SUCCESS: "Portfolio item deleted successfully",
+  UPDATE_PORTFOLIO_ITEM_SUCCESS: "portfolio updated successfully",
+  REMOVE_PORTFOLIO_IMAGE_SUCCESS: "Removed portfolio item successfully",
+  
 } as const;

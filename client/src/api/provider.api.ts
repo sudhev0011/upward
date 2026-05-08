@@ -1,70 +1,142 @@
-import { api } from './axios';
-import type { ApiEnvelope } from '@/interfaces/auth';
-import type { ProviderProfile, UpdateProviderProfileRequest, CreateProviderProfileRequest } from '@/interfaces/provider/provider.interface';
-import type { SubmitKycIdentityRequest, SaveKycBankRequest, UploadKycDocumentResponse, ProviderKycDocument, providerBankDocument } from '@/interfaces/provider/kyc.interface';
+import { api } from "./axios";
+import type { ApiEnvelope } from "@/interfaces/auth";
+import type {
+  ProviderProfile,
+  UpdateProviderProfileRequest,
+  CreateProviderProfileRequest,
+} from "@/interfaces/provider/provider.interface";
+import type {
+  SubmitKycIdentityRequest,
+  SaveKycBankRequest,
+  UploadKycDocumentResponse,
+  ProviderKycDocument,
+  providerBankDocument,
+} from "@/interfaces/provider/kyc.interface";
 
-import { ProviderRoutes } from '@/constants/api-routes';
-import { CreateProviderServiceResponse, PaginatedProviderServicesGroupedByCategory, SetProviderServicePriceRequest } from '@/interfaces/admin/provider-service.interface';
+import { ProviderRoutes } from "@/constants/api-routes";
+import {
+  CreateProviderServiceResponse,
+  PaginatedProviderServicesGroupedByCategory,
+  SetProviderServicePriceRequest,
+} from "@/interfaces/admin/provider-service.interface";
 import type {
   SetAvailabilityRequest,
-  AvailabilityResponse
-} from '@/interfaces/provider/availability.interface';
+  AvailabilityResponse,
+} from "@/interfaces/provider/availability.interface";
 
 import type {
   CreateUnavailabilityRequest,
-  Unavailability
-} from '@/interfaces/provider/unavailability.interface';
+  Unavailability,
+} from "@/interfaces/provider/unavailability.interface";
 
 import type {
   SetAvailabilityOverrideRequest,
-  AvailabilityOverride
-} from '@/interfaces/provider/availability-override.interface';
-
+  AvailabilityOverride,
+} from "@/interfaces/provider/availability-override.interface";
+import {
+  CreatePortfolioItemRequest,
+  GetUploadUrlRequest,
+  GetUploadUrlResponse,
+  PortfolioItem,
+  PortfolioPageResponse,
+  RemovePortfolioImageRequest,
+  UpdatePortfolioItemRequest,
+} from "@/interfaces/provider/portfolio.interface";
+import axios from "axios";
 
 export const providerApi = {
-  
   async getProviderProfile(): Promise<ApiEnvelope<ProviderProfile>> {
-    return (await api.get<ApiEnvelope<ProviderProfile>>(ProviderRoutes.PROFILE)).data;
+    return (await api.get<ApiEnvelope<ProviderProfile>>(ProviderRoutes.PROFILE))
+      .data;
   },
 
-  async createProviderProfile(data: CreateProviderProfileRequest): Promise<ApiEnvelope<ProviderProfile>> {
-    return (await api.post<ApiEnvelope<ProviderProfile>>(ProviderRoutes.PROFILE, data)).data;
+  async createProviderProfile(
+    data: CreateProviderProfileRequest,
+  ): Promise<ApiEnvelope<ProviderProfile>> {
+    return (
+      await api.post<ApiEnvelope<ProviderProfile>>(ProviderRoutes.PROFILE, data)
+    ).data;
   },
 
-  async updateProviderProfile(data: UpdateProviderProfileRequest): Promise<ApiEnvelope<ProviderProfile>> {
-    return (await api.put<ApiEnvelope<ProviderProfile>>(ProviderRoutes.PROFILE, data)).data;
+  async updateProviderProfile(
+    data: UpdateProviderProfileRequest,
+  ): Promise<ApiEnvelope<ProviderProfile>> {
+    return (
+      await api.put<ApiEnvelope<ProviderProfile>>(ProviderRoutes.PROFILE, data)
+    ).data;
   },
 
-  async getUploadProfileUrl(data: { fileType: string }): Promise<ApiEnvelope<{ uploadUrl: string; fileUrl: string; }>> {
-    return (await api.post<ApiEnvelope<{ uploadUrl: string; fileUrl: string; }>>(ProviderRoutes.PROFILE_UPLOAD_URL, data)).data;
+  async getUploadProfileUrl(data: {
+    fileType: string;
+  }): Promise<ApiEnvelope<{ uploadUrl: string; fileUrl: string }>> {
+    return (
+      await api.post<ApiEnvelope<{ uploadUrl: string; fileUrl: string }>>(
+        ProviderRoutes.PROFILE_UPLOAD_URL,
+        data,
+      )
+    ).data;
   },
 
-  async submitKycIdentity(data: SubmitKycIdentityRequest): Promise<ApiEnvelope<void>> {
-    return (await api.post<ApiEnvelope<void>>(ProviderRoutes.KYC_IDENTITY, data)).data;
+  async submitKycIdentity(
+    data: SubmitKycIdentityRequest,
+  ): Promise<ApiEnvelope<void>> {
+    return (
+      await api.post<ApiEnvelope<void>>(ProviderRoutes.KYC_IDENTITY, data)
+    ).data;
   },
 
   async saveKycBank(data: SaveKycBankRequest): Promise<ApiEnvelope<void>> {
-    return (await api.post<ApiEnvelope<void>>(ProviderRoutes.KYC_BANK, data)).data;
+    return (await api.post<ApiEnvelope<void>>(ProviderRoutes.KYC_BANK, data))
+      .data;
   },
 
-  async uploadKycDocument(data: { fileType: string }): Promise<ApiEnvelope<UploadKycDocumentResponse>> {
-    return (await api.post<ApiEnvelope<UploadKycDocumentResponse>>(ProviderRoutes.KYC_DOCUMENT_UPLOAD, data)).data;
+  async uploadKycDocument(data: {
+    fileType: string;
+  }): Promise<ApiEnvelope<UploadKycDocumentResponse>> {
+    return (
+      await api.post<ApiEnvelope<UploadKycDocumentResponse>>(
+        ProviderRoutes.KYC_DOCUMENT_UPLOAD,
+        data,
+      )
+    ).data;
   },
 
-  async getKycDocument(): Promise<ApiEnvelope<ProviderKycDocument>>{
-    return (await api.get<ApiEnvelope<ProviderKycDocument>>(ProviderRoutes.GET_KYC_DOCUMENT)).data
+  async getKycDocument(): Promise<ApiEnvelope<ProviderKycDocument>> {
+    return (
+      await api.get<ApiEnvelope<ProviderKycDocument>>(
+        ProviderRoutes.GET_KYC_DOCUMENT,
+      )
+    ).data;
   },
 
-  async getBankDocument(): Promise<ApiEnvelope<providerBankDocument>>{
-    return (await api.get<ApiEnvelope<providerBankDocument>>(ProviderRoutes.GET_BANK_DOCUMENT)).data
+  async getBankDocument(): Promise<ApiEnvelope<providerBankDocument>> {
+    return (
+      await api.get<ApiEnvelope<providerBankDocument>>(
+        ProviderRoutes.GET_BANK_DOCUMENT,
+      )
+    ).data;
   },
 
-  async createProviderService(data: {serviceId: string}): Promise<ApiEnvelope<CreateProviderServiceResponse>>{
-    return (await api.post<ApiEnvelope<CreateProviderServiceResponse>>(ProviderRoutes.CREATE_PROVIDE_SERVICE, data) ).data
+  async createProviderService(data: {
+    serviceId: string;
+  }): Promise<ApiEnvelope<CreateProviderServiceResponse>> {
+    return (
+      await api.post<ApiEnvelope<CreateProviderServiceResponse>>(
+        ProviderRoutes.CREATE_PROVIDE_SERVICE,
+        data,
+      )
+    ).data;
   },
 
-  async setProviderServicePrice(data: SetProviderServicePriceRequest): Promise<ApiEnvelope<CreateProviderServiceResponse>>{
-    return (await api.patch<ApiEnvelope<CreateProviderServiceResponse>>(ProviderRoutes.SET_PROVIDER_SERVICE_PRICE, data)).data
+  async setProviderServicePrice(
+    data: SetProviderServicePriceRequest,
+  ): Promise<ApiEnvelope<CreateProviderServiceResponse>> {
+    return (
+      await api.patch<ApiEnvelope<CreateProviderServiceResponse>>(
+        ProviderRoutes.SET_PROVIDER_SERVICE_PRICE,
+        data,
+      )
+    ).data;
   },
 
   async getProviderServiceGroupedByCategory(params: {
@@ -75,93 +147,163 @@ export const providerApi = {
     mode?: "onsite" | "offsite" | "both";
     sortBy?: "name" | "createdAt";
     sortOrder?: "asc" | "desc";
-  }):Promise<ApiEnvelope<PaginatedProviderServicesGroupedByCategory>>{
-    return (await api.get<ApiEnvelope<PaginatedProviderServicesGroupedByCategory>>(ProviderRoutes.GET_ALL_PROVIDER_SERVICE_BY_CATEGORY,{params})).data
+  }): Promise<ApiEnvelope<PaginatedProviderServicesGroupedByCategory>> {
+    return (
+      await api.get<ApiEnvelope<PaginatedProviderServicesGroupedByCategory>>(
+        ProviderRoutes.GET_ALL_PROVIDER_SERVICE_BY_CATEGORY,
+        { params },
+      )
+    ).data;
   },
 
-  async deleteProviderServiceById(id: string):Promise<ApiEnvelope<void>>{
-    return (await api.delete<ApiEnvelope<void>>(ProviderRoutes.DELETE_PROVIDER_SERVICE.replace(':id', id))).data
+  async deleteProviderServiceById(id: string): Promise<ApiEnvelope<void>> {
+    return (
+      await api.delete<ApiEnvelope<void>>(
+        ProviderRoutes.DELETE_PROVIDER_SERVICE.replace(":id", id),
+      )
+    ).data;
   },
-
-
 
   async setAvailability(
-  data: SetAvailabilityRequest
-): Promise<ApiEnvelope<AvailabilityResponse>> {
-  return (
-    await api.put<ApiEnvelope<AvailabilityResponse>>(
-      ProviderRoutes.SET_AVAILABILITY,
-      data
-    )
-  ).data;
-},
+    data: SetAvailabilityRequest,
+  ): Promise<ApiEnvelope<AvailabilityResponse>> {
+    return (
+      await api.put<ApiEnvelope<AvailabilityResponse>>(
+        ProviderRoutes.SET_AVAILABILITY,
+        data,
+      )
+    ).data;
+  },
 
-async getAvailability(): Promise<ApiEnvelope<AvailabilityResponse>> {
-  return (
-    await api.get<ApiEnvelope<AvailabilityResponse>>(
-      ProviderRoutes.GET_AVAILABILITY
-    )
-  ).data;
-},
+  async getAvailability(): Promise<ApiEnvelope<AvailabilityResponse>> {
+    return (
+      await api.get<ApiEnvelope<AvailabilityResponse>>(
+        ProviderRoutes.GET_AVAILABILITY,
+      )
+    ).data;
+  },
 
-async createUnavailability(
-  data: CreateUnavailabilityRequest
-): Promise<ApiEnvelope<Unavailability>> {
-  return (
-    await api.post<ApiEnvelope<Unavailability>>(
-      ProviderRoutes.CREATE_UNAVAILABILITY,
-      data
-    )
-  ).data;
-},
+  async createUnavailability(
+    data: CreateUnavailabilityRequest,
+  ): Promise<ApiEnvelope<Unavailability>> {
+    return (
+      await api.post<ApiEnvelope<Unavailability>>(
+        ProviderRoutes.CREATE_UNAVAILABILITY,
+        data,
+      )
+    ).data;
+  },
 
+  async deleteUnavailability(id: string): Promise<ApiEnvelope<void>> {
+    return (
+      await api.delete<ApiEnvelope<void>>(
+        ProviderRoutes.DELETE_UNAVAILABILITY.replace(":id", id),
+      )
+    ).data;
+  },
 
+  async getUnavailability(): Promise<ApiEnvelope<Unavailability[]>> {
+    return (
+      await api.get<ApiEnvelope<Unavailability[]>>(
+        ProviderRoutes.GET_UNAVAILABILITY,
+      )
+    ).data;
+  },
 
-async deleteUnavailability(id: string): Promise<ApiEnvelope<void>> {
-  return (
-    await api.delete<ApiEnvelope<void>>(
-      ProviderRoutes.DELETE_UNAVAILABILITY.replace(':id', id)
-    )
-  ).data;
-},
+  async getAvailabilityOverrides(): Promise<
+    ApiEnvelope<AvailabilityOverride[]>
+  > {
+    return (
+      await api.get<ApiEnvelope<AvailabilityOverride[]>>(
+        ProviderRoutes.GET_AVAILABILITY_OVERRIDES,
+      )
+    ).data;
+  },
 
+  async setAvailabilityOverride(
+    data: SetAvailabilityOverrideRequest,
+  ): Promise<ApiEnvelope<AvailabilityOverride>> {
+    return (
+      await api.put<ApiEnvelope<AvailabilityOverride>>(
+        ProviderRoutes.SET_AVAILABILITY_OVERRIDE,
+        data,
+      )
+    ).data;
+  },
 
-async getUnavailability(): Promise<ApiEnvelope<Unavailability[]>> {
-  return (
-    await api.get<ApiEnvelope<Unavailability[]>>(
-      ProviderRoutes.GET_UNAVAILABILITY
-    )
-  ).data;
-},
+  async deleteAvailabilityOverride(date: string): Promise<ApiEnvelope<void>> {
+    return (
+      await api.delete<ApiEnvelope<void>>(
+        ProviderRoutes.DELETE_AVAILABILITY_OVERRIDE.replace(":date", date),
+      )
+    ).data;
+  },
 
+  async getUploadUrl(
+    params: GetUploadUrlRequest,
+  ): Promise<ApiEnvelope<GetUploadUrlResponse>> {
+    return (
+      await api.get<ApiEnvelope<GetUploadUrlResponse>>(
+        ProviderRoutes.GET_PORTFOLIO_UPLOAD_URL,
+        { params },
+      )
+    ).data;
+  },
 
-async getAvailabilityOverrides(): Promise<ApiEnvelope<AvailabilityOverride[]>> {
-  return (
-    await api.get<ApiEnvelope<AvailabilityOverride[]>>(
-      ProviderRoutes.GET_AVAILABILITY_OVERRIDES
-    )
-  ).data;
-},
+  // Step 2 — after all images are uploaded to S3, save the portfolio item
+  async createPortfolioItem(
+    data: CreatePortfolioItemRequest,
+  ): Promise<ApiEnvelope<PortfolioItem>> {
+    return (
+      await api.post<ApiEnvelope<PortfolioItem>>(
+        ProviderRoutes.CREATE_PORTFOLIO_ITEM,
+        data,
+      )
+    ).data;
+  },
 
+  // Get all portfolio items for the authenticated provider
+  async getPortfolio(
+    page: number = 1,
+    limit: number = 9
+  ): Promise<ApiEnvelope<PortfolioPageResponse>> {
+    return (
+      await api.get<ApiEnvelope<PortfolioPageResponse>>(
+        ProviderRoutes.GET_PORTFOLIO,
+        { params: { page, limit } }
+      )
+    ).data;
+  },
 
-async setAvailabilityOverride(
-  data: SetAvailabilityOverrideRequest
-): Promise<ApiEnvelope<AvailabilityOverride>> {
-  return (
-    await api.put<ApiEnvelope<AvailabilityOverride>>(
-      ProviderRoutes.SET_AVAILABILITY_OVERRIDE,
-      data
-    )
-  ).data;
-},
+  // Delete a portfolio item (also deletes images from S3 on backend)
+  async deletePortfolioItem(id: string): Promise<ApiEnvelope<null>> {
+    const url = ProviderRoutes.DELETE_PORTFOLIO_ITEM.replace(":id", id);
+    return (await api.delete<ApiEnvelope<null>>(url)).data;
+  },
 
+  // Utility — upload a single file directly to S3 via presigned URL
+  async uploadFileToS3(uploadUrl: string, file: File): Promise<void> {
+    await axios.put(uploadUrl, file, {
+      headers: {
+        "Content-Type": file.type,
+      },
+    });
+  },
 
-async deleteAvailabilityOverride(date: string): Promise<ApiEnvelope<void>> {
-  return (
-    await api.delete<ApiEnvelope<void>>(
-      ProviderRoutes.DELETE_AVAILABILITY_OVERRIDE.replace(':date', date)
-    )
-  ).data;
-},
+  async updatePortfolioItem(
+    id: string,
+    data: UpdatePortfolioItemRequest,
+  ): Promise<ApiEnvelope<PortfolioItem>> {
+    const url = ProviderRoutes.UPDATE_PORTFOLIO_ITEM.replace(":id", id);
+    return (await api.patch<ApiEnvelope<PortfolioItem>>(url, data)).data;
+  },
 
+  // Removes one image from an item — backend deletes from S3 immediately
+  async removePortfolioImage(
+    id: string,
+    data: RemovePortfolioImageRequest,
+  ): Promise<ApiEnvelope<null>> {
+    const url = ProviderRoutes.REMOVE_PORTFOLIO_IMAGE.replace(":id", id);
+    return (await api.delete<ApiEnvelope<null>>(url, { data })).data;
+  },
 };

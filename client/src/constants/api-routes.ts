@@ -47,6 +47,13 @@ export const ProviderRoutes = {
   GET_AVAILABILITY_OVERRIDES: "/api/provider/availability/overrides",
   DELETE_AVAILABILITY_OVERRIDE: "/api/provider/availability/overrides/:date",
 
+   // ─── Portfolio ───────────────────────────────────────────────────────────────
+  GET_PORTFOLIO_UPLOAD_URL: "/api/provider/portfolio/upload-url",
+  CREATE_PORTFOLIO_ITEM: "/api/provider/portfolio",
+  GET_PORTFOLIO: "/api/provider/portfolio",
+  DELETE_PORTFOLIO_ITEM: "/api/provider/portfolio/:id",
+  REMOVE_PORTFOLIO_IMAGE:    "/api/provider/portfolio/:id/images",
+  UPDATE_PORTFOLIO_ITEM:     "/api/provider/portfolio/:id",
 
 } as const;
 
@@ -70,7 +77,7 @@ export const AdminRoutes = {
   GET_ALL_PAGINATED_SERVICES: '/api/admin/services',
   TOGGLE_SERVICE: '/api/admin/service/toggle',
   UPDATE_SERVICE: '/api/admin/service/toggle',
-
+  
 
 } as const;
 

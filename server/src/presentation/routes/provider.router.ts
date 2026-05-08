@@ -10,6 +10,7 @@ import {
   availabilityController,
   unavaliabilityController,
   availabilityOverrideController,
+  portfolioController,
 } from "../../infrastructure/di/provider.Di";
 import { UserBlockedMiddleware } from "../middleware/user-blocked.middleware";
 import { getUserByIdUseCase } from "../../infrastructure/di/authDi";
@@ -95,5 +96,14 @@ export class ProviderRouter {
       "/availability/overrides/:date",
       availabilityOverrideController.deleteAvailabilityOverride,
     );
+
+    //---Portfolio
+
+    this.router.get("/portfolio/upload-url", portfolioController.getUploadUrl);
+    this.router.post("/portfolio", portfolioController.createPortfolioItem);
+    this.router.get("/portfolio", portfolioController.getPortfolio);
+    this.router.delete("/portfolio/:id", portfolioController.deletePortfolioItem);
+    this.router.delete("/portfolio/:id/images", portfolioController.removePortfolioImage);
+    this.router.patch("/portfolio/:id", portfolioController.updatePortfolioItem);
   }
 }
