@@ -59,3 +59,10 @@ export const GetUploadUrlRequestDtoSchema = z.object({
 });
 
 export type GetUploadUrlRequestDto = z.infer<typeof GetUploadUrlRequestDtoSchema>;
+
+export const GetPortfolioQueryDtoSchema = z.object({
+  page:  z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(9),
+});
+ 
+export type GetPortfolioQueryDto = z.infer<typeof GetPortfolioQueryDtoSchema>;

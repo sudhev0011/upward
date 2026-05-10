@@ -1,1 +1,1 @@
-export const PORTFOLIO_LIMIT = 9;
+export const PORTFOLIO_LIMIT = 6;

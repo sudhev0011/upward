@@ -10,6 +10,14 @@ export interface PortfolioItemResponseDto {
   updatedAt: Date;
 }
 
+export interface PortfolioPageResponseDto {
+  items: PortfolioItemResponseDto[];
+  totalCount: number;
+  page: number;
+  limit: number;
+  hasNextPage: boolean;
+}
+
 export interface GetUploadUrlResponseDto {
   uploadUrl: string;
   fileUrl: string;

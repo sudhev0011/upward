@@ -8,7 +8,7 @@ import {
 } from "../../../../shared/utils/presentation/controller.utils";
 import { formatZodErrors } from "../../../../shared/utils/presentation/zod-error-formatter.utils";
 import { successResponse } from "../../../../shared/constants";
-import { CreatePortfolioItemRequestDtoSchema, GetUploadUrlRequestDtoSchema, RemovePortfolioImageRequestDtoSchema, UpdatePortfolioItemRequestDtoSchema } from "../../../../application/dtos/provider/portfolio/portfolioRequest.dto";
+import { CreatePortfolioItemRequestDtoSchema, GetPortfolioQueryDtoSchema, GetUploadUrlRequestDtoSchema, RemovePortfolioImageRequestDtoSchema, UpdatePortfolioItemRequestDtoSchema } from "../../../../application/dtos/provider/portfolio/portfolioRequest.dto";
 import { ICreatePortfolioItemUseCase } from "../../../../domain/interfaces/usecases/portfolio/ICreatePortfolioItemUseCase";
 import { IGetPortfolioUseCase } from "../../../../domain/interfaces/usecases/portfolio/IGetPortfolioUseCase";
 import { IDeletePortfolioItemUseCase } from "../../../../domain/interfaces/usecases/portfolio/IDeletePortfolioItemUseCase";
@@ -86,9 +86,17 @@ export class PortfolioController {
     next: NextFunction
   ) => {
     const providerId = validateUserId(req);
-
+ 
+    const parsed = GetPortfolioQueryDtoSchema.safeParse(req.query);
+    if (!parsed.success)
+      return handleValidationError(formatZodErrors(parsed.error), next);
+ 
     try {
-      const result = await this._getPortfolioUseCase.execute(providerId);
+      const result = await this._getPortfolioUseCase.execute(
+        providerId,
+        parsed.data.page,
+        parsed.data.limit
+      );
       sendSuccessResponse(res, successResponse.GET_PORTFOLIO_SUCCESS, result);
     } catch (error) {
       handleAsyncError(error, next);

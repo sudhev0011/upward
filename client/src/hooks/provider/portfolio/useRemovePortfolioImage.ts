@@ -6,8 +6,8 @@ export const useRemovePortfolioImage = () => {
   const queryClient = useQueryClient();
  
   return useMutation({
-    mutationFn: ({ itemId, imageUrl }: { itemId: string; imageUrl: string }) =>
-      providerApi.removePortfolioImage(itemId, { imageUrl }),
+    mutationFn: ({ id, imageUrl }: { id: string; imageUrl: string }) =>
+      providerApi.removePortfolioImage(id, { imageUrl }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: portfolioKeys.all });
     },

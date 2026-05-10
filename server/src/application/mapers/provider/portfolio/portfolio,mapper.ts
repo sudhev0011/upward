@@ -1,5 +1,8 @@
 import { PortfolioItem } from "../../../../domain/entities/portfolio.entity";
-import { PortfolioItemResponseDto } from "../../../dtos/provider/portfolio/portfolioResponse.dto";
+import {
+  PortfolioItemResponseDto,
+  PortfolioPageResponseDto,
+} from "../../../dtos/provider/portfolio/portfolioResponse.dto";
 
 export class PortfolioMapper {
   static toResponse(entity: PortfolioItem): PortfolioItemResponseDto {
@@ -16,7 +19,18 @@ export class PortfolioMapper {
     };
   }
 
-  static toResponseList(entities: PortfolioItem[]): PortfolioItemResponseDto[] {
-    return entities.map((e) => this.toResponse(e));
+  static toPageResponse(
+    entities: PortfolioItem[],
+    totalCount: number,
+    page: number,
+    limit: number
+  ): PortfolioPageResponseDto {
+    return {
+      items:       entities.map((e) => this.toResponse(e)),
+      totalCount,
+      page,
+      limit,
+      hasNextPage: page * limit < totalCount,
+    };
   }
 }

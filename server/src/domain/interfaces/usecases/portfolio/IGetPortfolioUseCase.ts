@@ -1,5 +1,5 @@
-import { PortfolioItemResponseDto } from "../../../../application/dtos/provider/portfolio/portfolioResponse.dto";
+import { PortfolioPageResponseDto } from "../../../../application/dtos/provider/portfolio/portfolioResponse.dto";
 
 export interface IGetPortfolioUseCase {
-  execute(providerId: string): Promise<PortfolioItemResponseDto[]>;
+  execute(providerId: string, page: number, limit: number): Promise<PortfolioPageResponseDto>;
 }
