@@ -11,12 +11,12 @@ export interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
   children, 
   allowedRoles = [], 
-  redirectTo = '/auth/login' 
+  redirectTo = '/login' 
 }) => {
   const { isAuthenticated, activeRole,isAuthChecked } = useAppSelector((state) => state.auth);
   const location = useLocation();
 
-  if (!isAuthenticated) {
+  if (!isAuthChecked) {
     return <Loading />;
   }
 

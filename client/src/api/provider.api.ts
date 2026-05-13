@@ -250,7 +250,6 @@ export const providerApi = {
     ).data;
   },
 
-  // Step 2 — after all images are uploaded to S3, save the portfolio item
   async createPortfolioItem(
     data: CreatePortfolioItemRequest,
   ): Promise<ApiEnvelope<PortfolioItem>> {
@@ -262,7 +261,6 @@ export const providerApi = {
     ).data;
   },
 
-  // Get all portfolio items for the authenticated provider
   async getPortfolio(
     page: number = 1,
     limit: number = 9
@@ -275,13 +273,11 @@ export const providerApi = {
     ).data;
   },
 
-  // Delete a portfolio item (also deletes images from S3 on backend)
   async deletePortfolioItem(id: string): Promise<ApiEnvelope<null>> {
     const url = ProviderRoutes.DELETE_PORTFOLIO_ITEM.replace(":id", id);
     return (await api.delete<ApiEnvelope<null>>(url)).data;
   },
 
-  // Utility — upload a single file directly to S3 via presigned URL
   async uploadFileToS3(uploadUrl: string, file: File): Promise<void> {
     await axios.put(uploadUrl, file, {
       headers: {
@@ -298,7 +294,6 @@ export const providerApi = {
     return (await api.patch<ApiEnvelope<PortfolioItem>>(url, data)).data;
   },
 
-  // Removes one image from an item — backend deletes from S3 immediately
   async removePortfolioImage(
     id: string,
     data: RemovePortfolioImageRequest,

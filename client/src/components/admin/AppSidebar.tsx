@@ -107,7 +107,8 @@ export function AppSidebar() {
 
   const handleLogout = async () => {
     logoutMutation(undefined, {
-      onSuccess: () => {
+      onSuccess: (res) => {
+        toast.info(res?.message)
         dispatch(logout());
         navigate("/login/admin");
       },

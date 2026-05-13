@@ -102,7 +102,7 @@ export const Hero = () => {
           </Magnet>
 
           <Magnet padding={30} magnetStrength={5}>
-            <Link to="/services">
+            <Link to="/providers">
               <Button
                 size="lg"
                 variant="outline"

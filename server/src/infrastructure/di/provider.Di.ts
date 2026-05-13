@@ -44,13 +44,15 @@ import { GetPortfolioUseCase } from "../../application/use-cases/provider/portfo
 import { DeletePortfolioItemUseCase } from "../../application/use-cases/provider/portfolio/deletePortfolioItem.use-case";
 import { UpdatePortfolioItemUseCase } from "../../application/use-cases/provider/portfolio/updatePortfolioItem.use-case";
 import { RemovePortfolioImageUseCase } from "../../application/use-cases/provider/portfolio/removePortfolioItem.use-case";
+import { GetProvidersByCategoryUseCase } from "../../application/use-cases/provider/profile/get-providers-by-category.use-case";
+import { serviceRespository, categoryRepository } from "./adminDi";
 
 //repo init
 const userRepository = new UserRepository(); 
 const providerProfileRepository = new ProviderProfileRepository();
 export const providerKycRepository = new ProviderKycRepository();
 const providerBankRepository = new ProviderBankRepository();
-const providerServiceRepository = new ProviderServiceRepository()
+export const providerServiceRepository = new ProviderServiceRepository()
 const avaliabilityRepository = new AvailabilityRepository()
 const unavailabilityRepository = new UnavailabilityRepository()
 const availabilityOverrideRepository = new AvailabilityOverrideRepository();
@@ -63,7 +65,7 @@ const encryptionService = new EncryptionService();
 
 
 // useCase init
-const getProviderProfileUseCase = new GetProviderProfileUseCase(providerProfileRepository,userRepository);
+export const getProviderProfileUseCase = new GetProviderProfileUseCase(providerProfileRepository,userRepository);
 const updateProviderProfileUseCase = new UpdateProviderProfileUseCase(providerProfileRepository,userRepository,s3Service,logger);
 const createProviderProfileUseCase = new CreateProviderProfileUseCase(providerProfileRepository);
 const uploadAvatarUseCase = new UploadAvatarUseCase(s3Service);
@@ -75,26 +77,30 @@ export const getProviderKycUseCase = new GetProviderKycUseCase(providerKycReposi
 const getProviderBankUseCase = new GetProviderBankUseCase(providerBankRepository,s3Service,encryptionService);
 const createProviderServiceUseCase = new CreateProviderServiceUseCase(providerServiceRepository);
 const getProviderServicesByCategoryUseCase = new GetProviderServicesByCategoryUseCase(userRepository,providerServiceRepository)
-const setProviderServicePriceUseCase = new SetProviderServicePriceUseCase(providerServiceRepository);
+const setProviderServicePriceUseCase = new SetProviderServicePriceUseCase(providerServiceRepository, serviceRespository,providerProfileRepository,categoryRepository,logger);
 const deleteProviderServiceUseCase = new DeleteProviderServiceUseCase(providerServiceRepository)
 const setAvailabilityUseCase = new SetAvailabilityUseCase(avaliabilityRepository)
-const getAvailabilityUseCase = new GetAvailabilityUseCase(avaliabilityRepository)
-const getUnavailabilitiesUseCase = new GetUnavailabilitiesUseCase(unavailabilityRepository)
+export const getAvailabilityUseCase = new GetAvailabilityUseCase(avaliabilityRepository)
+export const getUnavailabilitiesUseCase = new GetUnavailabilitiesUseCase(unavailabilityRepository)
 const createUnavailabilityUseCase = new CreateUnavailabilityUseCase(unavailabilityRepository)
 const deleteUnavailabilityUseCase = new DeleteUnavailabilityUseCase(unavailabilityRepository)
 const setAvailabilityOverrideUseCase = new SetAvailabilityOverrideUseCase(availabilityOverrideRepository,unavailabilityRepository);
-const getAvailabilityOverridesUseCase = new GetAvailabilityOverridesUseCase(availabilityOverrideRepository);
+export const getAvailabilityOverridesUseCase = new GetAvailabilityOverridesUseCase(availabilityOverrideRepository);
 const deleteAvailabilityOverrideUseCase = new DeleteAvailabilityOverrideUseCase(availabilityOverrideRepository);
 
 const getUploadUrlUseCase = new GetUploadUrlUseCase(s3Service)
 const createPortfolioItemUseCase = new CreatePortfolioItemUseCase(portfolioRepository)
-const getPortfolioUseCase = new GetPortfolioUseCase(portfolioRepository)
+export const getPortfolioUseCase = new GetPortfolioUseCase(portfolioRepository)
 const deletePortfolioItemUseCase = new DeletePortfolioItemUseCase(portfolioRepository, s3Service)
 const updatePortfolioItemUseCase = new UpdatePortfolioItemUseCase(portfolioRepository)
 const removePortfolioImageUseCase = new RemovePortfolioImageUseCase(portfolioRepository,s3Service)
 
+const getProvidersByCategoryUseCase = new GetProvidersByCategoryUseCase(
+  providerProfileRepository,
+);
+
 // contrller init
-export const providerProfileController = new ProviderProfileController(uploadAvatarUseCase,createProviderProfileUseCase,getProviderProfileUseCase,updateProviderProfileUseCase);
+export const providerProfileController = new ProviderProfileController(uploadAvatarUseCase,createProviderProfileUseCase,getProviderProfileUseCase,updateProviderProfileUseCase, getProvidersByCategoryUseCase);
 export const kycController = new KycController(submitProviderKycUseCase,saveProviderBankUseCase,getProviderKycUseCase,getProviderBankUseCase,uploadKycDocumentUseCase)
 export const providerServiceController = new ProviderServiceController(createProviderServiceUseCase,getProviderServicesByCategoryUseCase,setProviderServicePriceUseCase, deleteProviderServiceUseCase)
 

@@ -26,8 +26,13 @@ export class PortfolioController {
     private readonly _deletePortfolioItemUseCase: IDeletePortfolioItemUseCase,
   ) {}
 
-  // GET /portfolio/upload-url?fileName=x&contentType=image/jpeg
-  // Step 1 — provider requests a presigned S3 URL before uploading
+  /**
+   * provider requests a presigned S3 URL before uploading
+   * @param req /portfolio/upload-url?fileName=x&contentType=image/jpeg
+   * @param res the response is a infinity scrollable portfolios based on the title
+   * @param next 
+   * @returns 
+   */
   getUploadUrl = async (
     req: AuthenticatedRequest,
     res: Response,
@@ -51,8 +56,14 @@ export class PortfolioController {
     }
   };
 
-  // POST /portfolio
-  // Step 2 — after uploading to S3, provider saves the portfolio item
+
+  /**
+   * after uploading to S3, provider saves the portfolio item
+   * @param req the request body is containing the title,image urls,tags etc
+   * @param res response is the newly added document data
+   * @param next 
+   * @returns 
+   */
   createPortfolioItem = async (
     req: AuthenticatedRequest,
     res: Response,
@@ -78,8 +89,13 @@ export class PortfolioController {
     }
   };
 
-  // GET /portfolio
-  // Returns all portfolio items for the authenticated provider
+  /**
+   * Returns all portfolio items for the authenticated provider
+   * @param req reqest to fetch all the portfolios for listing with infinity scroll feature
+   * @param res response is the portfolios with infinity scroll metadatas
+   * @param next 
+   * @returns 
+   */
   getPortfolio = async (
     req: AuthenticatedRequest,
     res: Response,
@@ -88,9 +104,11 @@ export class PortfolioController {
     const providerId = validateUserId(req);
  
     const parsed = GetPortfolioQueryDtoSchema.safeParse(req.query);
-    if (!parsed.success)
+    if (!parsed.success){
       return handleValidationError(formatZodErrors(parsed.error), next);
- 
+      
+    }
+    
     try {
       const result = await this._getPortfolioUseCase.execute(
         providerId,
@@ -103,8 +121,13 @@ export class PortfolioController {
     }
   };
 
-  // DELETE /portfolio/:id
-  // Deletes item doc from DB and all associated images from S3
+  /**
+   * Deletes item doc from DB and all associated images from S3
+   * @param req the request include the id of the portfolio document
+   * @param res void
+   * @param next 
+   * @returns 
+   */
   deletePortfolioItem = async (
     req: AuthenticatedRequest,
     res: Response,
@@ -126,8 +149,13 @@ export class PortfolioController {
     }
   };
 
-    // PATCH /portfolio/:id
-  // Updates metadata + appends new images
+  /**
+   * Updates metadata + appends new images, the body may contain all the fields of the portfolio document
+   * @param req the body may contain all the fields of the portfolio document
+   * @param res the response is the updated portfolio document
+   * @param next 
+   * @returns 
+   */
   updatePortfolioItem = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const providerId = validateUserId(req);
     const { id } = req.params;
@@ -147,8 +175,13 @@ export class PortfolioController {
     }
   };
  
-  // DELETE /portfolio/:id/images
-  // Removes a single image from item + deletes from S3
+  /**
+   * Removes a single image from item + deletes from S3
+   * @param req the request includes the id of the document and the imageUrl
+   * @param res void
+   * @param next 
+   * @returns 
+   */
   removePortfolioImage = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const providerId = validateUserId(req);
     const { id } = req.params;

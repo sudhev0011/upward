@@ -158,7 +158,7 @@ export default function Providers() {
         rowKey={(p) => p.userId}
         onRowClick={(p) => setSelectedProviderId(p.userId)}
         search={params.search}
-        onSearchChange={(val) =>
+        onSearchChange={(val) =>  
           setParams((prev) => ({ ...prev, search: val, page: 1 }))
         }
         currentPage={listData?.data?.page || 1}

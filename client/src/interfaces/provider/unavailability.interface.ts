@@ -1,5 +1,3 @@
-// @/interfaces/provider/unavailability.interface.ts
-
 export const UnavailabilitySource = {
   MANUAL: "manual",
   BOOKING: "booking",

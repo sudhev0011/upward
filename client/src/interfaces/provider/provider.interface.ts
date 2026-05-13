@@ -24,6 +24,7 @@ export interface ProviderProfile {
   isBlocked: boolean | null;
   isVerified: boolean |  null;
   socialLinks: SocialLink[];
+  categories: string[];
   createdAt: string;
   updatedAt: string;
 }

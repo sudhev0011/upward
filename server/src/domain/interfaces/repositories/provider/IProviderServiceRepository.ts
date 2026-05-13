@@ -2,6 +2,7 @@ import { ProviderService } from "../../../entities/provider-service.entity";
 import { ProviderServicesGroupedData } from "../../../queries/provider/ProviderServicesQueryModel";
 import { IBaseRepository } from "../base/IBaseRepository";
 import { PaginatedResult } from "../../../common.types";
+import { ProviderServicePublicItem } from "../../../queries/client/provider-service-public-item";
 
 export interface IProviderServiceRepository extends IBaseRepository<ProviderService>{
 
@@ -28,4 +29,7 @@ export interface IProviderServiceRepository extends IBaseRepository<ProviderServ
     sortOrder?: "asc" | "desc";
   }
   ): Promise<PaginatedResult<ProviderServicesGroupedData>>;
+
+  // IProviderServiceRepository
+getActiveServicesByProvider(providerId: string): Promise<ProviderServicePublicItem[]>;
 }

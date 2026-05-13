@@ -1,4 +1,7 @@
 import { format } from "date-fns";
+import { AvailabilityResponse } from "@/interfaces/provider/availability.interface";
+import { AvailabilityOverride } from "@/interfaces/provider/availability-override.interface";
+import { Unavailability } from "@/interfaces/provider/unavailability.interface";
 
 // "09:00" → "9:00 AM" | "13:30" → "1:30 PM"
 export const to12h = (time: string | null): string => {
@@ -17,3 +20,74 @@ export const fromDateString = (str: string): Date => {
   const [y, m, d] = str.split("-").map(Number);
   return new Date(y, m - 1, d);
 };
+
+export type DayStatus =
+  | { type: "available"; startTime: string; endTime: string }
+  | { type: "unavailable"; reason?: string }
+  | { type: "not_working" };
+
+const DAYS = [
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+] as const;
+
+export function resolveDayStatus(
+  date: Date,
+  availability: AvailabilityResponse,
+  overrides: AvailabilityOverride[],
+  unavailabilities: Unavailability[],
+): DayStatus {
+  const dateStr = date.toISOString().split("T")[0]; // "YYYY-MM-DD"
+
+  // 1. Check unavailability — highest priority (manual blocks + bookings)
+  const unavail = unavailabilities.find((u) => {
+    const start = new Date(u.startDate);
+    const end = new Date(u.endDate);
+    return date >= start && date <= end;
+  });
+  if (unavail) {
+    return { type: "unavailable", reason: unavail.reason ?? undefined };
+  }
+
+  // 2. Check override for this specific date
+  const override = overrides.find((o) => o.date === dateStr);
+  if (override) {
+    if (!override.isWorking) return { type: "unavailable" };
+    if (override.startTime && override.endTime) {
+      return {
+        type: "available",
+        startTime: override.startTime,
+        endTime: override.endTime,
+      };
+    }
+  }
+
+  // 3. Fall back to weekly schedule
+  const dayName = DAYS[date.getDay()];
+  const schedule = availability.weeklySchedule[dayName];
+
+  if (!schedule.isWorking) return { type: "not_working" };
+  if (schedule.startTime && schedule.endTime) {
+    return {
+      type: "available",
+      startTime: schedule.startTime,
+      endTime: schedule.endTime,
+    };
+  }
+  return { type: "not_working" };
+}
+
+export function getMonthDays(year: number, month: number): Date[] {
+  const days: Date[] = [];
+  const date = new Date(year, month, 1);
+  while (date.getMonth() === month) {
+    days.push(new Date(date));
+    date.setDate(date.getDate() + 1);
+  }
+  return days;
+}

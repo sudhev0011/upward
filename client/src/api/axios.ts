@@ -19,8 +19,6 @@ const processQueue = (error: AxiosError | null = null) => {
     if (error) {
       prom.reject(error);
     } else {
-      // In a success case, we don't pass anything here because 
-      // the resolve() call inside the interceptor handles the retry
       prom.resolve(null as unknown as AxiosResponse); 
     }
   });

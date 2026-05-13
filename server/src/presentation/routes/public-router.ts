@@ -1,23 +1,58 @@
 import { Router } from "express";
-import { authenticateToken } from "../middleware/auth.middleware";
-import { publicCategoryController, publicServiceController } from "../../infrastructure/di/publicDi";
+import {
+  publicAvailabilityController,
+  publicCategoryController,
+  publicPortfolioController,
+  publicProviderProfileController,
+  publicProviderServiceController,
+  publicServiceController,
+} from "../../infrastructure/di/publicDi";
+import { providerProfileController } from "../../infrastructure/di/provider.Di";
 
-export class PublicRouter{
+export class PublicRouter {
+  public router: Router;
 
-    public router: Router;
+  constructor() {
+    this.router = Router();
+    this._initializeRoutes();
+  }
 
-    constructor(){
-        this.router = Router();
-        this._initializeRoutes();
-    }
+  private _initializeRoutes(): void {
+    this.router.get("/categories", publicCategoryController.getAllCategories);
+    this.router.get("/services", publicServiceController.getAllService);
+    this.router.get(
+      "/services/:categoryId",
+      publicServiceController.getServicesByCategory,
+    );
+    this.router.get(
+      "/providers",
+      providerProfileController.getProvidersByCategory,
+    );
+    this.router.get(
+      "/providers/:providerId/portfolio",
+      publicPortfolioController.getPortfolio,
+    );
+    this.router.get(
+      "/providers/:providerId/availability",
+      publicAvailabilityController.getAvailability,
+    );
+    this.router.get(
+      "/providers/:providerId/availability/overrides",
+      publicAvailabilityController.getAvailabilityOverrides,
+    );
+    this.router.get(
+      "/providers/:providerId/unavailability",
+      publicAvailabilityController.getUnavailabilities,
+    );
 
-    private _initializeRoutes(): void{
+    this.router.get(
+      "/providers/:providerId/profile",
+      publicProviderProfileController.getProviderProfile,
+    );
 
-        this.router.use(authenticateToken);
-
-        this.router.get('/categories', publicCategoryController.getAllCategories);
-        this.router.get('/services', publicServiceController.getAllService);
-        this.router.get('/services/:categoryId', publicServiceController.getServicesByCategory);
-        
-    }
+    this.router.get(
+      "/providers/:providerId/services",
+      publicProviderServiceController.getActiveServices,
+    );
+  }
 }

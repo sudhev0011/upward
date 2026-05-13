@@ -128,7 +128,7 @@ const Navbar = () => {
 
       links: [
         { label: "Home", href: "/" },
-        { label: "Services", href: "/services" },
+        { label: "Services", href: "/providers?category=Photography" },
       ],
     },
 

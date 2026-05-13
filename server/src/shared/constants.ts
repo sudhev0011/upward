@@ -72,5 +72,7 @@ export const successResponse = {
   DELETE_PORTFOLIO_ITEM_SUCCESS: "Portfolio item deleted successfully",
   UPDATE_PORTFOLIO_ITEM_SUCCESS: "portfolio updated successfully",
   REMOVE_PORTFOLIO_IMAGE_SUCCESS: "Removed portfolio item successfully",
+
+  GET_PROVIDERS_BY_CATEGORY: "Providers fetched by category successfully"
   
 } as const;

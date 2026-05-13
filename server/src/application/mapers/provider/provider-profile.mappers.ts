@@ -23,6 +23,7 @@ export class ProviderProfileMapper {
     ratingAvg?: number | null;
     isApprovedByAdmin?: boolean | null;
     socialLinks?: SocialLink[];
+    categories?: string[];
   }): CreateInput<ProviderProfile> {
     return {
       userId: data.userId,
@@ -39,6 +40,7 @@ export class ProviderProfileMapper {
       ratingAvg: data.ratingAvg ?? 0,
       isApprovedByAdmin: data.isApprovedByAdmin ?? false,
       socialLinks: data.socialLinks ?? [],
+      categories: data.categories ?? []
     };
   }
 

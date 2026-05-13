@@ -9,6 +9,8 @@ import ForgotPassword from '@/pages/auth/ForgotPassword';
 import AuthRedirect from '@/components/common/AuthRedirect';
 import PublicLayout from '@/layouts/PublicLayout';
 import { RoleGuard } from '@/components/common/RoleGuard';
+import { ProviderListingPage } from '@/pages/public/ProviderListingPage';
+import { ProviderProfilePage } from '@/pages/public/ProviderProfilePage';
 
 const PublicRoutes = () => {
   return (
@@ -43,6 +45,13 @@ const PublicRoutes = () => {
           path="/reset-password"
           element={<AuthRedirect> <ResetPassword /> </AuthRedirect>}
           />
+
+          <Route
+          path="/providers"
+          element={<ProviderListingPage />}
+          />
+
+          <Route path="/providers/:providerId" element={<ProviderProfilePage />} />
 
         </Route>
     </Routes>

@@ -11,41 +11,22 @@ import {
 } from "@/components/ui/table";
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 export interface ColumnDef<TRow> {
-  /** Header label. Pass an empty string for action columns. */
   header: string;
-  /** Optional fixed width class, e.g. "w-10" */
   width?: string;
-  /** Render the cell content for this row */
   cell: (row: TRow) => React.ReactNode;
 }
-
 interface DataTableProps<TRow> {
-  /** Column definitions — header + cell renderer per column */
   columns: ColumnDef<TRow>[];
-  /** The (already filtered) rows to render */
   data: TRow[];
-  /** Unique key extractor */
   rowKey: (row: TRow) => string;
-  /** Optional: fires when the row itself is clicked (not a button inside it) */
   onRowClick?: (row: TRow) => void;
-
-  // ── Toolbar props ──────────────────────────────────────────────────────────
-  /** Current search string */
   search: string;
   onSearchChange: (value: string) => void;
   searchPlaceholder?: string;
-  /** Extra filter controls rendered to the right of the search box */
   filters?: React.ReactNode;
-  /** CTA button rendered at the far right of the toolbar (e.g. "Add Provider") */
   action?: React.ReactNode;
-
-  // ── Optional states ────────────────────────────────────────────────────────
   emptyMessage?: string;
-
   currentPage?: number;
   totalPages?: number;
   onPageChange?: (page: number) => void;
@@ -72,12 +53,14 @@ export function DataTable<TRow>({
   const [localSearch, setLocalSearch] = useState(search);
 
   useEffect(() => {
+  if (localSearch !== search) {
     const timer = setTimeout(() => {
       onSearchChange(localSearch);
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [localSearch, onSearchChange]);
+  }
+}, [localSearch, onSearchChange, search]);
 
   useEffect(() => {
     setLocalSearch(search);

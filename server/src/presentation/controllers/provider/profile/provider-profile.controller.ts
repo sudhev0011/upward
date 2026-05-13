@@ -16,6 +16,8 @@ import { IGetProviderProfileUseCase } from "../../../../domain/interfaces/usecas
 import { UpdateProviderProfileRequestDtoSchema } from "../../../../application/dtos/provider/profile/info/request/update-provider-profile-request.dto";
 import { IUpdateProviderProfileUseCase } from "../../../../domain/interfaces/usecases/provider/profile/IUpdateProviderProfileUseCase";
 import { successResponse } from "../../../../shared/constants";
+import { GetProvidersByCategoryRequestDtoSchema } from "../../../../application/dtos/provider/profile/info/request/get-providers-by-category-request.dto";
+import { IGetProvidersByCategoryUseCase } from "../../../../domain/interfaces/usecases/provider/profile/IGetProvidersByCategoryUseCase";
 
 export class ProviderProfileController {
   constructor(
@@ -23,6 +25,7 @@ export class ProviderProfileController {
     private readonly _createProviderProfileUseCase: ICreateProviderProfileUseCase,
     private readonly _getProviderProfileUseCase: IGetProviderProfileUseCase,
     private readonly _updateProviderProfileUseCase: IUpdateProviderProfileUseCase,
+    private readonly _getProvidersByCategoryUseCase: IGetProvidersByCategoryUseCase,
   ) {}
 
   public uploadAvatar = async (
@@ -135,4 +138,26 @@ export class ProviderProfileController {
       handleAsyncError(error, next);
     }
   };
+
+  public getProvidersByCategory = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const parsed = GetProvidersByCategoryRequestDtoSchema.safeParse(req.query);
+
+    if (!parsed.success) {
+      return handleValidationError(formatZodErrors(parsed.error), next);
+    }
+    
+    const result = await this._getProvidersByCategoryUseCase.execute(parsed.data);
+
+    sendSuccessResponse(res, successResponse.GET_PROVIDERS_BY_CATEGORY, result);
+  } catch (error) {
+    handleAsyncError(error, next);
+  }
 }
+}
+
+

@@ -27,7 +27,7 @@ const App = () => {
         <Route
           path="/admin/*"
           element={
-            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN]} redirectTo={"/login/admin"}>
               {" "}
               <AdminRoutes />
             </ProtectedRoute>

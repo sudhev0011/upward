@@ -13,6 +13,7 @@ export class CreatePortfolioItemUseCase implements ICreatePortfolioItemUseCase {
   async execute(
     data: CreatePortfolioItemRequestDto
   ): Promise<PortfolioItemResponseDto> {
+    
     const item = PortfolioItem.create({
       providerId:   data.providerId,
       title:        data.title,

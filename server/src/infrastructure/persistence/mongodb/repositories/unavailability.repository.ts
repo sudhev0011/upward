@@ -12,6 +12,18 @@ export class UnavailabilityRepository extends RepositoryBase<
     super(UnavailabilityModel);
   }
 
+
+  // async create(providerId: string,
+  //   rangeStart: Date,
+  //   rangeEnd: Date){
+
+  //     const recentUnavailability = this.findOne({"createdAt": -1});
+
+  //     const day = recentUnavailability.endDate
+  //     const today = new Date()
+  //     today.to
+  //   }
+
   async findByProviderId(providerId: string): Promise<Unavailability[]> {
     return this.findMany({ providerId: new Types.ObjectId(providerId) });
   }
