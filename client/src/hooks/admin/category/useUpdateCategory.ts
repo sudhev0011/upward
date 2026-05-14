@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { CategoryResponse, PaginatedCategoryResponse } from "@/interfaces/admin/category.interface";
 import { adminApi } from "@/api/admin.api";
 
@@ -14,7 +13,6 @@ export const useUpdateCategoryMutation = () => {
 
       const updated: CategoryResponse = res.data;
 
-      // 🔥 Update ALL cached category queries (pagination, filters, etc.)
       queryClient.setQueriesData(
         { queryKey: ["categoriesAdmin","list"] },
         (oldData: {data:PaginatedCategoryResponse}) => {
@@ -32,14 +30,7 @@ export const useUpdateCategoryMutation = () => {
         }
       );
 
-      // 🔁 Optional safety refetch (recommended)
       queryClient.invalidateQueries({ queryKey: ["categoriesAdmin"] });
-
-      toast.success(res.message);
-    },
-
-    onError: (error) => {
-      toast.error(error.message);
     },
   });
 };

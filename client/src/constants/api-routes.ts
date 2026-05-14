@@ -74,7 +74,7 @@ export const AdminRoutes = {
   GET_ALL_SERVICES: "/api/admin/services/all",
   GET_ALL_PAGINATED_SERVICES: "/api/admin/services",
   TOGGLE_SERVICE: "/api/admin/service/toggle",
-  UPDATE_SERVICE: "/api/admin/service/toggle",
+  UPDATE_SERVICE: "/api/admin/service/update",
 } as const;
 
 export const PublicRoutes = {

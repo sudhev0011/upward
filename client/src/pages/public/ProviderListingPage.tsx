@@ -25,7 +25,12 @@ export const ProviderListingPage = () => {
   });
 
   useEffect(() => {
-  setFilters((prev) => ({ ...prev, category: categoryFromUrl, page: 1 }));
+    const setfilter = async()=>{
+
+      await setFilters((prev) => ({ ...prev, category: categoryFromUrl, page: 1 }));
+    }
+
+    setfilter()
 }, [categoryFromUrl]);
 
   // Sync category from URL into filters (handles back/forward nav too)

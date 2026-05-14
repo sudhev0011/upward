@@ -1,13 +1,10 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  MapPin, Phone, Mail, Calendar, 
+  MapPin, Phone, Mail, 
   ArrowUpDown, User, ShieldCheck, ShieldAlert,
   Clock, Info
 } from "lucide-react";
 
-// API & Services
-import { adminApi } from "@/api/admin.api";
 
 // UI Components
 import { DataTable } from "@/components/admin/DataTable";
@@ -18,14 +15,12 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "sonner";
 import { useGetClientProfileById } from "@/hooks/admin/useGetClientProfileById";
 import { useGetClientsProfile } from "@/hooks/admin/useGetClientsProfiles";
 import { useBlockClientMutation } from "@/hooks/admin/useBlockClient";
 import { ClientProfile } from "@/interfaces/client/client.interface";
 
 export default function Clients() {
-  const queryClient = useQueryClient();
 
   // ─── STATE ──────────────────────────────────────────────────────────────────
   const [params, setParams] = useState({

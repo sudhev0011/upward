@@ -29,10 +29,10 @@ export default function AvailabilityPage() {
     handleBookingWindowChange,
     selectedDate,
     setSelectedDate,
+    selectedDateStr,
     overrideDates,
     unavailableDates,
     selectedOverride,
-    selectedUnavailability,
     isSelectedUnavailable,
     selectedDaySchedule,
     overrideStart,
@@ -204,8 +204,7 @@ export default function AvailabilityPage() {
               />
             </div>
 
-            {/* Selected Date Panel */}
-            <div className="space-y-4">
+            <div key={selectedDateStr ?? "no-date"} className="space-y-4">
               {selectedDate ? (
                 <>
                   {/* Date status card */}

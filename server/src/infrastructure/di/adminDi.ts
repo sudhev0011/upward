@@ -30,6 +30,7 @@ import { GetAllCategoriesWithPaginationUseCase } from "../../application/use-cas
 import { UpdateCategoryUseCase } from "../../application/use-cases/admin/category/update-category-use.case";
 import { GetAllServicesWithPaginationUseCase } from "../../application/use-cases/service/get-all-services-with-pagination.use-case";
 import { ToggleServiceUseCase } from "../../application/use-cases/service/toggle-service.use-case";
+import { UpdateServiceUseCase } from "../../application/use-cases/service/update-service.use-case";
 
 // repo init
 const userRepository = new UserRepository();
@@ -61,10 +62,11 @@ const getAllCategoriesWithPaginationUseCase = new GetAllCategoriesWithPagination
 const updateCategoryUseCase = new UpdateCategoryUseCase(categoryRepository)
 const getAllServicesWithPagination = new GetAllServicesWithPaginationUseCase(serviceRespository);
 const toggleServiceUseCase = new ToggleServiceUseCase(serviceRespository);
+const updateServiceUseCase = new UpdateServiceUseCase(serviceRespository)
 
 
 // cntrl init
 export const adminClientController = new AdminClientController(getAllUsersUseCase,adminGetUserByIdUseCase,blockUserUseCase,)
 export const adminProviderController = new AdminProviderController(getAllProvidersUseCase, adminGetProviderByIdUseCase, approveProviderUseCase,rejectProviderUseCase, blockProviderUseCase, getProviderKycUseCase);
 export const adminCategoryController = new AdminCategoryController(createCategoryUseCase,getAllCategoriesUseCase, getAllCategoriesWithPaginationUseCase, updateCategoryUseCase)
-export const adminServiceController = new AdminServiceController(createServiceUseCase,deleteServiceUseCase,getAllServicesUseCase, getAllServicesWithPagination, toggleServiceUseCase)
+export const adminServiceController = new AdminServiceController(createServiceUseCase,deleteServiceUseCase,getAllServicesUseCase, getAllServicesWithPagination, toggleServiceUseCase, updateServiceUseCase)

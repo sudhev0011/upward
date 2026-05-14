@@ -17,6 +17,8 @@ import { GetPaginatedServicesRequestDto } from "../../../application/dtos/admin/
 import { IToggleServiceUseCase } from "../../../domain/interfaces/usecases/service/IToggleServiceUseCase";
 import { ToggleServiceRequestDtoSchema } from "../../../application/dtos/admin/service/request/toggle-service-request.dto";
 import { successResponse } from "../../../shared/constants";
+import { UpdateServiceRequestDtoSchema } from "../../../application/dtos/admin/service/request/update-service-request.dto";
+import { IUpdateServiceUseCase } from "../../../domain/interfaces/usecases/service/IUpdateServiceUseCase";
 
 export class AdminServiceController {
   constructor(
@@ -25,6 +27,7 @@ export class AdminServiceController {
     private readonly _getAllServicesUseCase: IGetAllServicesUseCase,
     private readonly _getAllServicesWithPagination: IGetAllServicesWithPagination,
     private readonly _toggleServiceUseCase: IToggleServiceUseCase,
+    private readonly _updateServiceUseCase: IUpdateServiceUseCase
   ) {}
 // methos to create admin service as a catelog for providers
   createService = async (req: Request, res: Response, next: NextFunction) => {
@@ -100,6 +103,22 @@ export class AdminServiceController {
 
     } catch (error) {
       handleAsyncError(error, next);
+    }
+  }
+
+  updateService = async(req: Request, res: Response, next: NextFunction)=>{
+
+    const parsed = UpdateServiceRequestDtoSchema.safeParse(req.body);
+
+    if(!parsed.success){
+      return handleValidationError(formatZodErrors(parsed.error), next);
+    }
+
+    try {
+      const result = await this._updateServiceUseCase.execute(parsed.data);
+      sendSuccessResponse(res, successResponse.UPDATE_SERVICE, result);
+    } catch (error) {
+      handleAsyncError(error,next)
     }
   }
 

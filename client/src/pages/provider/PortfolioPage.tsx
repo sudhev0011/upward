@@ -72,6 +72,7 @@ export default function PortfolioPage() {
 
       <EditPortfolioDialog
         item={editItem}
+        key={editItem?.id}
         onOpenChange={(open) => { if (!open) setEditItem(null); }}
       />
 

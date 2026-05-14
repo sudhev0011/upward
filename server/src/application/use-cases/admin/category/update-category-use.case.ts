@@ -10,6 +10,7 @@ export class UpdateCategoryUseCase implements IUpdateCategoryUseCase {
   async execute(
     dto: UpdateCategoryRequestDto,
   ): Promise<CreateCategoryReponseDto> {
+    
     const result = await this._categoryRepository.update(dto.id, {
       name: dto.name,
       description: dto.description,

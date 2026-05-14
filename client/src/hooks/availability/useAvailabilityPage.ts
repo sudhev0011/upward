@@ -9,36 +9,46 @@ import { useDeleteAvailabilityOverrideMutation } from "@/hooks/provider/availabi
 import { useGetUnavailabilityQuery } from "@/hooks/provider/unavailability/useGetUnavailabilityQuery";
 import { useCreateUnavailabilityMutation } from "@/hooks/provider/unavailability/useCreateUnavailabilityMutation";
 import { useDeleteUnavailabilityMutation } from "@/hooks/provider/unavailability/useDeleteUnavailabilityMutation";
-import { DAYS, DAY_LABELS } from "@/constants/availability.constant";
-import { DayKey, LocalDaySchedule, DEFAULT_SCHEDULE } from "@/interfaces/availability.types";
-import { toDateString, fromDateString } from "@/utils/availability/availability.utils";
-
+import { DAYS } from "@/constants/availability.constant";
+import {
+  DayKey,
+  LocalDaySchedule,
+  DEFAULT_SCHEDULE,
+} from "@/interfaces/availability.types";
+import {
+  toDateString,
+  fromDateString,
+} from "@/utils/availability/availability.utils";
 
 export const useAvailabilityPage = () => {
-
   // ── Server state ─────────────────────────────────────────────────────────────
-  const { data: availabilityRes,   isLoading: loadingAvailability   } = useGetAvailabilityQuery();
-  const { data: overridesRes,      isLoading: loadingOverrides      } = useGetAvailabilityOverridesQuery();
-  const { data: unavailabilityRes, isLoading: loadingUnavailability } = useGetUnavailabilityQuery();
+  const { data: availabilityRes, isLoading: loadingAvailability } =
+    useGetAvailabilityQuery();
+  const { data: overridesRes, isLoading: loadingOverrides } =
+    useGetAvailabilityOverridesQuery();
+  const { data: unavailabilityRes, isLoading: loadingUnavailability } =
+    useGetUnavailabilityQuery();
 
-  const setAvailabilityMutation      = useSetAvailabilityMutation();
-  const setOverrideMutation          = useSetAvailabilityOverrideMutation();
-  const deleteOverrideMutation       = useDeleteAvailabilityOverrideMutation();
+  const setAvailabilityMutation = useSetAvailabilityMutation();
+  const setOverrideMutation = useSetAvailabilityOverrideMutation();
+  const deleteOverrideMutation = useDeleteAvailabilityOverrideMutation();
   const createUnavailabilityMutation = useCreateUnavailabilityMutation();
   const deleteUnavailabilityMutation = useDeleteUnavailabilityMutation();
 
   // ── Local UI state ────────────────────────────────────────────────────────────
-  const [bookingWindow,      setBookingWindow]      = useState<number>(7);
-  const [bookingWindowError, setBookingWindowError] = useState<string | null>(null);
-  const [selectedDate,       setSelectedDate]       = useState<Date | undefined>(undefined);
-  const [overrideStart,      setOverrideStart]      = useState("09:00");
-  const [overrideEnd,        setOverrideEnd]        = useState("17:00");
-  const [weeklySchedule,     setWeeklySchedule]     = useState<Record<DayKey, LocalDaySchedule>>(DEFAULT_SCHEDULE);
-
+  const [bookingWindow, setBookingWindow] = useState<number>(7);
+  const [bookingWindowError, setBookingWindowError] = useState<string | null>(
+    null,
+  );
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [overrideStart, setOverrideStart] = useState("09:00");
+  const [overrideEnd, setOverrideEnd] = useState("17:00");
+  const [weeklySchedule, setWeeklySchedule] =
+    useState<Record<DayKey, LocalDaySchedule>>(DEFAULT_SCHEDULE);
+  const [isSeeded, setIsSeeded] = useState(false);
   // ── Seed form from server ─────────────────────────────────────────────────────
-  useEffect(() => {
-    const availability = availabilityRes?.data;
-    if (!availability) return;
+  if (availabilityRes?.data && !isSeeded) {
+    const availability = availabilityRes.data;
 
     setBookingWindow(Number(availability.availabilityWindow));
 
@@ -47,19 +57,22 @@ export const useAvailabilityPage = () => {
       const d = availability.weeklySchedule[day];
       seeded[day] = {
         enabled: d.isWorking,
-        start:   d.startTime ?? "09:00",
-        end:     d.endTime   ?? "18:00",
+        start: d.startTime ?? "09:00",
+        end: d.endTime ?? "18:00",
       };
     }
     setWeeklySchedule(seeded);
-  }, [availabilityRes]);
+    setIsSeeded(true);
+  }
 
   // ── Derived server data ───────────────────────────────────────────────────────
-  const serverOverrides        = overridesRes?.data      ?? [];
+  const serverOverrides = overridesRes?.data ?? [];
   const serverUnavailabilities = unavailabilityRes?.data ?? [];
 
-  const overrideDates    = serverOverrides.map((o) => fromDateString(o.date));
-  const unavailableDates = serverUnavailabilities.map((u) => new Date(u.startDate));
+  const overrideDates = serverOverrides.map((o) => fromDateString(o.date));
+  const unavailableDates = serverUnavailabilities.map(
+    (u) => new Date(u.startDate),
+  );
 
   // ── Selected date derived state ───────────────────────────────────────────────
   const selectedDateStr = selectedDate ? toDateString(selectedDate) : null;
@@ -72,7 +85,7 @@ export const useAvailabilityPage = () => {
     ? (serverUnavailabilities.find(
         (u) =>
           toDateString(new Date(u.startDate)) === selectedDateStr &&
-          u.source === "manual"
+          u.source === "manual",
       ) ?? null)
     : null;
 
@@ -82,22 +95,17 @@ export const useAvailabilityPage = () => {
     ? (format(selectedDate, "EEEE").toLowerCase() as DayKey)
     : null;
 
-  const selectedDaySchedule = selectedDayKey ? weeklySchedule[selectedDayKey] : null;
-
-  // Pre-fill override inputs when selecting a date that already has an override
-  useEffect(() => {
-    if (selectedOverride) {
-      setOverrideStart(selectedOverride.startTime ?? "09:00");
-      setOverrideEnd(selectedOverride.endTime     ?? "17:00");
-    } else {
-      setOverrideStart("09:00");
-      setOverrideEnd("17:00");
-    }
-  }, [selectedOverride]);
+  const selectedDaySchedule = selectedDayKey
+    ? weeklySchedule[selectedDayKey]
+    : null;
 
   // ── Handlers ──────────────────────────────────────────────────────────────────
 
-  const updateSchedule = (day: DayKey, field: keyof LocalDaySchedule, value: string | boolean) => {
+  const updateSchedule = (
+    day: DayKey,
+    field: keyof LocalDaySchedule,
+    value: string | boolean,
+  ) => {
     setWeeklySchedule((prev) => ({
       ...prev,
       [day]: { ...prev[day], [field]: value },
@@ -127,16 +135,21 @@ export const useAvailabilityPage = () => {
       weeklySchedulePayload[day] = {
         isWorking: d.enabled,
         startTime: d.enabled ? d.start : null,
-        endTime:   d.enabled ? d.end   : null,
+        endTime: d.enabled ? d.end : null,
       };
     }
 
     setAvailabilityMutation.mutate(
-      { weeklySchedule: weeklySchedulePayload, availabilityWindow: bookingWindow },
       {
-        onSuccess: (response) => toast.success(response.message ?? "Schedule saved successfully"),
-        onError:   (error) => toast.error(error?.message   ?? "Failed to save schedule"),
-      }
+        weeklySchedule: weeklySchedulePayload,
+        availabilityWindow: bookingWindow,
+      },
+      {
+        onSuccess: (response) =>
+          toast.success(response.message ?? "Schedule saved successfully"),
+        onError: (error) =>
+          toast.error(error?.message ?? "Failed to save schedule"),
+      },
     );
   };
 
@@ -144,25 +157,39 @@ export const useAvailabilityPage = () => {
     if (!selectedDate || !selectedDateStr) return;
 
     if (selectedUnavailability) {
-      toast.error("This date has an unavailability block. Remove it first before adding an override.");
+      toast.error(
+        "This date has an unavailability block. Remove it first before adding an override.",
+      );
       return;
     }
 
     if (selectedDaySchedule?.enabled) {
-      if (overrideStart === selectedDaySchedule.start && overrideEnd === selectedDaySchedule.end) {
-        toast.warning("These hours match your regular schedule for this day. No override needed.");
+      if (
+        overrideStart === selectedDaySchedule.start &&
+        overrideEnd === selectedDaySchedule.end
+      ) {
+        toast.warning(
+          "These hours match your regular schedule for this day. No override needed.",
+        );
         return;
       }
     }
 
     setOverrideMutation.mutate(
-      { date: selectedDateStr, isWorking: true, startTime: overrideStart, endTime: overrideEnd },
+      {
+        date: selectedDateStr,
+        isWorking: true,
+        startTime: overrideStart,
+        endTime: overrideEnd,
+      },
       {
         onSuccess: () =>
-          toast.success(`Override saved for ${format(selectedDate, "MMM d, yyyy")}`),
+          toast.success(
+            `Override saved for ${format(selectedDate, "MMM d, yyyy")}`,
+          ),
         onError: (error) =>
           toast.error(error?.message ?? "Failed to save override"),
-      }
+      },
     );
   };
 
@@ -172,47 +199,63 @@ export const useAvailabilityPage = () => {
     if (isSelectedUnavailable) {
       deleteUnavailabilityMutation.mutate(selectedUnavailability!.id, {
         onSuccess: () =>
-          toast.success(`${format(selectedDate, "MMM d, yyyy")} marked as available`),
+          toast.success(
+            `${format(selectedDate, "MMM d, yyyy")} marked as available`,
+          ),
         onError: () => toast.error("Failed to update availability"),
       });
     } else {
       if (selectedOverride) {
-        toast.error("This date has an active override. Remove it first before blocking the date.");
+        toast.error(
+          "This date has an active override. Remove it first before blocking the date.",
+        );
         return;
       }
 
       const [y, m, d] = selectedDateStr.split("-").map(Number);
-      const dayStart = new Date(y, m - 1, d,  0,  0,  0);
-      const dayEnd   = new Date(y, m - 1, d, 23, 59, 59);
+      const dayStart = new Date(y, m - 1, d, 0, 0, 0);
+      const dayEnd = new Date(y, m - 1, d, 23, 59, 59);
 
       createUnavailabilityMutation.mutate(
-        { startDate: dayStart, endDate: dayEnd, source: "manual", reason: null },
+        {
+          startDate: dayStart,
+          endDate: dayEnd,
+          source: "manual",
+          reason: null,
+        },
         {
           onSuccess: () =>
-            toast.success(`${format(selectedDate, "MMM d, yyyy")} marked as unavailable`),
+            toast.success(
+              `${format(selectedDate, "MMM d, yyyy")} marked as unavailable`,
+            ),
           onError: (error) =>
             toast.error(error?.message ?? "Failed to mark unavailable"),
-        }
+        },
       );
     }
   };
 
   const handleRemoveOverride = (date: string) => {
     deleteOverrideMutation.mutate(date, {
-      onSuccess: (response) => toast.success(response?.message ?? "Override removed"),
-      onError:   (error)    => toast.error(error?.message       ?? "Failed to remove override"),
+      onSuccess: (response) =>
+        toast.success(response?.message ?? "Override removed"),
+      onError: (error) =>
+        toast.error(error?.message ?? "Failed to remove override"),
     });
   };
 
   const handleRemoveUnavailability = (id: string) => {
     deleteUnavailabilityMutation.mutate(id, {
-      onSuccess: (response) => toast.success(response?.message ?? "Date unblocked"),
-      onError:   (error)    => toast.error(error?.message       ?? "Failed to unblock date"),
+      onSuccess: (response) =>
+        toast.success(response?.message ?? "Date unblocked"),
+      onError: (error) =>
+        toast.error(error?.message ?? "Failed to unblock date"),
     });
   };
 
   // ── Loading ───────────────────────────────────────────────────────────────────
-  const isLoading = loadingAvailability || loadingOverrides || loadingUnavailability;
+  const isLoading =
+    loadingAvailability || loadingOverrides || loadingUnavailability;
 
   return {
     // loading
@@ -229,6 +272,7 @@ export const useAvailabilityPage = () => {
 
     // calendar
     selectedDate,
+    selectedDateStr,
     setSelectedDate,
     overrideDates,
     unavailableDates,
@@ -257,10 +301,10 @@ export const useAvailabilityPage = () => {
     handleRemoveUnavailability,
 
     // mutation pending states
-    isSavingSchedule:          setAvailabilityMutation.isPending,
-    isSavingOverride:          setOverrideMutation.isPending,
-    isDeletingOverride:        deleteOverrideMutation.isPending,
-    isCreatingUnavailability:  createUnavailabilityMutation.isPending,
-    isDeletingUnavailability:  deleteUnavailabilityMutation.isPending,
+    isSavingSchedule: setAvailabilityMutation.isPending,
+    isSavingOverride: setOverrideMutation.isPending,
+    isDeletingOverride: deleteOverrideMutation.isPending,
+    isCreatingUnavailability: createUnavailabilityMutation.isPending,
+    isDeletingUnavailability: deleteUnavailabilityMutation.isPending,
   };
 };

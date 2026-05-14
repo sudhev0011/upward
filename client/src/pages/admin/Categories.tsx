@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
 // UI Components
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -73,6 +73,7 @@ import { useUpdateCategoryMutation } from "@/hooks/admin/category/useUpdateCateg
 // Types
 import { CategoryResponse } from "@/interfaces/admin/category.interface";
 import { UpdateCategoryRequest } from "@/interfaces/admin/category.interface";
+import { Badge } from "@/components/ui/badge";
 
 export default function Categories() {
   const queryClient = useQueryClient();
@@ -321,10 +322,14 @@ export default function Categories() {
             {categories.map((c: CategoryResponse) => (
               <Card key={c.id}>
                 <CardContent className="p-5 space-y-3">
+                  <Badge
+                    variant="secondary"
+                    className="capitalize text-[10px] font-medium px-2 py-0"
+                  >
+                    {c.mode}
+                  </Badge>
                   <div className="flex justify-between items-start">
-                    <h3 className="font-semibold text-sm capitalize">
-                      {c.name}
-                    </h3>
+                    <CardTitle>{c.name}</CardTitle>
 
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

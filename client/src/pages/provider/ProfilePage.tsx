@@ -13,7 +13,6 @@ import { ExperienceSection } from "@/components/provider/profile/ExperienceSecti
 import { SkillsSection } from "@/components/provider/profile/SkillsSection";
 import { LanguagesSection } from "@/components/provider/profile/LanguagesSection";
 import { SocialLinksSection } from "@/components/provider/profile/SocialLinksSection";
-import { CreateProviderProfileRequest } from "@/interfaces/provider/provider.interface";
 
 export default function ProfilePage() {
   const { data: profileResponse, isLoading } = useGetProfileQuery();

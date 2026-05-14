@@ -24,10 +24,8 @@ import {
   Pagination,
   PaginationContent,
   PaginationItem,
-  PaginationLink,
   PaginationPrevious,
   PaginationNext,
-  PaginationEllipsis,
 } from "@/components/ui/pagination";
 import {
   Select,
@@ -142,7 +140,14 @@ export default function Services() {
     if (!open) {
       setIsEditing(false);
       setSelectedServiceId(null);
-      reset();
+      reset({
+      name: "",
+      description: "",
+      categoryId: "",
+      maxHour: 1,
+      mode: "onsite",
+      isActive: true,
+    });
     }
   };
 
@@ -182,6 +187,9 @@ export default function Services() {
             toast.success(res.message || "Service updated successfully");
             onOpenChange(false);
           },
+          onError: (error)=>{
+            toast.error(error.message || "Error updating service")
+          }
         }
       );
     } else {
@@ -190,6 +198,9 @@ export default function Services() {
           toast.success(res.message || "Service created successfully");
           onOpenChange(false);
         },
+        onError:(error)=>{
+          toast.error(error.message || "Error creating service")
+        }
       });
     }
   };

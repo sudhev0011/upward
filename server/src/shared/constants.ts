@@ -16,7 +16,8 @@ export const successResponse = {
   DELETE_SERVICE: "service deleted successfully",
   GET_ALL_SERVICES: "Services fetched successfully",
   PAGINATED_SERVICE_FETCHED: "services fetched successfully",
-  SERVICE_TOGGLE_UPDATE: "service updated successfullu",
+  SERVICE_TOGGLE_UPDATE: "service updated successfully",
+  UPDATE_SERVICE: "service updated successfully",
 
   SUCCESSFULL_LOGIN: "Login successful, verification required",
 

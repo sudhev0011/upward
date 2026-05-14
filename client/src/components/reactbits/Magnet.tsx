@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, ReactNode, HTMLAttributes } from 'react';
+import React, { useState, useEffect, useRef, ReactNode, HTMLAttributes, useEffectEvent } from 'react';
 
 interface MagnetProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
@@ -26,9 +26,13 @@ const Magnet: React.FC<MagnetProps> = ({
   const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const magnetRef = useRef<HTMLDivElement>(null);
 
+  const updatePosition = useEffectEvent((position:{ x: number; y: number })=>{
+    setPosition(position);
+  });
+
   useEffect(() => {
     if (disabled) {
-      setPosition({ x: 0, y: 0 });
+      updatePosition({x:0, y:0})
       return;
     }
 

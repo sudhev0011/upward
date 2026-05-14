@@ -40,6 +40,7 @@ export class AdminRouter {
     this.router.get("/services/all", adminServiceController.getAllService)
     this.router.get("/services", adminServiceController.getAllServicesWithPagination);
     this.router.patch("/service/toggle", adminServiceController.toggleService);
+    this.router.patch("/service/update", adminServiceController.updateService);
 
     
   }

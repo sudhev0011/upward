@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { Upload, X, Loader2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -28,7 +28,6 @@ import { useUpdatePortfolioItem } from "@/hooks/provider/portfolio/useUpdatePort
 import { useUploadPortfolioFiles } from "@/hooks/provider/portfolio/useUploadPortfolioFiles";
 import { useRemovePortfolioImage } from "@/hooks/provider/portfolio/useRemovePortfolioImage";
 
-
 interface LocalFile {
   file: File;
   previewUrl: string;
@@ -36,33 +35,43 @@ interface LocalFile {
 
 interface EditPortfolioDialogProps {
   item: PortfolioItem | null;
+  key?: string;
   onOpenChange: (open: boolean) => void;
 }
 
-export function EditPortfolioDialog({ item, onOpenChange }: EditPortfolioDialogProps) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [existingImages, setExistingImages] = useState<string[]>([]);
+export function EditPortfolioDialog({
+  item,
+  onOpenChange,
+}: EditPortfolioDialogProps) {
+  const [form, setForm] = useState(() => ({
+    title: item?.title ?? "",
+    description: item?.description ?? "",
+    existingImages: item?.images ?? [],
+  }));
   const [newFiles, setNewFiles] = useState<LocalFile[]>([]);
   const [removeConfirmUrl, setRemoveConfirmUrl] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { mutate: uploadFiles, isPending: isUploading } = useUploadPortfolioFiles();
-  const { mutate: updateItem, isPending: isUpdating } = useUpdatePortfolioItem();
-  const { mutate: removeImage, isPending: isRemoving } = useRemovePortfolioImage();
+  const { mutate: uploadFiles, isPending: isUploading } =
+    useUploadPortfolioFiles();
+  const { mutate: updateItem, isPending: isUpdating } =
+    useUpdatePortfolioItem();
+  const { mutate: removeImage, isPending: isRemoving } =
+    useRemovePortfolioImage();
 
   const isSubmitting = isUploading || isUpdating;
 
   // Sync form when item changes
-  useEffect(() => {
-    if (item) {
-      setTitle(item.title);
-      setDescription(item.description ?? "");
-      setExistingImages(item.images);
-      setNewFiles([]);
-    }
-  }, [item]);
+  // useEffect(() => {
+  //   if (!item) return;
+
+  //   setForm({
+  //     title: item.title,
+  //     description: item.description ?? "",
+  //     existingImages: item.images,
+  //   });
+  // }, [item]);
 
   // ── Handlers ────────────────────────────────────────────────────────────────
 
@@ -100,25 +109,30 @@ export function EditPortfolioDialog({ item, onOpenChange }: EditPortfolioDialogP
       {
         onSuccess: (response) => {
           toast.success(response.message || "Image deleted");
-          setExistingImages((prev) => prev.filter((url) => url !== removeConfirmUrl));
+          setForm((prev) => ({
+            ...prev,
+            existingImages: prev.existingImages.filter(
+              (url) => url !== removeConfirmUrl,
+            ),
+          }));
           setRemoveConfirmUrl(null);
         },
-        onError: (error) => toast.error(error.message || "Failed to delete image"),
-      }
+        onError: (error) =>
+          toast.error(error.message || "Failed to delete image"),
+      },
     );
   };
 
   const handleSave = () => {
     if (!item) return;
-    if (!title.trim()) return toast.error("Title cannot be empty");
+    if (!form.title.trim()) return toast.error("Title cannot be empty");
 
     const save = (newImages?: string[], newStorageKeys?: string[]) => {
       updateItem(
         {
           id: item.id,
           data: {
-            title: title.trim(),
-            description: description.trim() || null,
+            ...form,
             ...(newImages?.length ? { newImages, newStorageKeys } : {}),
           },
         },
@@ -127,20 +141,24 @@ export function EditPortfolioDialog({ item, onOpenChange }: EditPortfolioDialogP
             toast.success(response.message || "Changes saved");
             handleClose();
           },
-          onError: (error) => toast.error(error.message || "Failed to update portfolio item"),
-        }
+          onError: (error) =>
+            toast.error(error.message || "Failed to update portfolio item"),
+        },
       );
     };
 
     if (newFiles.length > 0) {
-      uploadFiles(newFiles.map((f) => f.file), {
-        onSuccess: (uploaded) =>
-          save(
-            uploaded.map((u) => u.fileUrl),
-            uploaded.map((u) => u.storageKey)
-          ),
-        onError: () => toast.error("Failed to upload images"),
-      });
+      uploadFiles(
+        newFiles.map((f) => f.file),
+        {
+          onSuccess: (uploaded) =>
+            save(
+              uploaded.map((u) => u.fileUrl),
+              uploaded.map((u) => u.storageKey),
+            ),
+          onError: () => toast.error("Failed to upload images"),
+        },
+      );
     } else {
       save();
     }
@@ -150,7 +168,12 @@ export function EditPortfolioDialog({ item, onOpenChange }: EditPortfolioDialogP
 
   return (
     <>
-      <Dialog open={!!item} onOpenChange={(open) => { if (!open) handleClose(); }}>
+      <Dialog
+        open={!!item}
+        onOpenChange={(open) => {
+          if (!open) handleClose();
+        }}
+      >
         <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Work</DialogTitle>
@@ -160,14 +183,18 @@ export function EditPortfolioDialog({ item, onOpenChange }: EditPortfolioDialogP
           </DialogHeader>
 
           <div className="space-y-5 mt-1">
-
             {/* Title */}
             <div className="space-y-1.5">
               <Label htmlFor="edit-title">Title</Label>
               <Input
                 id="edit-title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                value={form.title}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    title: e.target.value,
+                  }))
+                }
                 disabled={isSubmitting}
               />
             </div>
@@ -176,12 +203,16 @@ export function EditPortfolioDialog({ item, onOpenChange }: EditPortfolioDialogP
             <div className="space-y-1.5">
               <Label htmlFor="edit-desc">
                 Description{" "}
-                <span className="text-muted-foreground font-normal">(optional)</span>
+                <span className="text-muted-foreground font-normal">
+                  (optional)
+                </span>
               </Label>
               <Textarea
                 id="edit-desc"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                value={form.description}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, description: e.target.value }))
+                }
                 rows={2}
                 disabled={isSubmitting}
                 className="resize-none"
@@ -191,14 +222,17 @@ export function EditPortfolioDialog({ item, onOpenChange }: EditPortfolioDialogP
             <Separator />
 
             {/* Existing images */}
-            {existingImages.length > 0 && (
+            {form.existingImages.length > 0 && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label>Current Images</Label>
-                  <span className="text-xs text-muted-foreground">{existingImages.length} photo{existingImages.length !== 1 ? "s" : ""}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {form.existingImages.length} photo
+                    {form.existingImages.length !== 1 ? "s" : ""}
+                  </span>
                 </div>
                 <div className="grid grid-cols-4 gap-2">
-                  {existingImages.map((url, i) => (
+                  {form.existingImages.map((url, i) => (
                     <div
                       key={i}
                       className="relative group/thumb aspect-square rounded-lg overflow-hidden border border-border/40"
@@ -232,7 +266,9 @@ export function EditPortfolioDialog({ item, onOpenChange }: EditPortfolioDialogP
             <div className="space-y-2">
               <Label>
                 Add More Images{" "}
-                <span className="text-muted-foreground font-normal">(optional)</span>
+                <span className="text-muted-foreground font-normal">
+                  (optional)
+                </span>
               </Label>
               <input
                 ref={fileInputRef}
@@ -290,9 +326,15 @@ export function EditPortfolioDialog({ item, onOpenChange }: EditPortfolioDialogP
               disabled={isSubmitting}
             >
               {isUploading ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Uploading...</>
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Uploading...
+                </>
               ) : isUpdating ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Saving...</>
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
               ) : (
                 "Save Changes"
               )}
@@ -304,7 +346,9 @@ export function EditPortfolioDialog({ item, onOpenChange }: EditPortfolioDialogP
       {/* ── Remove image confirm ── */}
       <AlertDialog
         open={!!removeConfirmUrl}
-        onOpenChange={(open) => { if (!open) setRemoveConfirmUrl(null); }}
+        onOpenChange={(open) => {
+          if (!open) setRemoveConfirmUrl(null);
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -313,7 +357,8 @@ export function EditPortfolioDialog({ item, onOpenChange }: EditPortfolioDialogP
               Delete this image?
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This image will be permanently deleted from storage and cannot be recovered.
+              This image will be permanently deleted from storage and cannot be
+              recovered.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -323,10 +368,14 @@ export function EditPortfolioDialog({ item, onOpenChange }: EditPortfolioDialogP
               disabled={isRemoving}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isRemoving
-                ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Deleting...</>
-                : "Delete Image"
-              }
+              {isRemoving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete Image"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

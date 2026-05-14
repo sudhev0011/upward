@@ -1,7 +1,6 @@
-// components/provider/public-profile/PortfolioSection.tsx
 import { useGetProviderPortfolio } from '@/hooks/public/providers/useGetProviderPortfolio';
 import { PortfolioItem } from '@/interfaces/provider/portfolio.interface';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { X, ChevronLeft, ChevronRight, ImageOff, Loader2 } from 'lucide-react';
 
 interface Props {

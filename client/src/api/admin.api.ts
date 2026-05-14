@@ -202,7 +202,7 @@ export const adminApi = {
   ): Promise<ApiEnvelope<ServiceResponse>> {
     return (
       await api.patch<ApiEnvelope<ServiceResponse>>(
-        AdminRoutes.TOGGLE_SERVICE,
+        AdminRoutes.UPDATE_SERVICE,
         data,
       )
     ).data;

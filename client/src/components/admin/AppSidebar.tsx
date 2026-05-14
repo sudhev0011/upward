@@ -96,7 +96,7 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const location = useLocation();
   const navigate = useNavigate();
-  const { mutate: logoutMutation, isPending: isLoggingOut } =
+  const { mutate: logoutMutation } =
     useLogoutMutation();
   const dispatch = useAppDispatch();
 
