@@ -39,16 +39,14 @@ api.interceptors.response.use(
   async (error: AxiosError<ApiErrorResponse>): Promise<AxiosResponse> => {
     const original = error.config as CustomAxiosRequestConfig;
 
-    // A. Handle cases where the request never reached the server (Network Error)
     if (!error.response) {
       return Promise.reject(error);
     }
 
     const status = error.response.status;
-    const message = error.response.data?.message || "";
+    const message = error.response.data.message || "";
 
-    // B. Re-inserting the 403 / Refresh Token Failure logic
-    // If the refresh token itself is dead, we must log out.
+    
     if (status === 403 || message.includes("Invalid refresh token")) {
       store.dispatch(logout());
       return Promise.reject(error);
@@ -89,7 +87,6 @@ api.interceptors.response.use(
       }
     }
 
-    // Default rejection for all other errors (400, 404, 500, etc.)
-    return Promise.reject(error);
+    return Promise.reject(error?.response?.data);
   }
 );

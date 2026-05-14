@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { useGetAvailabilityQuery } from "@/hooks/provider/availability/useGetAvailabilityQuery";
@@ -46,7 +46,15 @@ export const useAvailabilityPage = () => {
   const [weeklySchedule, setWeeklySchedule] =
     useState<Record<DayKey, LocalDaySchedule>>(DEFAULT_SCHEDULE);
   const [isSeeded, setIsSeeded] = useState(false);
-  // ── Seed form from server ─────────────────────────────────────────────────────
+  const [initialWeeklySchedule, setInitialWeeklySchedule] = useState<Record<
+    DayKey,
+    LocalDaySchedule
+  > | null>(null);
+
+  const [initialBookingWindow, setInitialBookingWindow] = useState<
+    number | null
+  >(null);
+
   if (availabilityRes?.data && !isSeeded) {
     const availability = availabilityRes.data;
 
@@ -62,6 +70,8 @@ export const useAvailabilityPage = () => {
       };
     }
     setWeeklySchedule(seeded);
+    setInitialWeeklySchedule(structuredClone(seeded));
+    setInitialBookingWindow(Number(availability.availabilityWindow));
     setIsSeeded(true);
   }
 
@@ -73,6 +83,9 @@ export const useAvailabilityPage = () => {
   const unavailableDates = serverUnavailabilities.map(
     (u) => new Date(u.startDate),
   );
+  const isScheduleDirty =
+    JSON.stringify(weeklySchedule) !== JSON.stringify(initialWeeklySchedule) ||
+    bookingWindow !== initialBookingWindow;
 
   // ── Selected date derived state ───────────────────────────────────────────────
   const selectedDateStr = selectedDate ? toDateString(selectedDate) : null;
@@ -123,6 +136,11 @@ export const useAvailabilityPage = () => {
       return;
     }
 
+    if (!isScheduleDirty) {
+      toast.info("No changes to save");
+      return;
+    }
+
     setBookingWindowError(null);
 
     const weeklySchedulePayload = {} as Record<
@@ -145,8 +163,12 @@ export const useAvailabilityPage = () => {
         availabilityWindow: bookingWindow,
       },
       {
-        onSuccess: (response) =>
-          toast.success(response.message ?? "Schedule saved successfully"),
+        onSuccess: (response) => {
+          setInitialWeeklySchedule(structuredClone(weeklySchedule));
+          setInitialBookingWindow(bookingWindow);
+
+          toast.success(response.message ?? "Schedule saved successfully");
+        },
         onError: (error) =>
           toast.error(error?.message ?? "Failed to save schedule"),
       },
@@ -264,6 +286,7 @@ export const useAvailabilityPage = () => {
     // weekly schedule
     weeklySchedule,
     updateSchedule,
+    isScheduleDirty,
 
     // booking window
     bookingWindow,

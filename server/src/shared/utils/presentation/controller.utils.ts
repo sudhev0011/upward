@@ -41,17 +41,6 @@ export function badRequest(res: Response, message: string): void {
   sendErrorResponse(res, message, null, HttpStatus.BAD_REQUEST);
 }
 
-export function handleError(res: Response, error: unknown): void {
-
-  if (error && typeof error === 'object' && 'statusCode' in error && 'message' in error) {
-    sendErrorResponse(res, (error as { message: string }).message, null, (error as { statusCode: number }).statusCode);
-  } else if (error instanceof Error) {
-    sendErrorResponse(res, error.message, null, HttpStatus.INTERNAL_SERVER_ERROR);
-  } else {
-    sendErrorResponse(res, 'Internal server error', null, HttpStatus.INTERNAL_SERVER_ERROR);
-  }
-}
-
 export function sendCreatedResponse<T>(res: Response, message: string, data: T): void {
   sendSuccessResponse(res, message, data, undefined, HttpStatus.CREATED);
 }
@@ -66,10 +55,6 @@ export function sendUnauthorizedResponse<T>(res: Response, message: string = 'Un
 
 export function sendForbiddenResponse<T>(res: Response, message: string = 'Forbidden', data?: T): void {
   sendErrorResponse(res, message, data, HttpStatus.FORBIDDEN);
-}
-
-export function sendConflictResponse<T>(res: Response, message: string, data?: T): void {
-  sendErrorResponse(res, message, data, HttpStatus.CONFLICT);
 }
 
 export function sendInternalServerErrorResponse<T>(res: Response, message: string = 'Internal server error', data?: T): void {

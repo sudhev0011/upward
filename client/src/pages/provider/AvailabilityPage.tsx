@@ -24,6 +24,7 @@ export default function AvailabilityPage() {
     isLoading,
     weeklySchedule,
     updateSchedule,
+    isScheduleDirty,
     bookingWindow,
     bookingWindowError,
     handleBookingWindowChange,
@@ -75,7 +76,7 @@ export default function AvailabilityPage() {
         <Button
           className="rounded-xl shadow-lg shadow-primary/20"
           onClick={handleSaveSchedule}
-          disabled={isSavingSchedule}
+          disabled={isSavingSchedule || !isScheduleDirty}
         >
           {isSavingSchedule
             ? <Loader2 className="h-4 w-4 mr-2 animate-spin" />
