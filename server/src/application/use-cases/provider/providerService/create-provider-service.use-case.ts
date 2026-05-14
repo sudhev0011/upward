@@ -18,7 +18,7 @@ export class CreateProviderServiceUseCase implements ICreateProviderServiceUseCa
     });
 
     if (existed) {
-      throw new ConflictError("Provider service already exists");
+      throw new ConflictError("A service with this ID is already linked to your provider account.");
     }
 
     const providerService = ProviderService.create(data);

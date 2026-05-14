@@ -1,4 +1,5 @@
 import { ProviderServiceStatus } from "../enums/provider-service.status.enum";
+import { ValidationError } from "../errors/errors";
 
 export class ProviderService {
   constructor(
@@ -38,7 +39,7 @@ export class ProviderService {
 
   setPrice(price: number): ProviderService {
     if (price <= 0) {
-      throw new Error("Price must be greater than zero");
+      throw new ValidationError("Price must be greater than zero");
     }
 
     return new ProviderService(
