@@ -74,6 +74,8 @@ export const successResponse = {
   UPDATE_PORTFOLIO_ITEM_SUCCESS: "portfolio updated successfully",
   REMOVE_PORTFOLIO_IMAGE_SUCCESS: "Removed portfolio item successfully",
 
-  GET_PROVIDERS_BY_CATEGORY: "Providers fetched by category successfully"
+  GET_PROVIDERS_BY_CATEGORY: "Providers fetched by category successfully",
+
+  GET_AVAILABLE_SLOTS_SUCCESS: "Avaialable slots fetched successfully",
   
 } as const;

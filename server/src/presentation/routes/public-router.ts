@@ -7,7 +7,10 @@ import {
   publicProviderServiceController,
   publicServiceController,
 } from "../../infrastructure/di/publicDi";
-import { providerProfileController } from "../../infrastructure/di/provider.Di";
+import {
+  providerProfileController,
+  slotController,
+} from "../../infrastructure/di/provider.Di";
 
 export class PublicRouter {
   public router: Router;
@@ -53,6 +56,11 @@ export class PublicRouter {
     this.router.get(
       "/providers/:providerId/services",
       publicProviderServiceController.getActiveServices,
+    );
+
+    this.router.get(
+      "/providers/:providerId/services/:serviceId/slots",
+      slotController.getAvailableSlots,
     );
   }
 }

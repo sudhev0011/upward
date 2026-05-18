@@ -46,6 +46,10 @@ import { UpdatePortfolioItemUseCase } from "../../application/use-cases/provider
 import { RemovePortfolioImageUseCase } from "../../application/use-cases/provider/portfolio/removePortfolioItem.use-case";
 import { GetProvidersByCategoryUseCase } from "../../application/use-cases/provider/profile/get-providers-by-category.use-case";
 import { serviceRespository, categoryRepository } from "./adminDi";
+import { SlotController } from "../../presentation/controllers/provider/slot/slot.controller";
+import { GetAvailableSlotsUseCase } from "../../application/use-cases/slot/get-available-slots.use-case";
+import { WorkingHoursResolverService } from "../../application/services/working-hours-resolver.service";
+import { UnavailabilityResolverService } from "../../application/services/unavailability-resolver.service";
 
 //repo init
 const userRepository = new UserRepository(); 
@@ -62,7 +66,8 @@ const portfolioRepository = new PortfolioRepository()
 const logger = new WinstonLogger();
 const s3Service = new S3Service(logger);
 const encryptionService = new EncryptionService();
-
+const workingHoursResolver = new WorkingHoursResolverService(avaliabilityRepository, availabilityOverrideRepository)
+const unavailabilityResolver = new UnavailabilityResolverService(unavailabilityRepository)
 
 // useCase init
 export const getProviderProfileUseCase = new GetProviderProfileUseCase(providerProfileRepository,userRepository);
@@ -82,7 +87,7 @@ const deleteProviderServiceUseCase = new DeleteProviderServiceUseCase(providerSe
 const setAvailabilityUseCase = new SetAvailabilityUseCase(avaliabilityRepository)
 export const getAvailabilityUseCase = new GetAvailabilityUseCase(avaliabilityRepository)
 export const getUnavailabilitiesUseCase = new GetUnavailabilitiesUseCase(unavailabilityRepository)
-const createUnavailabilityUseCase = new CreateUnavailabilityUseCase(unavailabilityRepository)
+const createUnavailabilityUseCase = new CreateUnavailabilityUseCase(unavailabilityRepository,availabilityOverrideRepository)
 const deleteUnavailabilityUseCase = new DeleteUnavailabilityUseCase(unavailabilityRepository)
 const setAvailabilityOverrideUseCase = new SetAvailabilityOverrideUseCase(availabilityOverrideRepository,unavailabilityRepository);
 export const getAvailabilityOverridesUseCase = new GetAvailabilityOverridesUseCase(availabilityOverrideRepository);
@@ -99,6 +104,8 @@ const getProvidersByCategoryUseCase = new GetProvidersByCategoryUseCase(
   providerProfileRepository,
 );
 
+const getAvailableSlotsUseCase = new GetAvailableSlotsUseCase(providerServiceRepository,serviceRespository,categoryRepository,workingHoursResolver,unavailabilityResolver )
+
 // contrller init
 export const providerProfileController = new ProviderProfileController(uploadAvatarUseCase,createProviderProfileUseCase,getProviderProfileUseCase,updateProviderProfileUseCase, getProvidersByCategoryUseCase);
 export const kycController = new KycController(submitProviderKycUseCase,saveProviderBankUseCase,getProviderKycUseCase,getProviderBankUseCase,uploadKycDocumentUseCase)
@@ -108,4 +115,7 @@ export const availabilityController = new AvailabilityController(setAvailability
 export const unavaliabilityController = new UnavailabilityController(createUnavailabilityUseCase, getUnavailabilitiesUseCase,deleteUnavailabilityUseCase)
 export const availabilityOverrideController = new AvailabilityOverrideController(setAvailabilityOverrideUseCase, getAvailabilityOverridesUseCase, deleteAvailabilityOverrideUseCase);
 
-export const portfolioController = new PortfolioController(getUploadUrlUseCase, createPortfolioItemUseCase, getPortfolioUseCase, updatePortfolioItemUseCase, removePortfolioImageUseCase, deletePortfolioItemUseCase)
+export const portfolioController = new PortfolioController(getUploadUrlUseCase, createPortfolioItemUseCase, getPortfolioUseCase, updatePortfolioItemUseCase, removePortfolioImageUseCase, deletePortfolioItemUseCase);
+
+
+export const slotController = new SlotController(getAvailableSlotsUseCase)

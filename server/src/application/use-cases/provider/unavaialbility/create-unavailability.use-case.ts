@@ -1,5 +1,9 @@
 import { Unavailability } from "../../../../domain/entities/unavailability.entity";
-import { ConflictError } from "../../../../domain/errors/errors";
+import {
+  ConflictError,
+  ValidationError,
+} from "../../../../domain/errors/errors";
+import { IAvailabilityOverrideRepository } from "../../../../domain/interfaces/repositories/availability-override/IAvailability-override.repository";
 import { IUnavailabilityRepository } from "../../../../domain/interfaces/repositories/unavailability/IUnavaliability-repository";
 import { CreateUnavailabilityRequestDto } from "../../../dtos/provider/unavailability/unavailability-request.dto";
 import { UnavailabilityResponseDto } from "../../../dtos/provider/unavailability/unavailability-response.dto";
@@ -7,23 +11,38 @@ import { UnavailabilityMapper } from "../../../mapers/provider/unavailability/un
 
 export class CreateUnavailabilityUseCase {
   constructor(
-    private readonly _unavailabilityRepository: IUnavailabilityRepository
+    private readonly _unavailabilityRepository: IUnavailabilityRepository,
+    private readonly _availabilityOverrideRepository: IAvailabilityOverrideRepository,
   ) {}
 
   async execute(
-    data: CreateUnavailabilityRequestDto
+    data: CreateUnavailabilityRequestDto,
   ): Promise<UnavailabilityResponseDto> {
+    const dateOnly = data.endDate.toISOString().split("T")[0];
+    const dayStart = new Date(`${data.startDate}T00:00:00.000Z`);
+    const dayEnd = new Date(`${data.endDate}T23:59:59.999Z`);
+    console.log(dayStart)
+    console.log(dayEnd)
+    const overRide = await this._availabilityOverrideRepository.findOne({
+      date: dateOnly,
+    });
+
+    if (overRide) {
+      throw new ValidationError(
+        "Override exists on this date delete that first",
+      );
+    }
 
     // Check for overlapping manual blocks to avoid duplicates
     const overlapping = await this._unavailabilityRepository.findOverlapping(
       data.providerId,
       data.startDate,
-      data.endDate
+      data.endDate,
     );
 
     if (overlapping.length > 0) {
       throw new ConflictError(
-        "An unavailability block already exists for this time range"
+        "An unavailability block already exists for this time range",
       );
     }
 

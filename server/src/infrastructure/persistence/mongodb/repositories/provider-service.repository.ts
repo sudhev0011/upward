@@ -174,47 +174,60 @@ export class ProviderServiceRepository
     };
   }
 
-  async getActiveServicesByProvider(providerId: string): Promise<ProviderServicePublicItem[]> {
-  const pipeline: PipelineStage[] = [
-    {
-      $match: {
-        providerId: new Types.ObjectId(providerId),
-        status: ProviderServiceStatus.ACTIVE,
-        isActive: true,
+  async getActiveServicesByProvider(
+    providerId: string,
+  ): Promise<ProviderServicePublicItem[]> {
+    const pipeline: PipelineStage[] = [
+      {
+        $match: {
+          providerId: new Types.ObjectId(providerId),
+          status: ProviderServiceStatus.ACTIVE,
+          isActive: true,
+        },
       },
-    },
-    {
-      $lookup: {
-        from: 'services',
-        localField: 'serviceId',
-        foreignField: '_id',
-        as: 'service',
+      {
+        $lookup: {
+          from: "services",
+          localField: "serviceId",
+          foreignField: "_id",
+          as: "service",
+        },
       },
-    },
-    { $unwind: '$service' },
-    {
-      $lookup: {
-        from: 'categories',
-        localField: 'service.categoryId',
-        foreignField: '_id',
-        as: 'category',
+      { $unwind: "$service" },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "service.categoryId",
+          foreignField: "_id",
+          as: "category",
+        },
       },
-    },
-    { $unwind: '$category' },
-    {
-      $project: {
-        _id: 0,
-        providerServiceId: '$_id',
-        serviceName: '$service.name',
-        mode: '$service.mode',
-        maxHour: '$service.maxHour',
-        price: '$price',
-        categoryName: '$category.name',
+      { $unwind: "$category" },
+      {
+        $project: {
+          _id: 0,
+          providerServiceId: "$_id",
+          serviceName: "$service.name",
+          mode: "$service.mode",
+          maxHour: "$service.maxHour",
+          price: "$price",
+          categoryName: "$category.name",
+        },
       },
-    },
-    { $sort: { categoryName: 1, serviceName: 1 } },
-  ];
+      { $sort: { categoryName: 1, serviceName: 1 } },
+    ];
 
-  return ProviderServiceModel.aggregate(pipeline);
-}
+    return ProviderServiceModel.aggregate(pipeline);
+  }
+
+  async findActive(
+    providerId: string,
+    serviceId: string,
+  ): Promise<ProviderService | null> {
+    return this.findOne({
+      providerId,
+      serviceId,
+      isActive: true,
+    });
+  }
 }

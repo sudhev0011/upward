@@ -1,6 +1,7 @@
 import { AvailabilityOverride } from "../../../../domain/entities/availability-override.entity";
+import { IBaseRepository } from "../base/IBaseRepository";
 
-export interface IAvailabilityOverrideRepository {
+export interface IAvailabilityOverrideRepository extends IBaseRepository<AvailabilityOverride> {
   
   findByProviderId(providerId: string): Promise<AvailabilityOverride[]>;
 

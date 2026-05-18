@@ -13,9 +13,10 @@ export interface IProviderServiceRepository extends IBaseRepository<ProviderServ
     serviceId: string
   ): Promise<ProviderService | null>;
 
-  // findGroupedByCategory(
-  //   providerId: string
-  // ): Promise<ProviderServicesGroupedData[]>;
+  findActive(
+    providerId: string,
+    serviceId: string
+  ): Promise<ProviderService | null>;
   
   findGroupedByCategory(
     providerId: string,
