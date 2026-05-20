@@ -82,14 +82,12 @@ export class GetAvailableSlotsUseCase {
       input.date,
     );
 
-    console.log(blockedRanges)
 
     const freeRanges = RangeCalculationService.subtractRanges(
       workingRange,
       blockedRanges,
     );
 
-    console.log(freeRanges)
  
     const durationMinutes = service.maxHour * 60;
 

@@ -1,7 +1,10 @@
 import { Types } from "mongoose";
 import { RepositoryBase } from "./base.repository";
 import { Unavailability } from "../../../../domain/entities/unavailability.entity";
-import { UnavailabilityModel,UnavailabilityDocument } from "../models/unavailability.mode";
+import {
+  UnavailabilityModel,
+  UnavailabilityDocument,
+} from "../models/unavailability.mode";
 import { UnavailabilitySource } from "../../../../domain/enums/unavailability.enum";
 import { ITransactionContext } from "../../../../domain/interfaces/database/transaction-context.interface";
 import { MongoSessionUtil } from "../helper/mongo-session.utils";
@@ -26,22 +29,22 @@ export class UnavailabilityRepository extends RepositoryBase<
     providerId: string,
     rangeStart: Date,
     rangeEnd: Date,
-    transaction?: ITransactionContext
+    transaction?: ITransactionContext,
   ): Promise<Unavailability[]> {
-    const session =
-      MongoSessionUtil.getSession(
-        transaction,
-      );
-    return this.findMany({
-      providerId: new Types.ObjectId(providerId),
-      startDate: { $lt: rangeEnd },
-      endDate: { $gt: rangeStart },
-    },session);
+    const session = MongoSessionUtil.getSession(transaction);
+    return this.findMany(
+      {
+        providerId: new Types.ObjectId(providerId),
+        startDate: { $lt: rangeEnd },
+        endDate: { $gt: rangeStart },
+      },
+      session,
+    );
   }
 
   async findBySource(
     providerId: string,
-    source: UnavailabilitySource
+    source: UnavailabilitySource,
   ): Promise<Unavailability[]> {
     return this.findMany({
       providerId: new Types.ObjectId(providerId),
@@ -50,21 +53,30 @@ export class UnavailabilityRepository extends RepositoryBase<
   }
 
   // When a booking is cancelled, remove the corresponding unavailability block
-  async deleteByBookingId(bookingId: string): Promise<boolean> {
-    if (!Types.ObjectId.isValid(bookingId)) return false;
+  async deleteByBookingId(
+    bookingId: string,
+    transaction?: ITransactionContext,
+  ): Promise<boolean> {
+    const session = MongoSessionUtil.getSession(transaction);
 
-    const result = await this.model.findOneAndDelete({
-      bookingId: new Types.ObjectId(bookingId),
-    });
+    const result = await this.model.deleteOne(
+      {
+        bookingId,
+        source: UnavailabilitySource.BOOKING,
+      },
+      {
+        session,
+      },
+    );
 
-    return result !== null;
+    return result.deletedCount > 0;
   }
 
   // Delete all manual blocks for a provider in a date range
   async deleteManualInRange(
     providerId: string,
     rangeStart: Date,
-    rangeEnd: Date
+    rangeEnd: Date,
   ): Promise<number> {
     const result = await this.model.deleteMany({
       providerId: new Types.ObjectId(providerId),
@@ -79,12 +91,12 @@ export class UnavailabilityRepository extends RepositoryBase<
   // ─── Mappers ───────────────────────────────────────────────────────────────
 
   protected mapToEntity(document: UnavailabilityDocument): Unavailability {
-    return UnavailabilityInfraMapper.mapToEntity(document)
+    return UnavailabilityInfraMapper.mapToEntity(document);
   }
 
   protected mapToDocument(
-    entity: Partial<Unavailability>
+    entity: Partial<Unavailability>,
   ): Partial<UnavailabilityDocument> {
-    return UnavailabilityInfraMapper.mapToDocument(entity)
+    return UnavailabilityInfraMapper.mapToDocument(entity);
   }
 }

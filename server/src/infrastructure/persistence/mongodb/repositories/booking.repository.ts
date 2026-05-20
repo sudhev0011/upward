@@ -5,7 +5,7 @@ import { BookingDocument, BookingModel } from "../models/booking.model";
 import { RepositoryBase } from "./base.repository";
 import { ITransactionContext } from "../../../../domain/interfaces/database/transaction-context.interface";
 import { MongoSessionUtil } from "../helper/mongo-session.utils";
-
+import { BookingMapper } from "../../../mapers.persistence/booking/booking-mapper";
 export class BookingRepository
   extends RepositoryBase<Booking, BookingDocument>
   implements IBookingRepository
@@ -88,90 +88,10 @@ export class BookingRepository
   }
 
   protected mapToEntity(document: BookingDocument): Booking {
-    return Booking.create({
-      id: document._id.toString(),
-
-      clientId: document.clientId.toString(),
-
-      providerId: document.providerId.toString(),
-
-      providerServiceId: document.providerServiceId.toString(),
-
-      serviceId: document.serviceId.toString(),
-
-      status: document.status,
-
-      paymentType: document.paymentType,
-
-      paymentStatus: document.paymentStatus,
-
-      totalAmount: document.totalAmount,
-
-      paidAmount: document.paidAmount,
-
-      bookingDate: document.bookingDate,
-
-      startDateTime: document.startDateTime,
-
-      endDateTime: document.endDateTime,
-
-      notes: document.notes,
-
-      refundAmount: document.refundAmount,
-
-      cancelledBy: document.cancelledBy?.toString() || null,
-
-      cancellationReason: document.cancellationReason,
-
-      cancelledAt: document.cancelledAt,
-
-      expiresAt: document.expiresAt,
-
-      createdAt: document.createdAt,
-
-      updatedAt: document.updatedAt,
-    });
+    return BookingMapper.mapToEntity(document)
   }
 
   protected mapToDocument(entity: Partial<Booking>): Partial<BookingDocument> {
-    return {
-      clientId: entity.clientId as any,
-
-      providerId: entity.providerId as any,
-
-      providerServiceId: entity.providerServiceId as any,
-
-      serviceId: entity.serviceId as any,
-
-      status: entity.status,
-
-      paymentType: entity.paymentType,
-
-      paymentStatus: entity.paymentStatus,
-
-      totalAmount: entity.totalAmount,
-
-      paidAmount: entity.paidAmount,
-
-      remainingAmount: entity.remainingAmount,
-
-      refundAmount: entity.refundAmount,
-
-      bookingDate: entity.bookingDate,
-
-      startDateTime: entity.startDateTime,
-
-      endDateTime: entity.endDateTime,
-
-      notes: entity.notes,
-
-      cancelledBy: entity.cancelledBy as any,
-
-      cancellationReason: entity.cancellationReason,
-
-      cancelledAt: entity.cancelledAt,
-
-      expiresAt: entity.expiresAt,
-    };
+    return BookingMapper.mapToDocument(entity)
   }
 }

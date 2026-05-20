@@ -68,7 +68,7 @@ export class BookingMapper {
     if (entity.totalAmount !== undefined) doc.totalAmount = entity.totalAmount;
     if (entity.paidAmount !== undefined) doc.paidAmount = entity.paidAmount;
     if (entity.remainingAmount !== undefined)
-      doc.refundAmount = entity.remainingAmount;
+      doc.remainingAmount = entity.remainingAmount;
 
     if (entity.refundAmount !== undefined)
       doc.refundAmount = entity.refundAmount;

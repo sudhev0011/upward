@@ -14,6 +14,7 @@ import { errorHandler } from "../middleware/error-handler";
 import { requestLogger } from "../middleware/logger.middleware";
 import { winstonLogger } from "../../infrastructure/config/logger";
 import { PublicRouter } from "../routes/public-router";
+import { bookingExpirationJob } from "../../infrastructure/di/jobsDi";
 
 export class AppServer {
   private _app: express.Application;
@@ -43,16 +44,15 @@ export class AppServer {
     this._app.use(express.json({ limit: "10mb" }));
     this._app.use(express.urlencoded({ extended: true }));
     this._app.use(cookieParser());
-    this._app.use(requestLogger)
+    this._app.use(requestLogger);
   }
 
   private configureRoutes(): void {
-
     this._app.use("/api/auth", new AuthRouter().router);
     this._app.use("/api/client", new ClientRouter().router);
     this._app.use("/api/provider", new ProviderRouter().router);
-    this._app.use("/api/admin", new AdminRouter().router)
-    this._app.use("/api/public", new PublicRouter().router)
+    this._app.use("/api/admin", new AdminRouter().router);
+    this._app.use("/api/public", new PublicRouter().router);
 
     this._app.use(errorHandler);
   }
@@ -75,10 +75,17 @@ export class AppServer {
     }
   }
 
+  private initializeJobs(): void {
+    bookingExpirationJob.start();
+
+    winstonLogger.info("Background jobs initialized");
+  }
+
   public async start(): Promise<void> {
     try {
       await this.connectDatabase();
       this.init();
+      this.initializeJobs();
 
       this._httpServer.listen(this._port, () => {
         winstonLogger.info(`Server running on http://localhost:${this._port}`);
