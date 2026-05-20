@@ -50,6 +50,8 @@ import { SlotController } from "../../presentation/controllers/provider/slot/slo
 import { GetAvailableSlotsUseCase } from "../../application/use-cases/slot/get-available-slots.use-case";
 import { WorkingHoursResolverService } from "../../application/services/working-hours-resolver.service";
 import { UnavailabilityResolverService } from "../../application/services/unavailability-resolver.service";
+import { SlotValidationService } from "../../application/services/slot-validation.service";
+import { BookingRepository } from "../persistence/mongodb/repositories/booking.repository";
 
 //repo init
 const userRepository = new UserRepository(); 
@@ -61,6 +63,7 @@ const avaliabilityRepository = new AvailabilityRepository()
 const unavailabilityRepository = new UnavailabilityRepository()
 const availabilityOverrideRepository = new AvailabilityOverrideRepository();
 const portfolioRepository = new PortfolioRepository()
+const bookingRepository = new BookingRepository()
 
 // service init
 const logger = new WinstonLogger();
@@ -68,6 +71,7 @@ const s3Service = new S3Service(logger);
 const encryptionService = new EncryptionService();
 const workingHoursResolver = new WorkingHoursResolverService(avaliabilityRepository, availabilityOverrideRepository)
 const unavailabilityResolver = new UnavailabilityResolverService(unavailabilityRepository)
+const slotValidationService = new SlotValidationService(providerServiceRepository,serviceRespository,categoryRepository,bookingRepository,workingHoursResolver,unavailabilityResolver)
 
 // useCase init
 export const getProviderProfileUseCase = new GetProviderProfileUseCase(providerProfileRepository,userRepository);

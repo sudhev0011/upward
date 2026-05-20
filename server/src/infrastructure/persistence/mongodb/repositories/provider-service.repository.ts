@@ -11,6 +11,8 @@ import { ProviderServicesGroupedData } from "../../../../domain/queries/provider
 import { PaginatedResult } from "../../../../domain/common.types";
 import { ProviderServicePublicItem } from "../../../../domain/queries/client/provider-service-public-item";
 import { ProviderServiceStatus } from "../../../../domain/enums/provider-service.status.enum";
+import { ITransactionContext } from "../../../../domain/interfaces/database/transaction-context.interface";
+import { MongoSessionUtil } from "../helper/mongo-session.utils";
 
 export class ProviderServiceRepository
   extends RepositoryBase<ProviderService, ProviderServiceDocument>
@@ -30,10 +32,17 @@ export class ProviderServiceRepository
     return ProviderServiceMapper.toDocument(entity);
   }
 
-  async findByProvider(providerId: string): Promise<ProviderService[]> {
-    return this.findMany({
-      providerId: new Types.ObjectId(providerId),
-    });
+  async findByProvider(
+    providerId: string,
+    transaction?: ITransactionContext,
+  ): Promise<ProviderService[]> {
+    const session = MongoSessionUtil.getSession(transaction);
+    return this.findMany(
+      {
+        providerId: new Types.ObjectId(providerId),
+      },
+      session,
+    );
   }
 
   async findByProviderAndService(
@@ -223,11 +232,16 @@ export class ProviderServiceRepository
   async findActive(
     providerId: string,
     serviceId: string,
+    transaction?: ITransactionContext,
   ): Promise<ProviderService | null> {
-    return this.findOne({
-      providerId,
-      serviceId,
-      isActive: true,
-    });
+    const session = MongoSessionUtil.getSession(transaction);
+    return this.findOne(
+      {
+        providerId,
+        serviceId,
+        isActive: true,
+      },
+      session,
+    );
   }
 }

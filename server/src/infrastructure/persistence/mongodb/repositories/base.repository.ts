@@ -1,12 +1,37 @@
-import { Model, Document as MongooseDocument, QueryFilter } from "mongoose";
-import { Types } from "mongoose";
+import {
+  Model,
+  Document as MongooseDocument,
+  QueryFilter,
+  Types,
+} from "mongoose";
+
 import { CreateInput } from "../../../../domain/types/common.types";
 
-export abstract class RepositoryBase<T, TDocument extends MongooseDocument> {
-  constructor(protected model: Model<TDocument>) {}
+import { ITransactionContext } from "../../../../domain/interfaces/database/transaction-context.interface";
+import { MongoSessionUtil } from "../helper/mongo-session.utils";
 
-  async create(data: CreateInput<T>): Promise<T> {
-    const documentData = this.mapToDocument(data as Partial<T>);
+
+export abstract class RepositoryBase<
+  T,
+  TDocument extends MongooseDocument,
+> {
+  constructor(
+    protected model: Model<TDocument>,
+  ) {}
+
+  async create(
+    data: CreateInput<T>,
+    transaction?: ITransactionContext,
+  ): Promise<T> {
+    const session =
+      MongoSessionUtil.getSession(
+        transaction,
+      );
+
+    const documentData =
+      this.mapToDocument(
+        data as Partial<T>,
+      );
 
     const document = new this.model({
       ...documentData,
@@ -14,72 +39,178 @@ export abstract class RepositoryBase<T, TDocument extends MongooseDocument> {
       updatedAt: new Date(),
     });
 
-    const savedDocument = await document.save();
-    return this.mapToEntity(savedDocument);
-  }
+    const savedDocument =
+      await document.save({
+        session,
+      });
 
-  async findById(id: string): Promise<T | null> {
-    if (!Types.ObjectId.isValid(id)) {
-      return null;
-    }
-
-    const document = await this.model.findById(id);
-    return document ? this.mapToEntity(document) : null;
-  }
-
-  async update(id: string, data: Partial<T>): Promise<T | null> {
-    if (!Types.ObjectId.isValid(id)) {
-      return null;
-    }
-
-    const documentData = this.mapToDocument(data);
-
-    const document = await this.model.findByIdAndUpdate(
-      id,
-      { ...documentData, updatedAt: new Date() },
-      { new: true },
+    return this.mapToEntity(
+      savedDocument,
     );
-
-    return document ? this.mapToEntity(document) : null;
   }
 
-  async delete(id: string): Promise<boolean> {
+  async findById(
+    id: string,
+    transaction?: ITransactionContext,
+  ): Promise<T | null> {
+    const session =
+      MongoSessionUtil.getSession(
+        transaction,
+      );
+
+    if (!Types.ObjectId.isValid(id)) {
+      return null;
+    }
+
+    const document =
+      await this.model
+        .findById(id)
+        .session(session || null);
+
+    return document
+      ? this.mapToEntity(document)
+      : null;
+  }
+
+  async update(
+    id: string,
+    data: Partial<T>,
+    transaction?: ITransactionContext,
+  ): Promise<T | null> {
+    const session =
+      MongoSessionUtil.getSession(
+        transaction,
+      );
+
+    if (!Types.ObjectId.isValid(id)) {
+      return null;
+    }
+
+    const documentData =
+      this.mapToDocument(data);
+
+    const document =
+      await this.model.findByIdAndUpdate(
+        id,
+        {
+          ...documentData,
+          updatedAt: new Date(),
+        },
+        {
+          new: true,
+          session,
+        },
+      );
+
+    return document
+      ? this.mapToEntity(document)
+      : null;
+  }
+
+  async delete(
+    id: string,
+    transaction?: ITransactionContext,
+  ): Promise<boolean> {
+    const session =
+      MongoSessionUtil.getSession(
+        transaction,
+      );
+
     if (!Types.ObjectId.isValid(id)) {
       return false;
     }
 
-    const result = await this.model.findByIdAndDelete(id);
+    const result =
+      await this.model.findByIdAndDelete(
+        id,
+        {
+          session,
+        },
+      );
+
     return result !== null;
   }
 
   async findOne(
-    filter: QueryFilter<TDocument> | Record<string, unknown>,
+    filter:
+      | QueryFilter<TDocument>
+      | Record<string, unknown>,
+
+    transaction?: ITransactionContext,
   ): Promise<T | null> {
-    const document = await this.model.findOne(filter as QueryFilter<TDocument>);
-    return document ? this.mapToEntity(document) : null;
+    const session =
+      MongoSessionUtil.getSession(
+        transaction,
+      );
+
+    const document =
+      await this.model
+        .findOne(
+          filter as QueryFilter<TDocument>,
+        )
+        .session(session || null);
+
+    return document
+      ? this.mapToEntity(document)
+      : null;
   }
 
   async findMany(
-    filter: QueryFilter<TDocument> | Record<string, unknown>,
+    filter:
+      | QueryFilter<TDocument>
+      | Record<string, unknown>,
+
+    transaction?: ITransactionContext,
   ): Promise<T[]> {
-    const documents = await this.model.find(filter as QueryFilter<TDocument>);
-    return documents.map((doc) => this.mapToEntity(doc));
+    const session =
+      MongoSessionUtil.getSession(
+        transaction,
+      );
+
+    const documents =
+      await this.model
+        .find(
+          filter as QueryFilter<TDocument>,
+        )
+        .session(session || null);
+
+    return documents.map((doc) =>
+      this.mapToEntity(doc),
+    );
   }
 
   async countDocuments(
-    filter: QueryFilter<TDocument> | Record<string, unknown>,
+    filter:
+      | QueryFilter<TDocument>
+      | Record<string, unknown>,
+
+    transaction?: ITransactionContext,
   ): Promise<number> {
-    return await this.model.countDocuments(filter as QueryFilter<TDocument>);
+    const session =
+      MongoSessionUtil.getSession(
+        transaction,
+      );
+
+    return await this.model
+      .countDocuments(
+        filter as QueryFilter<TDocument>,
+      )
+      .session(session || null);
   }
 
   async paginate(
-    filter: QueryFilter<TDocument> | Record<string, unknown> = {},
+    filter:
+      | QueryFilter<TDocument>
+      | Record<string, unknown> = {},
+
     options: {
       page?: number;
       limit?: number;
       sortBy?: string;
       sortOrder?: "asc" | "desc";
     } = {},
+
+    transaction?: ITransactionContext,
   ): Promise<{
     data: T[];
     total: number;
@@ -87,34 +218,74 @@ export abstract class RepositoryBase<T, TDocument extends MongooseDocument> {
     limit: number;
     totalPages: number;
   }> {
-    const page = options.page || 1;
-    const limit = options.limit || 10;
-    const sortBy = options.sortBy || "createdAt";
-    const sortOrder = options.sortOrder === "asc" ? 1 : -1;
+    const session =
+      MongoSessionUtil.getSession(
+        transaction,
+      );
 
-    const skip = (page - 1) * limit;
-    const documents = await this.model
-      .find(filter as QueryFilter<TDocument>)
-      .collation({ locale: "en", strength: 2 })
-      .sort({ [sortBy]: sortOrder })
-      .skip(skip)
-      .limit(limit)
-      .exec();
+    const page =
+      options.page || 1;
 
-    const total = await this.model.countDocuments(
-      filter as QueryFilter<TDocument>,
-    );
-    const data = documents.map((doc) => this.mapToEntity(doc));
+    const limit =
+      options.limit || 10;
+
+    const sortBy =
+      options.sortBy ||
+      "createdAt";
+
+    const sortOrder =
+      options.sortOrder === "asc"
+        ? 1
+        : -1;
+
+    const skip =
+      (page - 1) * limit;
+
+    const documents =
+      await this.model
+        .find(
+          filter as QueryFilter<TDocument>,
+        )
+        .session(session || null)
+        .collation({
+          locale: "en",
+          strength: 2,
+        })
+        .sort({
+          [sortBy]: sortOrder,
+        })
+        .skip(skip)
+        .limit(limit)
+        .exec();
+
+    const total =
+      await this.model
+        .countDocuments(
+          filter as QueryFilter<TDocument>,
+        )
+        .session(session || null);
+
+    const data =
+      documents.map((doc) =>
+        this.mapToEntity(doc),
+      );
 
     return {
       data,
       total,
       page,
       limit,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil(
+        total / limit,
+      ),
     };
   }
 
-  protected abstract mapToEntity(document: TDocument): T;
-  protected abstract mapToDocument(entity: Partial<T>): Partial<TDocument>;
+  protected abstract mapToEntity(
+    document: TDocument,
+  ): T;
+
+  protected abstract mapToDocument(
+    entity: Partial<T>,
+  ): Partial<TDocument>;
 }

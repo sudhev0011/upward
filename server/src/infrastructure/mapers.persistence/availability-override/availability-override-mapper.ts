@@ -3,20 +3,22 @@ import { AvailabilityOverride } from "../../../domain/entities/availability-over
 import { AvailabilityOverrideDocument } from "../../persistence/mongodb/models/availability-override.model";
 
 export class AvailabilityOverrideInfraMapper {
-  static toEntity(doc: AvailabilityOverrideDocument): AvailabilityOverride {
+  static mapToEntity(
+    document: AvailabilityOverrideDocument
+  ): AvailabilityOverride {
     return AvailabilityOverride.create({
-      id: doc._id.toString(),
-      providerId: doc.providerId.toString(),
-      date: doc.date,
-      isWorking: doc.isWorking,
-      startTime: doc.startTime ?? null,
-      endTime: doc.endTime ?? null,
-      createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
+      id: document._id.toString(),
+      providerId: document.providerId.toString(),
+      date: document.date,
+      isWorking: document.isWorking,
+      startTime: document.startTime ?? null,
+      endTime: document.endTime ?? null,
+      createdAt: document.createdAt,
+      updatedAt: document.updatedAt,
     });
   }
 
-  static toDocument(
+  static mapToDocument(
     entity: Partial<AvailabilityOverride>
   ): Partial<AvailabilityOverrideDocument> {
     const doc: Partial<AvailabilityOverrideDocument> = {};
@@ -28,6 +30,6 @@ export class AvailabilityOverrideInfraMapper {
     if (entity.startTime !== undefined) doc.startTime = entity.startTime;
     if (entity.endTime !== undefined) doc.endTime = entity.endTime;
 
-    return doc;
+    return doc as Partial<AvailabilityOverrideDocument>;
   }
 }

@@ -3,24 +3,24 @@ import { Unavailability } from "../../../domain/entities/unavailability.entity";
 import { UnavailabilityDocument } from "../../persistence/mongodb/models/unavailability.mode";
 
 export class UnavailabilityInfraMapper {
-  static toEntity(doc: UnavailabilityDocument): Unavailability {
+  static mapToEntity(document: UnavailabilityDocument): Unavailability {
     return Unavailability.create({
-      id: doc._id.toString(),
-      providerId: doc.providerId.toString(),
-      startDate: doc.startDate,
-      endDate: doc.endDate,
-      reason: doc.reason ?? null,
-      source: doc.source,
-      bookingId: doc.bookingId?.toString() ?? null,
-      createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
+      id: document._id.toString(),
+      providerId: document.providerId.toString(),
+      startDate: document.startDate,
+      endDate: document.endDate,
+      reason: document.reason ?? null,
+      source: document.source,
+      bookingId: document.bookingId?.toString() ?? null,
+      createdAt: document.createdAt,
+      updatedAt: document.updatedAt,
     });
   }
 
-  static toDocument(
+  static mapToDocument(
     entity: Partial<Unavailability>
   ): Partial<UnavailabilityDocument> {
-    const doc: Partial<UnavailabilityDocument> = {};
+    const doc: Record<string, unknown> = {};
 
     if (entity.providerId !== undefined)
       doc.providerId = new Types.ObjectId(entity.providerId);
@@ -33,6 +33,6 @@ export class UnavailabilityInfraMapper {
         ? new Types.ObjectId(entity.bookingId)
         : null;
 
-    return doc;
+    return doc as Partial<UnavailabilityDocument>;
   }
 }

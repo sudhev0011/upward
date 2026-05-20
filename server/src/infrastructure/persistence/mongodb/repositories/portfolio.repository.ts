@@ -7,6 +7,7 @@ import {
 } from "../models/portfolio.model";
 import { IPortfolioRepository } from "../../../../domain/interfaces/repositories/portfolio/IPortfolioRepository";
 import { PortfolioPaginatedResult } from "../../../../domain/common.types";
+import { PortfolioMapper } from "../../../mapers.persistence/portfolio/portfolio-mapper";
 export class PortfolioRepository
   extends RepositoryBase<PortfolioItem, PortfolioItemDocument>
   implements IPortfolioRepository
@@ -81,35 +82,12 @@ export class PortfolioRepository
   // ─── Mappers ───────────────────────────────────────────────────────────────
 
   protected mapToEntity(document: PortfolioItemDocument): PortfolioItem {
-    return PortfolioItem.create({
-      id: document._id.toString(),
-      providerId: document.providerId.toString(),
-      title: document.title,
-      description: document.description,
-      images: document.images,
-      storageKeys: document.storageKeys,
-      thumbnailUrl: document.thumbnailUrl,
-      tags: document.tags,
-      createdAt: document.createdAt,
-      updatedAt: document.updatedAt,
-    });
+    return PortfolioMapper.mapToEntity(document)
   }
 
   protected mapToDocument(
     entity: Partial<PortfolioItem>,
   ): Partial<PortfolioItemDocument> {
-    const doc: Record<string, unknown> = {};
-
-    if (entity.providerId !== undefined)
-      doc.providerId = new Types.ObjectId(entity.providerId);
-    if (entity.title !== undefined) doc.title = entity.title;
-    if (entity.description !== undefined) doc.description = entity.description;
-    if (entity.images !== undefined) doc.images = entity.images;
-    if (entity.storageKeys !== undefined) doc.storageKeys = entity.storageKeys;
-    if (entity.thumbnailUrl !== undefined)
-      doc.thumbnailUrl = entity.thumbnailUrl;
-    if (entity.tags !== undefined) doc.tags = entity.tags;
-
-    return doc as Partial<PortfolioItemDocument>;
+    return PortfolioMapper.mapToDocument(entity)
   }
 }

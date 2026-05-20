@@ -9,7 +9,6 @@ import {
 } from "../../infrastructure/di/publicDi";
 import {
   providerProfileController,
-  slotController,
 } from "../../infrastructure/di/provider.Di";
 
 export class PublicRouter {
@@ -58,9 +57,6 @@ export class PublicRouter {
       publicProviderServiceController.getActiveServices,
     );
 
-    this.router.get(
-      "/providers/:providerId/services/:serviceId/slots",
-      slotController.getAvailableSlots,
-    );
+
   }
 }

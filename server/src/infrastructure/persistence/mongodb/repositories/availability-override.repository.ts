@@ -2,6 +2,7 @@ import { Types } from "mongoose";
 import { RepositoryBase } from "./base.repository";
 import { AvailabilityOverride } from "../../../../domain/entities/availability-override.entity";
 import { AvailabilityOverrideModel, AvailabilityOverrideDocument } from "../models/availability-override.model";
+import { AvailabilityOverrideInfraMapper } from "../../../mapers.persistence/availability-override/availability-override-mapper";
 export class AvailabilityOverrideRepository extends RepositoryBase<
   AvailabilityOverride,
   AvailabilityOverrideDocument
@@ -71,30 +72,12 @@ export class AvailabilityOverrideRepository extends RepositoryBase<
   protected mapToEntity(
     document: AvailabilityOverrideDocument
   ): AvailabilityOverride {
-    return AvailabilityOverride.create({
-      id: document._id.toString(),
-      providerId: document.providerId.toString(),
-      date: document.date,
-      isWorking: document.isWorking,
-      startTime: document.startTime ?? null,
-      endTime: document.endTime ?? null,
-      createdAt: document.createdAt,
-      updatedAt: document.updatedAt,
-    });
+    return AvailabilityOverrideInfraMapper.mapToEntity(document)
   }
 
   protected mapToDocument(
     entity: Partial<AvailabilityOverride>
   ): Partial<AvailabilityOverrideDocument> {
-    const doc: Record<string, unknown> = {};
-
-    if (entity.providerId !== undefined)
-      doc.providerId = new Types.ObjectId(entity.providerId);
-    if (entity.date !== undefined) doc.date = entity.date;
-    if (entity.isWorking !== undefined) doc.isWorking = entity.isWorking;
-    if (entity.startTime !== undefined) doc.startTime = entity.startTime;
-    if (entity.endTime !== undefined) doc.endTime = entity.endTime;
-
-    return doc as Partial<AvailabilityOverrideDocument>;
+    return AvailabilityOverrideInfraMapper.mapToDocument(entity)
   }
 }

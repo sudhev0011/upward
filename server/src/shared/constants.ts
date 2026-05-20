@@ -77,5 +77,7 @@ export const successResponse = {
   GET_PROVIDERS_BY_CATEGORY: "Providers fetched by category successfully",
 
   GET_AVAILABLE_SLOTS_SUCCESS: "Avaialable slots fetched successfully",
+
+  CREATE_BOOKING_SUCCESS: "Booking created successfully",
   
 } as const;
