@@ -2,7 +2,6 @@ interface ApiResponse<T = unknown> {
   success: boolean;
   message: string;
   data: T;
-  token?: string;
 }
 
 export const createSuccessResponse = <T>(message: string, data: T, token?: string): ApiResponse<T> => {
@@ -11,10 +10,6 @@ export const createSuccessResponse = <T>(message: string, data: T, token?: strin
     message,
     data,
   };
-
-  if (token) {
-    response.token = token;
-  }
 
   return response;
 };

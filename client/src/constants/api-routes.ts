@@ -21,6 +21,7 @@ export const ClientRoutes = {
     `/api/client/providers/${providerId}/services/${serviceId}/slots`,
 
   BOOKINGS: "/api/client/bookings",
+  PAYMENT_CREATE_INTENT: "/api/client/payments/create-intent",
 } as const;
 
 export const ProviderRoutes = {

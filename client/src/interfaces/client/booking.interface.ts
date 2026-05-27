@@ -1,5 +1,5 @@
 import { PaymentType } from "@/enums/payment-type.enum";
-
+import { Location } from "../location.interface";
 // --- Slot ---
 
 export interface AvailableSlot {
@@ -20,6 +20,7 @@ export interface CreateBookingRequest {
   bookingDate: string; // YYYY-MM-DD
   startTime: string;   // HH:mm
   paymentType: PaymentType;
+  location: Location;
   notes?: string | null;
 }
 
@@ -34,16 +35,26 @@ export interface BookingFormState {
   endTime: string;             // HH:mm — from slot response, display only
   paymentType: PaymentType | null;
   notes: string;
-  location: string;            // future backend field
+  location: Location | null;            // future backend field
 }
 
 // --- Response ---
 
 export interface Booking {
-  id: string;
+  bookingId: string;
   providerServiceId: string;
   bookingDate: string;
   startTime: string;
   paymentType: PaymentType;
   notes?: string | null;
+}
+
+export interface CreatePaymentIntentRequest {
+  bookingId: string;
+}
+
+export interface PaymentIntentResponse {
+  paymentIntentId: string;
+  clientSecret: string;
+  paymentId: string;
 }

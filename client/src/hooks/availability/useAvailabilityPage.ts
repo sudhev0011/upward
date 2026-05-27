@@ -80,7 +80,7 @@ export const useAvailabilityPage = () => {
   const serverUnavailabilities = unavailabilityRes?.data ?? [];
 
   const overrideDates = serverOverrides.map((o) => fromDateString(o.date));
-  const unavailableDates = serverUnavailabilities.map(
+  const unavailableDates = serverUnavailabilities.filter((u) => u.source === "manual").map(
     (u) => new Date(u.startDate),
   );
   const isScheduleDirty =

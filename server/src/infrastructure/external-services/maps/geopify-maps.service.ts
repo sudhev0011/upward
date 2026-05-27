@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { env } from "../../config/env";
 import {
   Location,
   LocationSuggestion,
@@ -13,7 +13,7 @@ import {
 export class GeoapifyMapsService
   implements MapsService
 {
-  private readonly apiKey = "9bf5e0cf93654cb0a035a4dc8b866806";
+  private readonly apiKey = env.GEOPIFY_API_KEY
 
   async searchLocations(
     query: string,

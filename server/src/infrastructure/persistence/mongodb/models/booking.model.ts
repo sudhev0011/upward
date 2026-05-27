@@ -6,6 +6,19 @@ import { PaymentStatus } from "../../../../domain/enums/payment-status.enum";
 
 import { PaymentType } from "../../../../domain/enums/payment-type.enum";
 
+interface GeoPoint {
+  type: "Point";
+  coordinates: [number, number]; // [lng, lat]
+}
+
+interface ClientLocation {
+  placeId: string;
+  address: string;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+  coordinates: GeoPoint;
+}
 export interface BookingDocument extends Document {
   clientId: Types.ObjectId;
 
@@ -35,7 +48,7 @@ export interface BookingDocument extends Document {
 
   endDateTime: Date;
 
-  location: string;
+  location: ClientLocation;
 
   notes: string | null;
 
@@ -51,6 +64,47 @@ export interface BookingDocument extends Document {
 
   updatedAt: Date;
 }
+
+const ClientLocationSchema = new Schema<ClientLocation>(
+  {
+    placeId: {
+      type: String,
+      required: true,
+    },
+
+    address: {
+      type: String,
+      required: true,
+    },
+
+    city: {
+      type: String,
+    },
+
+    state: {
+      type: String,
+    },
+
+    country: {
+      type: String,
+    },
+
+    coordinates: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        required: true,
+        default: "Point",
+      },
+
+      coordinates: {
+        type: [Number], // [lng, lat]
+        required: true,
+      },
+    },
+  },
+  { _id: false },
+);
 
 const BookingSchema = new Schema<BookingDocument>(
   {
@@ -142,7 +196,7 @@ const BookingSchema = new Schema<BookingDocument>(
     },
 
     location: {
-      type: String,
+      type: ClientLocationSchema,
       required: true,
     },
 

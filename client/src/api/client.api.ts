@@ -14,7 +14,12 @@ import type {
   GetAvailableSlotsRequest,
   CreateBookingRequest,
   Booking,
+  CreatePaymentIntentRequest,
+  PaymentIntentResponse,
 } from "@/interfaces/client/booking.interface";
+import { ListBookingsRequest, ListBookingsResponse } from "@/interfaces/bookings/bookings.interface";
+
+
 
 export const clientApi = {
   async getProfile(): Promise<ApiEnvelope<ClientProfile>> {
@@ -66,5 +71,26 @@ export const clientApi = {
   ): Promise<ApiEnvelope<Booking>> {
     return (await api.post<ApiEnvelope<Booking>>(ClientRoutes.BOOKINGS, data))
       .data;
+  },
+
+  async createPaymentIntent(
+    data: CreatePaymentIntentRequest,
+  ): Promise<ApiEnvelope<PaymentIntentResponse>> {
+    return (
+      await api.post<ApiEnvelope<PaymentIntentResponse>>(
+        ClientRoutes.PAYMENT_CREATE_INTENT,
+        data,
+      )
+    ).data;
+  },
+
+  async listBookings(
+    params: ListBookingsRequest,
+  ): Promise<ApiEnvelope<ListBookingsResponse>> {
+    return (
+      await api.get<ApiEnvelope<ListBookingsResponse>>(ClientRoutes.BOOKINGS, {
+        params,
+      })
+    ).data;
   },
 };

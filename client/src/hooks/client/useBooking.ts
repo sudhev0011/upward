@@ -26,7 +26,8 @@ export const useAvailableSlots = (
     queryKey: bookingKeys.slots(params),
     queryFn: () => clientApi.getAvailableSlots(params),
     enabled: enabled && !!params.date && !!params.providerId && !!params.providerServiceId,
-    staleTime: 1000 * 60 * 2, // 2 minutes — slots can change, don't cache too long
+    staleTime: 0,
+    gcTime: 0, 
     retry: 1,
   });
 };

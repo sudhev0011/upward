@@ -95,7 +95,6 @@ export class ConfirmPaymentUseCase
 
         const confirmedBooking =
           booking.confirm();
-
         await this.bookingRepository.update(
           booking.id!,
 

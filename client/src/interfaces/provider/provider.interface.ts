@@ -1,27 +1,7 @@
+import { Location } from "../location.interface";
 export interface SocialLink {
   name: string;
   link?: string;
-}
-
-export interface GeoPoint {
-  type: "Point";
-
-  // [lng, lat]
-  coordinates: [number, number];
-}
-
-export interface Location {
-  placeId: string;
-
-  address: string;
-
-  city?: string | null;
-
-  state?: string | null;
-
-  country?: string | null;
-
-  coordinates: GeoPoint;
 }
 
 export interface ProviderProfile {

@@ -48,6 +48,10 @@ export class SlotValidationService {
       );
     }
 
+    if(!providerService.price){
+      throw new UnprocessableEntityError("Provider Service has no price")
+    }
+
     /**
      * STEP 2
      * Validate service
@@ -63,6 +67,7 @@ export class SlotValidationService {
         "Service not found"
       );
     }
+
 
     /**
      * STEP 3
@@ -235,7 +240,7 @@ export class SlotValidationService {
       endDateTime,
 
       totalAmount:
-        providerService.price || 0,
+        providerService.price,
     };
   }
 }

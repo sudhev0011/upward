@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { LocationSchema } from './create-provider-profile-request.dto';
+import { LocationSchema } from '../../../../common/location/location.dto';
 
 const SocialLinkSchema = z.object({
   name: z.string().min(1, 'Social link name is required'),

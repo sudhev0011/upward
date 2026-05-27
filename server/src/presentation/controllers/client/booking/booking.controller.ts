@@ -13,55 +13,76 @@ import { formatZodErrors } from "../../../../shared/utils/presentation/zod-error
 
 import { successResponse } from "../../../../shared/constants";
 
-import { CreateBookingRequestDtoSchema } from "../../../../application/dtos/client/booking/create-booking-request.dto";
+import { CreateBookingRequestDtoSchema } from "../../../../application/dtos/client/booking/request/create-booking-request.dto";
 
 import { ICreateBookingUseCase } from "../../../../domain/interfaces/usecases/booking/ICreateBookingUseCase";
 
+import { UserRole } from "../../../../domain/enums/user-role.enum";
+import { IListBookingsUseCase } from "../../../../domain/interfaces/usecases/booking/IListBookingUseCase";
+import { ListBookingsRequestDtoSchema } from "../../../../application/dtos/client/booking/request/list-bookings-request.dto";
+import { NotFound } from "@aws-sdk/client-s3";
+import { NotFoundError } from "../../../../domain/errors/errors";
+
 export class BookingController {
   constructor(
-    private readonly _createBookingUseCase: ICreateBookingUseCase
+    private readonly _createBookingUseCase: ICreateBookingUseCase,
+
+    private readonly _listBookingsUseCase: IListBookingsUseCase,
   ) {}
 
   /**
    * this method is to make booking of a service, it creates the booking doc with info after validation
    * @param req req includes the providerServiceId, date, start time, payment type etc
    * @param res response is a full booking oject with status as pending
-   * @param next 
-   * @returns 
+   * @param next
+   * @returns
    */
   createBooking = async (
     req: AuthenticatedRequest,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     const clientId = validateUserId(req);
 
-    const parsed =
-      CreateBookingRequestDtoSchema.safeParse(
-        req.body
-      );
+    const parsed = CreateBookingRequestDtoSchema.safeParse(req.body);
 
     if (!parsed.success) {
-      return handleValidationError(
-        formatZodErrors(parsed.error),
-        next
-      );
+      return handleValidationError(formatZodErrors(parsed.error), next);
     }
 
     try {
-      const result =
-        await this._createBookingUseCase.execute(
-          clientId,
-          parsed.data
-        );
-
-      sendSuccessResponse(
-        res,
-        successResponse.CREATE_BOOKING_SUCCESS,
-        result
+      const result = await this._createBookingUseCase.execute(
+        clientId,
+        parsed.data,
       );
+
+      sendSuccessResponse(res, successResponse.CREATE_BOOKING_SUCCESS, result);
     } catch (error) {
       handleAsyncError(error, next);
     }
   };
+
+  listBookings =
+    (role: UserRole) =>
+    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+      const currentUserId = validateUserId(req);
+
+      const parsed = ListBookingsRequestDtoSchema.safeParse(req.query);
+
+      if (!parsed.success) {
+        return handleValidationError(formatZodErrors(parsed.error), next);
+      }
+
+      try {
+        const result = await this._listBookingsUseCase.execute(
+          parsed.data,
+          currentUserId,
+          role,
+        );
+
+        sendSuccessResponse(res, successResponse.GET_BOOKINGS_SUCCESS, result);
+      } catch (error) {
+        handleAsyncError(error, next);
+      }
+    };
 }

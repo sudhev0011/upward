@@ -6,6 +6,7 @@ import {
   paymentController,
 } from "../../infrastructure/di/clientDi";
 import { slotController } from "../../infrastructure/di/provider.Di";
+import { UserRole } from "../../domain/enums/user-role.enum";
 export class ClientRouter {
   public router: Router;
 
@@ -33,8 +34,10 @@ export class ClientRouter {
     this.router.post("/bookings", bookingController.createBooking);
     this.router.post(
       "/payments/create-intent",
-
+      
       paymentController.createPaymentIntent,
     );
+
+    this.router.get("/bookings", bookingController.listBookings(UserRole.CLIENT));
   }
 }

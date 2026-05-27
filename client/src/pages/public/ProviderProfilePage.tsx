@@ -88,7 +88,7 @@ export const ProviderProfilePage = () => {
                   <div className="flex flex-wrap items-center gap-3 mt-1">
                     {provider.location && (
                       <span className="flex items-center gap-1 text-xs text-gray-400">
-                        <MapPin size={11} /> {provider.location}
+                        <MapPin size={11} /> {provider?.location.address}
                       </span>
                     )}
                     {provider.experience && (
@@ -209,7 +209,7 @@ export const ProviderProfilePage = () => {
           {/* Tab content */}
           <div className="p-6">
             {activeTab === "services" && (
-              <ServicesSection providerId={providerId!} />
+              <ServicesSection providerId={providerId!} providerName={provider.name}/>
             )}
             {activeTab === "portfolio" && (
               <PortfolioSection providerId={providerId!} />

@@ -67,6 +67,7 @@ export class BookingMapper {
 
     if (entity.status !== undefined) doc.status = entity.status;
     if (entity.paymentType !== undefined) doc.paymentType = entity.paymentType;
+    if (entity.paymentStatus !== undefined) doc.paymentStatus = entity.paymentStatus;
     if (entity.totalAmount !== undefined) doc.totalAmount = entity.totalAmount;
     if (entity.paidAmount !== undefined) doc.paidAmount = entity.paidAmount;
     if (entity.remainingAmount !== undefined)
@@ -82,6 +83,8 @@ export class BookingMapper {
 
     if (entity.endDateTime !== undefined) doc.endDateTime = entity.endDateTime;
 
+    if(entity.location !== undefined) doc.location = entity.location;
+    
     if (entity.notes !== undefined) doc.notes = entity.notes;
 
     if (entity.cancelledBy !== undefined)

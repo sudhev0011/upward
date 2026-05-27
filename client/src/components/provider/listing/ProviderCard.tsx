@@ -28,7 +28,7 @@ export const ProviderCard = ({ provider }: Props) => {
           {provider.location && (
             <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
               <MapPin size={11} />
-              {provider.location}
+              {provider.location.address}
             </p>
           )}
         </div>

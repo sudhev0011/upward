@@ -1,10 +1,12 @@
+import { Location } from "../location.interface";
+
 export interface ClientProviderListItem {
   id: string;
   userId: string;
   name: string;
   email: string;
   bio: string | null;
-  location: string | null;
+  location: Location | null;
   avatarUrl: string | null;
   experience: string | null;
   ratingAvg: number;

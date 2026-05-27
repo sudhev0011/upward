@@ -1,15 +1,19 @@
+import { useState } from 'react';
 import { useGetProviderActiveServices } from '@/hooks/public/providers/provider-service/useGetProviderActiveServices';
 import { ProviderServicePublicItem } from '@/interfaces/provider/provider-service.interface';
 import { Clock, MapPin, Wifi, LayoutGrid, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import BookingModal from '@/components/booking/BookingModal';
 
 interface Props {
   providerId: string;
+  providerName: string;
 }
 
 const MODE_CONFIG = {
-  onsite:  { label: 'On-site',  icon: MapPin,      color: 'text-emerald-600 bg-emerald-50 border-emerald-100' },
-  offsite: { label: 'Off-site', icon: Wifi,         color: 'text-purple-600 bg-purple-50 border-purple-100'   },
-  both:    { label: 'Both',     icon: LayoutGrid,   color: 'text-[#4A86B0] bg-[#EEF5FB] border-[#C8DFF0]'    },
+  onsite:  { label: 'On-site',  icon: MapPin,    color: 'text-emerald-600 bg-emerald-50 border-emerald-100' },
+  offsite: { label: 'Off-site', icon: Wifi,       color: 'text-purple-600 bg-purple-50 border-purple-100'   },
+  both:    { label: 'Both',     icon: LayoutGrid, color: 'text-[#4A86B0] bg-[#EEF5FB] border-[#C8DFF0]'    },
 } as const;
 
 function groupByCategory(items: ProviderServicePublicItem[]) {
@@ -20,8 +24,11 @@ function groupByCategory(items: ProviderServicePublicItem[]) {
   }, {});
 }
 
-export const ServicesSection = ({ providerId }: Props) => {
+export const ServicesSection = ({ providerId, providerName }: Props) => {
   const { data: services, isLoading, isError } = useGetProviderActiveServices(providerId);
+
+  // track which service the modal is open for
+  const [selectedService, setSelectedService] = useState<ProviderServicePublicItem | null>(null);
 
   if (isLoading) {
     return (
@@ -50,62 +57,84 @@ export const ServicesSection = ({ providerId }: Props) => {
   const grouped = groupByCategory(services);
 
   return (
-    <div className="space-y-6">
-      {Object.entries(grouped).map(([categoryName, items]) => (
-        <div key={categoryName}>
-          {/* Category header */}
-          <h3 className="text-xs font-bold text-[#4A86B0] uppercase tracking-widest mb-3">
-            {categoryName}
-          </h3>
+    <>
+      <div className="space-y-6">
+        {Object.entries(grouped).map(([categoryName, items]) => (
+          <div key={categoryName}>
+            {/* Category header */}
+            <h3 className="text-xs font-bold text-[#4A86B0] uppercase tracking-widest mb-3">
+              {categoryName}
+            </h3>
 
-          <div className="space-y-2">
-            {items.map((service) => {
-              const mode = MODE_CONFIG[service.mode as keyof typeof MODE_CONFIG];
-              const ModeIcon = mode?.icon;
+            <div className="space-y-2">
+              {items.map((service) => {
+                const mode = MODE_CONFIG[service.mode as keyof typeof MODE_CONFIG];
+                const ModeIcon = mode?.icon;
 
-              return (
-                <div
-                  key={service.providerServiceId}
-                  className="flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white hover:border-[#C8DFF0] transition-all"
-                >
-                  {/* Left */}
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-sm font-bold text-gray-800 truncate">
-                        {service.serviceName}
-                      </span>
-                      <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        {/* Mode badge */}
-                        {mode && (
-                          <span className={`flex items-center gap-1 text-xs font-medium border rounded-lg px-2 py-0.5 ${mode.color}`}>
-                            <ModeIcon size={10} />
-                            {mode.label}
-                          </span>
-                        )}
-                        {/* Max hours */}
-                        {service.maxHour && (
-                          <span className="flex items-center gap-1 text-xs text-gray-400">
-                            <Clock size={10} />
-                            Up to {service.maxHour}h
-                          </span>
-                        )}
+                return (
+                  <div
+                    key={service.providerServiceId}
+                    className="flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white hover:border-[#C8DFF0] transition-all"
+                  >
+                    {/* Left */}
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-sm font-bold text-gray-800 truncate">
+                          {service.serviceName}
+                        </span>
+                        <div className="flex items-center gap-2 mt-1 flex-wrap">
+                          {mode && (
+                            <span className={`flex items-center gap-1 text-xs font-medium border rounded-lg px-2 py-0.5 ${mode.color}`}>
+                              <ModeIcon size={10} />
+                              {mode.label}
+                            </span>
+                          )}
+                          {service.maxHour && (
+                            <span className="flex items-center gap-1 text-xs text-gray-400">
+                              <Clock size={10} />
+                              Up to {service.maxHour}h
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Price */}
-                  <div className="shrink-0 text-right">
-                    <span className="text-base font-black text-gray-900">
-                      ₹{service.price.toLocaleString('en-IN')}
-                    </span>
-                    <p className="text-xs text-gray-400">per session</p>
+                    {/* Right — price + book button */}
+                    <div className="shrink-0 flex items-center gap-3">
+                      <div className="text-right">
+                        <span className="text-base font-black text-gray-900">
+                          ₹{service.price.toLocaleString('en-IN')}
+                        </span>
+                        <p className="text-xs text-gray-400">per session</p>
+                      </div>
+
+                      <Button
+                        size="sm"
+                        onClick={() => setSelectedService(service)}
+                        className="bg-[#719FC4] hover:bg-[#5585A8] text-white rounded-xl px-4 shrink-0"
+                      >
+                        Book
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+
+      {/* Single modal instance — controlled by selectedService */}
+      {selectedService && (
+        <BookingModal
+          open={!!selectedService}
+          onClose={() => setSelectedService(null)}
+          providerId={providerId}
+          providerServiceId={selectedService.providerServiceId}
+          providerName={providerName}
+          serviceLabel={selectedService.serviceName}
+        />
+      )}
+    </>
   );
 };

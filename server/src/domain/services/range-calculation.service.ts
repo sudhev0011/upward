@@ -31,7 +31,6 @@ export class RangeCalculationService {
     blockedRanges: TimeRange[]
   ): TimeRange[] {
     if (!blockedRanges.length) {
-      console.log('at here')
       return [workingRange];
     }
 

@@ -19,12 +19,13 @@ import { LocationSuggestion,Location } from "@/interfaces/location.interface";
 import { Check, MapPin, Pencil } from "lucide-react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface Props {
-  value?: Location;
+  value?: Location | null;
 
   onChange: (
-    location: Location | undefined,
+    location: Location,
   ) => void;
 
   placeholder?: string;
@@ -65,6 +66,10 @@ export function LocationAutocomplete({
         suggestion.placeId,
       );
 
+      if(!location){
+        toast.error('location not found, please try again with proper selection')
+        return 
+      }
     onChange(location);
 
     setSearch(location.address);

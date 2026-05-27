@@ -1,6 +1,7 @@
 import { BookingStatus } from "../enums/booking-status.enum";
 import { PaymentStatus } from "../enums/payment-status.enum";
 import { PaymentType } from "../enums/payment-type.enum";
+import { Location } from '../interfaces/provider-profile.interface';
 
 import {
   UnprocessableEntityError,
@@ -31,7 +32,7 @@ export class Booking {
 
     public readonly startDateTime: Date,
     public readonly endDateTime: Date,
-    public readonly location: string,
+    public readonly location: Location,
 
     public readonly notes: string | null,
 
@@ -62,7 +63,7 @@ export class Booking {
 
     startDateTime: Date;
     endDateTime: Date;
-    location: string;
+    location: Location;
 
     notes?: string | null;
 
@@ -109,7 +110,6 @@ export class Booking {
     }
 
     const now = new Date();
-
     const remainingAmount =
       data.totalAmount - data.paidAmount;
 

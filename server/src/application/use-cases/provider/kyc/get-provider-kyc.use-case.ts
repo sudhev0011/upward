@@ -15,7 +15,6 @@ export class GetProviderKycUseCase implements IGetProviderKycUseCase {
 
   async execute(providerId: string): Promise<SubmitProviderKycResponseDto> {
     const kycData = await this._kycRepository.findByProviderId(providerId);
-    console.log(kycData)
     if (!kycData) {
       throw new NotFoundError("KYC data is not found");
     }

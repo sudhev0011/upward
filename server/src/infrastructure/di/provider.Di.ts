@@ -63,7 +63,6 @@ const avaliabilityRepository = new AvailabilityRepository()
 const unavailabilityRepository = new UnavailabilityRepository()
 const availabilityOverrideRepository = new AvailabilityOverrideRepository();
 const portfolioRepository = new PortfolioRepository()
-const bookingRepository = new BookingRepository()
 
 // service init
 const logger = new WinstonLogger();
@@ -71,7 +70,6 @@ const s3Service = new S3Service(logger);
 const encryptionService = new EncryptionService();
 const workingHoursResolver = new WorkingHoursResolverService(avaliabilityRepository, availabilityOverrideRepository)
 const unavailabilityResolver = new UnavailabilityResolverService(unavailabilityRepository)
-const slotValidationService = new SlotValidationService(providerServiceRepository,serviceRespository,categoryRepository,bookingRepository,workingHoursResolver,unavailabilityResolver)
 
 // useCase init
 export const getProviderProfileUseCase = new GetProviderProfileUseCase(providerProfileRepository,userRepository);

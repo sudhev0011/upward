@@ -80,6 +80,7 @@ export const successResponse = {
 
   CREATE_BOOKING_SUCCESS: "Booking created successfully",
 
-  CREATE_PAYMENT_INTENT_SUCCESS:"Payment intend created succcessfully"
+  CREATE_PAYMENT_INTENT_SUCCESS:"Payment intend created succcessfully",
+  GET_BOOKINGS_SUCCESS: "Booking listed successfully"
   
 } as const;

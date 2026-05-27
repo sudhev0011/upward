@@ -1,4 +1,4 @@
-import { Location } from "../../../../../../domain/interfaces/provider-profile.interface";
+import { Location } from "../../../../common/location/location.dto";
 
 export interface SocialLinkResponseDto {
   name: string;

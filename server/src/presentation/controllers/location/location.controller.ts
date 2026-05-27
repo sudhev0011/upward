@@ -11,7 +11,7 @@ export class LocationController {
       const result = await mapsService.searchLocations(query);
       res.json(result);
     } catch (error) {
-      console.log(error, "-------------------------");
+      console.log(error);
     }
   }
 
@@ -23,7 +23,7 @@ export class LocationController {
 
       res.json(result);
     } catch (error) {
-        console.log(error,'=======================')
+        console.log(error)
     }
   }
 }

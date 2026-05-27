@@ -7,17 +7,15 @@ import { ITransactionManager } from "../../../domain/interfaces/database/transac
 import { IBookingRepository } from "../../../domain/interfaces/repositories/booking/IBookingRepository";
 import { IUnavailabilityRepository } from "../../../domain/interfaces/repositories/unavailability/IUnavaliability-repository";
 import { ICreateBookingUseCase } from "../../../domain/interfaces/usecases/booking/ICreateBookingUseCase";
-import { CreateBookingRequestDto } from "../../dtos/client/booking/create-booking-request.dto";
-import { CreateBookingResponseDto } from "../../dtos/client/booking/create-booking-response.dto";
+import { CreateBookingRequestDto } from "../../dtos/client/booking/request/create-booking-request.dto";
+import { CreateBookingResponseDto } from "../../dtos/client/booking/response/create-booking-response.dto";
+import { BookingTravelValidationService } from "../../services/booking-travel-validation.service";
 import { SlotValidationService } from "../../services/slot-validation.service";
-
 export const PLATFORM_ADVANCE_PERCENTAGE = 20;
 
 export const BOOKING_PENDING_EXPIRY_MINUTES = 10;
 
-export class CreateBookingUseCase
-  implements ICreateBookingUseCase
-{
+export class CreateBookingUseCase implements ICreateBookingUseCase {
   constructor(
     private bookingRepository: IBookingRepository,
 
@@ -25,130 +23,116 @@ export class CreateBookingUseCase
 
     private slotValidationService: SlotValidationService,
 
+    private bookingTravelValidationService: BookingTravelValidationService,
+
     private transactionManager: ITransactionManager,
   ) {}
 
   async execute(
-  clientId: string,
-  data: CreateBookingRequestDto
-): Promise<CreateBookingResponseDto> {
+    clientId: string,
+    data: CreateBookingRequestDto,
+  ): Promise<CreateBookingResponseDto> {
+    /**
+     * STEP 1
+     * Validate requested slot
+     */
 
-  /**
-   * STEP 1
-   * Validate requested slot
-   */
+    const validationResult = await this.slotValidationService.validate({
+      providerServiceId: data.providerServiceId,
 
-  const validationResult =
-    await this.slotValidationService.validate({
-      providerServiceId:
-        data.providerServiceId,
+      bookingDate: data.bookingDate,
 
-      bookingDate:
-        data.bookingDate,
-
-      startTime:
-        data.startTime,
+      startTime: data.startTime,
     });
 
-  /**
-   * STEP 2
-   * Calculate payment amounts
-   */
+    /**
+     * STEP 2
+     * Validate booking travel feasibility
+     */
 
-  const totalAmount =
-    validationResult.totalAmount;
+    await this.bookingTravelValidationService.validate({
+      providerId: validationResult.providerId,
 
-  let paidAmount = 0;
+      bookingLocation: data.location,
+      bookingDate: data.bookingDate,
+      startDateTime: validationResult.startDateTime,
 
-  if (
-    data.paymentType ===
-    PaymentType.FULL
-  ) {
-    paidAmount = totalAmount;
-  } else {
-    paidAmount =
-      (totalAmount *
-        PLATFORM_ADVANCE_PERCENTAGE) /
-      100;
-  }
+      endDateTime: validationResult.endDateTime,
+    });
 
-  /**
-   * STEP 3
-   * Create booking expiry
-   */
+    /**
+     * STEP 2
+     * Calculate payment amounts
+     */
 
-  const expiresAt = new Date(
-    Date.now() +
-      BOOKING_PENDING_EXPIRY_MINUTES *
-        60 *
-        1000
-  );
+    const totalAmount = validationResult.totalAmount;
 
-  /**
-   * STEP 4
-   * Create pending booking entity
-   */
+    let paidAmount = 0;
 
-  const booking = Booking.create({
-    clientId,
+    if (data.paymentType === PaymentType.FULL) {
+      paidAmount = totalAmount;
+    } else {
+      paidAmount = (totalAmount * PLATFORM_ADVANCE_PERCENTAGE) / 100;
+    }
 
-    providerId:
-      validationResult.providerId,
+    /**
+     * STEP 3
+     * Create booking expiry
+     */
 
-    providerServiceId:
-      data.providerServiceId,
+    const expiresAt = new Date(
+      Date.now() + BOOKING_PENDING_EXPIRY_MINUTES * 60 * 1000,
+    );
 
-    serviceId:
-      validationResult.serviceId,
+    /**
+     * STEP 4
+     * Create pending booking entity
+     */
 
-    status: BookingStatus.PENDING,
+    const booking = Booking.create({
+      clientId,
 
-    paymentType:
-      data.paymentType,
+      providerId: validationResult.providerId,
 
-    paymentStatus:
-      paidAmount === totalAmount
-        ? PaymentStatus.PAID
-        : PaymentStatus.PARTIALLY_PAID,
+      providerServiceId: data.providerServiceId,
 
-    totalAmount,
+      serviceId: validationResult.serviceId,
 
-    paidAmount,
+      status: BookingStatus.PENDING,
 
-    bookingDate:
-      data.bookingDate,
+      paymentType: data.paymentType,
 
-    startDateTime:
-      validationResult.startDateTime,
+      totalAmount,
 
-    endDateTime:
-      validationResult.endDateTime,
-    
-    location: data.location,  
+      paidAmount,
 
-    notes:
-      data.notes ?? null,
+      bookingDate: data.bookingDate,
 
-    expiresAt,
-  });
+      startDateTime: validationResult.startDateTime,
 
-  /**
-   * STEP 5
-   * TRANSACTIONAL FLOW
-   */
+      endDateTime: validationResult.endDateTime,
 
-  return this.transactionManager.runInTransaction(
-    async (transaction) => {
+      location: data.location,
 
+      notes: data.notes ?? null,
+
+      expiresAt,
+    });
+
+    /**
+     * STEP 5
+     * TRANSACTIONAL FLOW
+     */
+
+    return this.transactionManager.runInTransaction(async (transaction) => {
       /**
        * Persist booking
        */
 
-      const createdBooking =
-        await this.bookingRepository.create(
-          booking,
-          transaction
-        );
+      const createdBooking = await this.bookingRepository.create(
+        booking,
+        transaction,
+      );
 
       /**
        * Create occupancy
@@ -156,24 +140,19 @@ export class CreateBookingUseCase
 
       await this.unavailabilityRepository.create(
         {
-          providerId:
-            validationResult.providerId,
+          providerId: validationResult.providerId,
 
-          startDate:
-            validationResult.startDateTime,
+          startDate: validationResult.startDateTime,
 
-          endDate:
-            validationResult.endDateTime,
+          endDate: validationResult.endDateTime,
 
-          source:
-            UnavailabilitySource.BOOKING,
+          source: UnavailabilitySource.BOOKING,
 
-          bookingId:
-            createdBooking.id!,
+          bookingId: createdBooking.id!,
 
           reason: null,
         },
-        transaction
+        transaction,
       );
 
       /**
@@ -181,31 +160,24 @@ export class CreateBookingUseCase
        */
 
       return {
-        bookingId:
-          createdBooking.id!,
+        bookingId: createdBooking.id!,
 
-        status:
-          createdBooking.status,
+        status: createdBooking.status,
 
-        paymentType:
-          createdBooking.paymentType,
+        paymentType: createdBooking.paymentType,
 
-        paymentStatus:
-          createdBooking.paymentStatus,
+        paymentStatus: createdBooking.paymentStatus,
 
-        totalAmount:
-          createdBooking.totalAmount,
+        totalAmount: createdBooking.totalAmount,
 
-        paidAmount:
-          createdBooking.paidAmount,
+        paidAmount: createdBooking.paidAmount,
 
-        remainingAmount:
-          createdBooking.remainingAmount,
+        remainingAmount: createdBooking.remainingAmount,
 
-        expiresAt:
-          createdBooking.expiresAt,
+        location: createdBooking.location,
+
+        expiresAt: createdBooking.expiresAt,
       };
-    }
-  );
-}
+    });
+  }
 }
