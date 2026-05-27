@@ -31,6 +31,7 @@ export class Booking {
 
     public readonly startDateTime: Date,
     public readonly endDateTime: Date,
+    public readonly location: string,
 
     public readonly notes: string | null,
 
@@ -61,6 +62,7 @@ export class Booking {
 
     startDateTime: Date;
     endDateTime: Date;
+    location: string;
 
     notes?: string | null;
 
@@ -136,6 +138,7 @@ export class Booking {
 
       data.startDateTime,
       data.endDateTime,
+      data.location,
 
       data.notes ?? null,
 
@@ -187,6 +190,7 @@ export class Booking {
 
       this.startDateTime,
       this.endDateTime,
+      this.location,
 
       this.notes,
 
@@ -236,6 +240,7 @@ export class Booking {
 
       this.startDateTime,
       this.endDateTime,
+      this.location,
 
       this.notes,
 
@@ -294,7 +299,8 @@ export class Booking {
 
       this.startDateTime,
       this.endDateTime,
-
+      this.location,
+      
       this.notes,
 
       data.cancelledBy,

@@ -28,6 +28,10 @@ import { AvailabilityOverride } from "../../domain/entities/availability-overrid
 import { AvailabilityOverrideRepository } from "../persistence/mongodb/repositories/availability-override.repository";
 import { UnavailabilityResolverService } from "../../application/services/unavailability-resolver.service";
 import { MongoTransactionManager } from "../persistence/mongodb/mongo-transaction.manager";
+import { PaymentController } from "../../presentation/controllers/client/payment/payment.controller";
+import { CreatePaymentIntentUseCase } from "../../application/use-cases/payment/create-payment-intent.use-case";
+import { PaymentRepository } from "../persistence/mongodb/repositories/payment.repository";
+import { StripeService } from "../external-services/stripe/stripe.service";
 
 
 
@@ -44,6 +48,7 @@ const serviceRepository = new ServiceRepository()
 const categoryRepository = new CategoryRepository()
 const unavailabilityResolver = new UnavailabilityResolverService(unavailabilityRepository)
 const mongoTransactionManager = new MongoTransactionManager()
+const paymentRepository = new PaymentRepository()
 
 // service init
 
@@ -51,7 +56,8 @@ const logger = new WinstonLogger();
 const s3Service = new S3Service(logger);
 const workingHoursResolverService = new WorkingHoursResolverService(availabilityRepository,availabilityOverrideRepository)
 const slotValidationService = new SlotValidationService(providerServiceRepository, serviceRepository, categoryRepository, bookingRepository, workingHoursResolverService, unavailabilityResolver)
-
+const stripeService = new StripeService()
+const transactionManager = new MongoTransactionManager()
 //useCase init
 const createClientProfileUseCase = new CreateClientProfileUseCase(clientProfileRepository)
 export const getClientProfileUseCase = new GetClientProfileUseCase(clientProfileRepository,userRepository)
@@ -60,7 +66,11 @@ const uploadAvatarUseCase = new UploadAvatarUseCase(s3Service)
 
 const createBookingUseCase = new CreateBookingUseCase(bookingRepository,unavailabilityRepository,slotValidationService,mongoTransactionManager)
 
+const createPaymentIntentUseCase = new CreatePaymentIntentUseCase(bookingRepository,paymentRepository,stripeService,transactionManager)
+
 // controller inint
 export const clientProfileController = new ClientProfileController(uploadAvatarUseCase,createClientProfileUseCase,getClientProfileUseCase,updateClientProfileUseCase)
 
 export const bookingController = new BookingController(createBookingUseCase)
+
+export const paymentController = new PaymentController(createPaymentIntentUseCase)

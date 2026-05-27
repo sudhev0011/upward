@@ -79,5 +79,7 @@ export const successResponse = {
   GET_AVAILABLE_SLOTS_SUCCESS: "Avaialable slots fetched successfully",
 
   CREATE_BOOKING_SUCCESS: "Booking created successfully",
+
+  CREATE_PAYMENT_INTENT_SUCCESS:"Payment intend created succcessfully"
   
 } as const;

@@ -35,6 +35,8 @@ export interface BookingDocument extends Document {
 
   endDateTime: Date;
 
+  location: string;
+
   notes: string | null;
 
   cancelledBy: Types.ObjectId | null;
@@ -136,6 +138,11 @@ const BookingSchema = new Schema<BookingDocument>(
 
     endDateTime: {
       type: Date,
+      required: true,
+    },
+
+    location: {
+      type: String,
       required: true,
     },
 

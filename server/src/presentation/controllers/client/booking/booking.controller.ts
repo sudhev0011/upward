@@ -23,7 +23,11 @@ export class BookingController {
   ) {}
 
   /**
-   * Create booking
+   * this method is to make booking of a service, it creates the booking doc with info after validation
+   * @param req req includes the providerServiceId, date, start time, payment type etc
+   * @param res response is a full booking oject with status as pending
+   * @param next 
+   * @returns 
    */
   createBooking = async (
     req: AuthenticatedRequest,

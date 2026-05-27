@@ -84,7 +84,6 @@ export class AvailabilityOverrideController {
     if (!date || !date?.trim()) {
       return handleValidationError("Invalid date param", next);
     }
-    console.log("bkjdsfghlk",date)
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       return handleValidationError("Invalid date format, use YYYY-MM-DD", next);
     }

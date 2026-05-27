@@ -74,7 +74,6 @@ export class ProviderServiceController{
 
     deleteProviderService = async(req: Request, res: Response, next: NextFunction)=>{
 
-        console.log(req.path)
         const {id} = req.params as {id:string}
         if(!id.trim()){
             return handleValidationError("invalid service id", next);

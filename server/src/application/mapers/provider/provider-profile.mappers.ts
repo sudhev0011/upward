@@ -6,12 +6,13 @@ import {
 } from "../../dtos/provider/profile/info/response/provider-profile-response.dto";
 import { CreateInput } from "../../../domain/types/common.types";
 import { User } from "../../../domain/entities/user.entity";
+import { Location } from "../../../domain/interfaces/provider-profile.interface";
 
 export class ProviderProfileMapper {
   static toEntity(data: {
     userId: string;
     bio?: string | null;
-    location?: string | null;
+    location?: Location | null;
     phone?: string | null;
     avatarUrl?: string | null;
     dateOfBirth?: Date | null;
@@ -87,7 +88,7 @@ export class ProviderProfileMapper {
   static toUpdateEntity(
     dto: Partial<{
       bio: string | null;
-      location: string | null;
+      location: Location | null;
       phone: string | null;
       email: string | null;
       dateOfBirth: string | null;

@@ -30,6 +30,8 @@ export const CreateBookingRequestDtoSchema =
       PaymentType
     ),
 
+    location: z.string().trim().min(3, "A valid location is required"),
+
     notes: z
       .string()
       .trim()

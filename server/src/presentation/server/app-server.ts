@@ -15,6 +15,8 @@ import { requestLogger } from "../middleware/logger.middleware";
 import { winstonLogger } from "../../infrastructure/config/logger";
 import { PublicRouter } from "../routes/public-router";
 import { bookingExpirationJob } from "../../infrastructure/di/jobsDi";
+import { WebhookRouter } from "../routes/webhook-router";
+import router from "../routes/location.router";
 
 export class AppServer {
   private _app: express.Application;
@@ -40,7 +42,8 @@ export class AppServer {
         credentials: true,
       }),
     );
-
+    
+    this._app.use("/api/webhooks",new WebhookRouter().router,);
     this._app.use(express.json({ limit: "10mb" }));
     this._app.use(express.urlencoded({ extended: true }));
     this._app.use(cookieParser());
@@ -53,6 +56,8 @@ export class AppServer {
     this._app.use("/api/provider", new ProviderRouter().router);
     this._app.use("/api/admin", new AdminRouter().router);
     this._app.use("/api/public", new PublicRouter().router);
+    this._app.use("/api/location",router);
+
 
     this._app.use(errorHandler);
   }

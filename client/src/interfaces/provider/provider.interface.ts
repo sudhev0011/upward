@@ -1,60 +1,113 @@
-
 export interface SocialLink {
   name: string;
   link?: string;
 }
 
+export interface GeoPoint {
+  type: "Point";
+
+  // [lng, lat]
+  coordinates: [number, number];
+}
+
+export interface Location {
+  placeId: string;
+
+  address: string;
+
+  city?: string | null;
+
+  state?: string | null;
+
+  country?: string | null;
+
+  coordinates: GeoPoint;
+}
+
 export interface ProviderProfile {
   id: string;
+
   userId: string;
+
   name: string;
+
   bio: string | null;
-  location: string | null;
+
+  location: Location | null;
+
   phone: string | null;
+
   email: string;
+
   avatarUrl: string | null;
+
   dateOfBirth: string | null;
+
   gender: string | null;
+
   skills: string[];
+
   languages: string[];
+
   experience: string | null;
+
   ratingCount: number;
+
   ratingAvg: number;
+
   isApprovedByAdmin: boolean;
+
   isBlocked: boolean | null;
-  isVerified: boolean |  null;
+
+  isVerified: boolean | null;
+
   socialLinks: SocialLink[];
+
   categories: string[];
+
   createdAt: string;
+
   updatedAt: string;
 }
 
 export interface CreateProviderProfileRequest {
   bio?: string;
-  location?: string;
+
+  location?: Location;
+
   phone?: string;
+
   email: string;
+
   dateOfBirth?: string;
+
   gender?: string;
+
   skills?: string[];
+
   socialLinks?: SocialLink[];
 }
 
 export interface UpdateProviderProfileRequest {
   bio?: string;
-  location?: string;
+
+  location?: Location;
+
   phone?: string;
+
   email?: string;
+
   name?: string;
+
   dateOfBirth?: string;
+
   gender?: string;
+
   skills?: string[];
+
   languages?: string[];
+
   socialLinks?: SocialLink[];
+
   avatarUrl?: string;
 }
-
-
-
-
-

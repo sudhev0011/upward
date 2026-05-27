@@ -27,7 +27,7 @@ export default function ProfilePage() {
     defaultValues: {
       name: "",
       bio: "",
-      location: "",
+      location: undefined,
       phone: "",
       email: "",
       dateOfBirth: undefined,
@@ -53,7 +53,7 @@ export default function ProfilePage() {
       reset({
         name: profile.name || "",
         bio: profile.bio || "",
-        location: profile.location || "",
+        location: profile.location || undefined,
         phone: profile.phone || "",
         email: profile.email || "",
         dateOfBirth: profile.dateOfBirth ? profile.dateOfBirth.split('T')[0] : undefined,

@@ -15,7 +15,6 @@ import { IBlockProviderUseCase } from "../../../domain/interfaces/usecases/admin
 import { RejectProviderDtoSchema } from "../../../application/dtos/admin/provider/request/reject-provider-request.dto";
 import { IRejectProviderUseCase } from "../../../domain/interfaces/usecases/admin/provider/IRejectProviderUseCase";
 import { IGetProviderKycUseCase } from "../../../domain/interfaces/usecases/provider/kyc/IGetProviderKycUseCase";
-import { success } from "zod";
 import { successResponse } from "../../../shared/constants";
 
 export class AdminProviderController {

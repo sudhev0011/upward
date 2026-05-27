@@ -94,7 +94,7 @@ export default function Providers() {
       cell: (p: ProviderProfile) => (
         <div className="flex items-center gap-3">
           <Avatar className="h-9 w-9 border">
-            <img src={p.avatarUrl ?? ""} alt="" className="object-cover" />
+            <img src={p.avatarUrl ?? undefined}  className="object-cover" />
             <AvatarFallback className="bg-primary/5 text-primary text-xs">
               {p.name?.[0]}
             </AvatarFallback>

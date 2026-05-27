@@ -17,6 +17,10 @@ export const ClientRoutes = {
   PROFILE: "/api/client/profile",
   PROFILE_UPLOAD_URL: "/api/client/profile-upload-url",
   PROFILE_AVATAR: "/api/client/profile/avatar",
+  AVAILABLE_SLOTS: (providerId: string, serviceId: string) =>
+    `/api/client/providers/${providerId}/services/${serviceId}/slots`,
+
+  BOOKINGS: "/api/client/bookings",
 } as const;
 
 export const ProviderRoutes = {
@@ -86,7 +90,13 @@ export const PublicRoutes = {
   GET_PROVIDER_AVAILABILITY: "api/public/providers/:providerId/availability",
   GET_PROVIDER_AVAILABILITY_OVERRIDES:
     "api/public/providers/:providerId/availability/overrides",
-  GET_PROVIDER_UNAVAILABILITY: "api/public/providers/:providerId/unavailability",
-  GET_PROVIDER_PROFILE: 'api/public/providers/:providerId/profile',
-GET_PROVIDER_ACTIVE_SERVICES: 'api/public/providers/:providerId/services',
+  GET_PROVIDER_UNAVAILABILITY:
+    "api/public/providers/:providerId/unavailability",
+  GET_PROVIDER_PROFILE: "api/public/providers/:providerId/profile",
+  GET_PROVIDER_ACTIVE_SERVICES: "api/public/providers/:providerId/services",
 } as const;
+
+export const LocationRoutes = {
+  GET_LOCATION: 'api/location/search',
+  GET_LOCATION_DETAILS: 'api/location/details'
+} as const

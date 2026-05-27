@@ -123,6 +123,8 @@ export class CreateBookingUseCase
 
     endDateTime:
       validationResult.endDateTime,
+    
+    location: data.location,  
 
     notes:
       data.notes ?? null,

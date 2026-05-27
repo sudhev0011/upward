@@ -31,6 +31,8 @@ export class BookingMapper {
 
       endDateTime: document.endDateTime,
 
+      location: document.location,
+      
       notes: document.notes,
 
       refundAmount: document.refundAmount,

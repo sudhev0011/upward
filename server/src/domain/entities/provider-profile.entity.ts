@@ -1,4 +1,5 @@
   import { SocialLink } from '../interfaces/provider-profile.interface';
+  import { Location } from '../interfaces/provider-profile.interface';
   export { SocialLink };
 
   export class ProviderProfile {
@@ -6,7 +7,7 @@
       public readonly id: string,
       public readonly userId: string,
       public readonly bio: string | null,
-      public readonly location: string | null,
+      public readonly location: Location | null,
       public readonly phone: string | null,
       public readonly avatarUrl: string | null, 
       public readonly dateOfBirth: Date | null,
@@ -27,7 +28,7 @@
       id: string;
       userId: string;
       bio?: string;
-      location?: string;
+      location?: Location;
       phone?: string;
       avatarUrl?: string | null; 
       dateOfBirth?: Date | null;

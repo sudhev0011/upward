@@ -10,10 +10,10 @@ export const GetAvailableSlotsRequestDtoSchema =
 
     date: z
       .string()
-    //   .regex(
-    //     DATE_REGEX,
-    //     "Date must be in YYYY-MM-DD format"
-    //   ),
+      .regex(
+        DATE_REGEX,
+        "Date must be in YYYY-MM-DD format"
+      ),
   });
 
 export type GetAvailableSlotsRequestDto =

@@ -123,7 +123,7 @@ export function ProfileHeader({
                 </h2>
                 <p className="flex items-center gap-1 mt-1 text-[13px] font-medium text-[#5585A8]">
                   <MapPin className="h-3 w-3 flex-shrink-0 text-[#719FC4]" />
-                  {location || (
+                  {location?.address || (
                     <span className="text-gray-300 italic">Your Location</span>
                   )}
                 </p>

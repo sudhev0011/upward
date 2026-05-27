@@ -49,7 +49,7 @@ api.interceptors.response.use(
     
     if (status === 403 || message.includes("Invalid refresh token")) {
       store.dispatch(logout());
-      return Promise.reject(error);
+      return Promise.reject(error.response.data);
     }
 
     // C. Handle 401 Unauthorized / Token Expiration

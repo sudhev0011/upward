@@ -87,11 +87,30 @@ export class BookingRepository
     });
   }
 
+  async findPendingBookingByIdAndClientId(
+    bookingId: string,
+
+    clientId: string,
+
+    transaction?: ITransactionContext,
+  ): Promise<Booking | null> {
+    return this.findOne(
+      {
+        _id: bookingId,
+
+        clientId,
+
+        status: BookingStatus.PENDING,
+      },
+      transaction,
+    );
+  }
+
   protected mapToEntity(document: BookingDocument): Booking {
-    return BookingMapper.mapToEntity(document)
+    return BookingMapper.mapToEntity(document);
   }
 
   protected mapToDocument(entity: Partial<Booking>): Partial<BookingDocument> {
-    return BookingMapper.mapToDocument(entity)
+    return BookingMapper.mapToDocument(entity);
   }
 }

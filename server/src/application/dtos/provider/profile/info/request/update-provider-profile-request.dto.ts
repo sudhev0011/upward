@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { LocationSchema } from './create-provider-profile-request.dto';
 
 const SocialLinkSchema = z.object({
   name: z.string().min(1, 'Social link name is required'),
@@ -8,7 +9,7 @@ const SocialLinkSchema = z.object({
 export const UpdateProviderProfileRequestDtoSchema = z.object({
   userId: z.string().min(1, 'User ID is required'),
   bio: z.string().max(2000, 'Summary must not exceed 2000 characters').optional(),
-  location: z.string().trim().min(3,"Enter a valid location").max(100, 'Location must not exceed 100 characters').optional(),
+  location: LocationSchema.optional(),
   phone: z.string().regex(/^\+?[\d\s\-\(\)]+$/, 'Please enter a valid phone number').optional(),
   dateOfBirth: z.string().date('Please enter a valid date of birth').optional(),
   gender: z.string().max(50, 'Gender must not exceed 50 characters').optional(),

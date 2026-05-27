@@ -4,13 +4,12 @@ import { ITransactionContext } from "../../database/transaction-context.interfac
 import { IBaseRepository } from "../base/IBaseRepository";
 
 export interface IBookingRepository extends IBaseRepository<Booking> {
- 
   findOverlappingActiveBooking(
     providerId: string,
     startDateTime: Date,
     endDateTime: Date,
   ): Promise<Booking | null>;
-  
+
   findProviderBookings(providerId: string): Promise<Booking[]>;
 
   findCustomerBookings(customerId: string): Promise<Booking[]>;
@@ -21,4 +20,10 @@ export interface IBookingRepository extends IBaseRepository<Booking> {
     currentDate: Date,
     transaction?: ITransactionContext,
   ): Promise<Booking[]>;
+
+  findPendingBookingByIdAndClientId(
+    bookingId: string,
+    clientId: string,
+    transaction?: ITransactionContext,
+  ): Promise<Booking | null>;
 }

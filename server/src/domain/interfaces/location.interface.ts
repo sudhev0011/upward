@@ -1,0 +1,25 @@
+export interface GeoPoint {
+  type: "Point";
+
+  coordinates: [number, number];
+}
+
+export interface Location {
+  placeId: string;
+
+  address: string;
+
+  city?: string | null;
+
+  state?: string | null;
+
+  country?: string | null;
+
+  coordinates: GeoPoint;
+}
+
+export interface LocationSuggestion {
+  placeId: string;
+
+  description: string;
+}
