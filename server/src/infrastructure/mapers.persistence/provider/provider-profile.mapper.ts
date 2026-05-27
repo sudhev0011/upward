@@ -20,6 +20,8 @@ export class ProviderProfileMapper {
       ratingCount: doc.ratingCount || 0,
       ratingAvg: doc.ratingAvg || 0,
       isApprovedByAdmin: doc.isApprovedByAdmin || false,
+      activeSubscriptionExpiresAt: doc.activeSubscriptionExpiresAt || null,
+      activeSubscriptionPlanName: doc.activeSubscriptionPlanName || null,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     });
@@ -42,6 +44,8 @@ export class ProviderProfileMapper {
     if (entity.ratingCount !== undefined) doc.ratingCount = entity.ratingCount || 0;
     if (entity.ratingAvg !== undefined) doc.ratingAvg = entity.ratingAvg || 0;
     if (entity.isApprovedByAdmin !== undefined) doc.isApprovedByAdmin = entity.isApprovedByAdmin || false;
+    if (entity.activeSubscriptionExpiresAt !== undefined) doc.activeSubscriptionExpiresAt = entity.activeSubscriptionExpiresAt;
+    if (entity.activeSubscriptionPlanName !== undefined) doc.activeSubscriptionPlanName = entity.activeSubscriptionPlanName;
     return doc;
   }
 }

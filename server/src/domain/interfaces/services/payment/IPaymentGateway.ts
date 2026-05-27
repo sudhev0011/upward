@@ -16,6 +16,8 @@ export interface VerifyWebhookResult {
   type: string;
 
   paymentIntentId: string;
+
+  metadata?: Record<string, string>;
 }
 
 export interface IPaymentGateway {

@@ -5,6 +5,7 @@ import { handleAsyncError } from "../../../shared/utils/presentation/controller.
 import { IPaymentGateway } from "../../../domain/interfaces/services/payment/IPaymentGateway";
 
 import { IConfirmPaymentUseCase } from "../../../domain/interfaces/usecases/payment/IConfirmPaymentUseCase";
+import { confirmSubscriptionPaymentUseCase } from "../../../infrastructure/di/subscriptionDi";
 
 export class StripeWebhookController {
   constructor(
@@ -30,7 +31,11 @@ export class StripeWebhookController {
       );
 
       if (event.type === "payment_intent.succeeded") {
-        await this.confirmPaymentUseCase.execute(event.paymentIntentId);
+        if (event.metadata?.type === "subscription") {
+          await confirmSubscriptionPaymentUseCase.execute(event.paymentIntentId);
+        } else {
+          await this.confirmPaymentUseCase.execute(event.paymentIntentId);
+        }
       }
 
       return res.status(200).json({

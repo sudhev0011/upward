@@ -20,6 +20,8 @@
       public readonly isApprovedByAdmin: boolean,
       public readonly socialLinks: SocialLink[],
       public readonly categories: string[],
+      public readonly activeSubscriptionExpiresAt: Date | null,
+      public readonly activeSubscriptionPlanName: string | null,
       public readonly createdAt: Date,
       public readonly updatedAt: Date,
     ) {}
@@ -41,6 +43,8 @@
       isApprovedByAdmin?: boolean,
       socialLinks?: SocialLink[];
       categories?: string[];
+      activeSubscriptionExpiresAt?: Date | null;
+      activeSubscriptionPlanName?: string | null;
       createdAt?: Date;
       updatedAt?: Date;
     }): ProviderProfile {
@@ -62,6 +66,8 @@
         data.isApprovedByAdmin ?? false, 
         data.socialLinks ?? [],
         data.categories ?? [],
+        data.activeSubscriptionExpiresAt ?? null,
+        data.activeSubscriptionPlanName ?? null,
         data.createdAt ?? now,
         data.updatedAt ?? now,
       );

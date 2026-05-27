@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, User, Briefcase, DollarSign, Image,
   ShieldCheck, ShoppingCart, Wallet, CalendarDays,
-  MessageSquare, Settings, Zap,
+  MessageSquare, Settings, Zap, Crown
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -15,6 +15,7 @@ const mainNav = [
   { title: "Profile",      url: "profile",             icon: User },
   { title: "Services",     url: "services",            icon: Briefcase },
   { title: "Pricing",      url: "pricing",             icon: DollarSign },
+  { title: "Subscription", url: "subscriptions",       icon: Crown },
   { title: "Portfolio",    url: "portfolio",           icon: Image },
   { title: "KYC & Bank",   url: "kyc",                 icon: ShieldCheck },
 ];

@@ -159,6 +159,7 @@ export class ProviderProfileRepository
     const initialMatch: Record<string, unknown> = {
       isApprovedByAdmin: true,
       categories: category,
+      activeSubscriptionExpiresAt: { $gte: new Date() },
     };
     if (minRating !== undefined) {
       initialMatch.ratingAvg = { $gte: minRating };

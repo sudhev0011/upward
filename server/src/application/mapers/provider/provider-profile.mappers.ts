@@ -25,6 +25,8 @@ export class ProviderProfileMapper {
     isApprovedByAdmin?: boolean | null;
     socialLinks?: SocialLink[];
     categories?: string[];
+    activeSubscriptionExpiresAt?: Date | null;
+    activeSubscriptionPlanName?: string | null;
   }): CreateInput<ProviderProfile> {
     return {
       userId: data.userId,
@@ -41,7 +43,9 @@ export class ProviderProfileMapper {
       ratingAvg: data.ratingAvg ?? 0,
       isApprovedByAdmin: data.isApprovedByAdmin ?? false,
       socialLinks: data.socialLinks ?? [],
-      categories: data.categories ?? []
+      categories: data.categories ?? [],
+      activeSubscriptionExpiresAt: data.activeSubscriptionExpiresAt ?? null,
+      activeSubscriptionPlanName: data.activeSubscriptionPlanName ?? null,
     };
   }
 
@@ -73,6 +77,10 @@ export class ProviderProfileMapper {
       isApprovedByAdmin: profile.isApprovedByAdmin,
       isBlocked: user?.isBlocked ?? null,
       isVerified: user?.isVerified ?? null,
+      activeSubscriptionExpiresAt: profile.activeSubscriptionExpiresAt
+        ? profile.activeSubscriptionExpiresAt.toISOString()
+        : null,
+      activeSubscriptionPlanName: profile.activeSubscriptionPlanName,
       createdAt: profile.createdAt.toISOString(),
       updatedAt: profile.updatedAt.toISOString(),
     };

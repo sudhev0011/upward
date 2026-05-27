@@ -55,6 +55,10 @@ export class StripeService implements IPaymentGateway {
       type: event.type,
 
       paymentIntentId: paymentIntent.id,
+
+      metadata: paymentIntent.metadata
+        ? (paymentIntent.metadata as Record<string, string>)
+        : undefined,
     };
   }
 

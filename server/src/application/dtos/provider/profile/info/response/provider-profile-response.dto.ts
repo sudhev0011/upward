@@ -25,6 +25,8 @@ export interface ProviderProfileResponseDto {
   isBlocked: boolean | null;
   isVerified: boolean |  null;
   socialLinks: SocialLinkResponseDto[];
+  activeSubscriptionExpiresAt: string | null;
+  activeSubscriptionPlanName: string | null;
   createdAt: string;
   updatedAt: string;
 }

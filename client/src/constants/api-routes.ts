@@ -100,4 +100,12 @@ export const PublicRoutes = {
 export const LocationRoutes = {
   GET_LOCATION: 'api/location/search',
   GET_LOCATION_DETAILS: 'api/location/details'
-} as const
+} as const;
+
+export const SubscriptionRoutes = {
+  ADMIN_PLANS: "/api/subscriptions/admin/plans",
+  ADMIN_PLAN_BY_ID: "/api/subscriptions/admin/plans/:id",
+  PROVIDER_ACTIVE_PLANS: "/api/subscriptions/provider/active-plans",
+  PROVIDER_CHECKOUT: "/api/subscriptions/provider/checkout",
+  PROVIDER_STATUS: "/api/subscriptions/provider/my-status",
+} as const;
