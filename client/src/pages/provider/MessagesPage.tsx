@@ -1,28 +1,139 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Send, Search } from "lucide-react";
-import { useState } from "react";
-
-const conversations = [
-  { id: 1, name: "Sarah Johnson", lastMessage: "Great, I'll confirm the venue details by tomorrow.", time: "2m ago", unread: 2, avatar: "SJ" },
-  { id: 2, name: "Mike Chen", lastMessage: "The edited videos look amazing! Thank you.", time: "1h ago", unread: 0, avatar: "MC" },
-  { id: 3, name: "Emily Davis", lastMessage: "Can we reschedule to next Friday?", time: "3h ago", unread: 1, avatar: "ED" },
-  { id: 4, name: "James Wilson", lastMessage: "Sent you the product list for the shoot.", time: "1d ago", unread: 0, avatar: "JW" },
-  { id: 5, name: "Rachel Green", lastMessage: "Looking forward to working with you!", time: "2d ago", unread: 0, avatar: "RG" },
-];
-
-const messages = [
-  { id: 1, sender: "client", text: "Hi Alex! I wanted to discuss the wedding photography package.", time: "10:30 AM" },
-  { id: 2, sender: "provider", text: "Of course! I'd love to help. What date is the wedding?", time: "10:32 AM" },
-  { id: 3, sender: "client", text: "It's on April 15th. We're looking for full-day coverage with drone shots.", time: "10:35 AM" },
-  { id: 4, sender: "provider", text: "That sounds wonderful! I have that date available. The Premium package would be perfect — it includes 8 hours of coverage plus drone footage.", time: "10:38 AM" },
-  { id: 5, sender: "client", text: "Great, I'll confirm the venue details by tomorrow.", time: "10:40 AM" },
-];
+import { useEffect, useState, useRef } from "react";
+import { useAppSelector } from "@/hooks/useRedux";
+import { useSocket } from "@/hooks/useSocket";
+import { chatApi } from "@/api/chat.api";
+import { Conversation, Message } from "@/interfaces/chat.interface";
 
 export default function MessagesPage() {
-  const [activeChat, setActiveChat] = useState(1);
+  const currentUser = useAppSelector((state) => state.auth.user);
+  const currentUserId = currentUser?.id || "";
+
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeChat, setActiveChat] = useState<string>("");
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [search, setSearch] = useState("");
+
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  // Hook up Socket.IO connection
+  const { socket } = useSocket(activeChat);
+
+  // Fetch all conversations
+  const fetchConversations = async () => {
+    try {
+      const response = await chatApi.getConversations();
+      if (response.success && response.data) {
+        setConversations(response.data);
+        if (response.data.length > 0 && !activeChat) {
+          setActiveChat(response.data[0].id);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchConversations();
+  }, []);
+
+  // Fetch messages for selected conversation
+  const fetchMessages = async (conversationId: string) => {
+    try {
+      const response = await chatApi.getMessages(conversationId);
+      if (response.success && response.data) {
+        setMessages(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (activeChat) {
+      fetchMessages(activeChat);
+
+      // Reset unread count for provider
+      chatApi.resetUnreadCount(activeChat, "provider").then(() => {
+        socket?.emit("read_messages", { conversationId: activeChat, role: "provider" });
+      });
+    }
+  }, [activeChat, socket]);
+
+  // Handle socket events
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleMessageReceived = (message: Message) => {
+      if (message.conversationId === activeChat) {
+        setMessages((prev) => [...prev, message]);
+        // Reset unread counts on server since we are active in this room
+        chatApi.resetUnreadCount(activeChat, "provider").then(() => {
+          socket.emit("read_messages", { conversationId: activeChat, role: "provider" });
+        });
+      }
+    };
+
+    const handleConversationUpdated = () => {
+      fetchConversations();
+    };
+
+    socket.on("message_received", handleMessageReceived);
+    socket.on("conversation_updated", handleConversationUpdated);
+
+    return () => {
+      socket.off("message_received", handleMessageReceived);
+      socket.off("conversation_updated", handleConversationUpdated);
+    };
+  }, [socket, activeChat]);
+
+  // Scroll to bottom when messages update
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const handleSend = () => {
+    if (!newMessage.trim() || !activeChat || !socket) return;
+
+    socket.emit(
+      "send_message",
+      {
+        conversationId: activeChat,
+        text: newMessage.trim(),
+      },
+      (res: { success: boolean; error?: string }) => {
+        if (!res.success) {
+          console.error("Failed to send message:", res.error);
+        }
+      }
+    );
+
+    setNewMessage("");
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      ? name
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .slice(0, 2)
+          .toUpperCase()
+      : "U";
+  };
+
+  const selectedConversation = conversations.find((c) => c.id === activeChat);
+
+  const filteredConversations = conversations.filter(
+    (c) =>
+      c.participant?.name.toLowerCase().includes(search.toLowerCase()) ||
+      c.participant?.email.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="space-y-8">
@@ -32,81 +143,130 @@ export default function MessagesPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100vh-240px)]">
+        {/* Conversations Card */}
         <Card className="border-border/50 bg-card/80 backdrop-blur-sm lg:col-span-1 flex flex-col overflow-hidden">
           <div className="p-3 border-b border-border/50">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search conversations..." className="pl-9 bg-secondary/30 border-border/50 rounded-xl" />
+              <Input
+                placeholder="Search conversations..."
+                className="pl-9 bg-secondary/30 border-border/50 rounded-xl"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
             </div>
           </div>
           <div className="flex-1 overflow-auto">
-            {conversations.map((conv) => (
-              <button
-                key={conv.id}
-                onClick={() => setActiveChat(conv.id)}
-                className={`w-full flex items-center gap-3 p-4 text-left transition-all duration-200 border-b border-border/30 ${
-                  activeChat === conv.id ? "bg-primary/5 border-l-2 border-l-primary" : "hover:bg-secondary/30"
-                }`}
-              >
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
-                  <span className="text-xs font-bold text-primary">{conv.avatar}</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-card-foreground">{conv.name}</span>
-                    <span className="text-[11px] text-muted-foreground">{conv.time}</span>
+            {filteredConversations.map((conv) => {
+              const hasUnread = conv.unreadCountProvider > 0;
+              const participantName = conv.participant?.name || "Client";
+              const initials = getInitials(participantName);
+
+              return (
+                <button
+                  key={conv.id}
+                  onClick={() => setActiveChat(conv.id)}
+                  className={`w-full flex items-center gap-3 p-4 text-left transition-all duration-200 border-b border-border/30 ${
+                    activeChat === conv.id ? "bg-primary/5 border-l-2 border-l-primary" : "hover:bg-secondary/30"
+                  }`}
+                >
+                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-primary">{initials}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground truncate mt-0.5">{conv.lastMessage}</p>
-                </div>
-                {conv.unread > 0 && (
-                  <span className="h-5 min-w-[20px] rounded-full bg-primary flex items-center justify-center text-[10px] text-primary-foreground font-bold px-1.5">
-                    {conv.unread}
-                  </span>
-                )}
-              </button>
-            ))}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <span className={`text-sm ${hasUnread ? "font-bold text-card-foreground" : "font-semibold text-muted-foreground"}`}>
+                        {participantName}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground">
+                        {conv.lastMessage ? new Date(conv.lastMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground truncate mt-0.5">
+                      {conv.lastMessage ? conv.lastMessage.text : "No messages yet"}
+                    </p>
+                  </div>
+                  {hasUnread && (
+                    <span className="h-5 min-w-[20px] rounded-full bg-primary flex items-center justify-center text-[10px] text-primary-foreground font-bold px-1.5">
+                      {conv.unreadCountProvider}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+            {filteredConversations.length === 0 && (
+              <div className="p-8 text-center text-xs text-muted-foreground">
+                No conversations found
+              </div>
+            )}
           </div>
         </Card>
 
+        {/* Chat Area Card */}
         <Card className="border-border/50 bg-card/80 backdrop-blur-sm lg:col-span-2 flex flex-col overflow-hidden">
-          <div className="p-4 border-b border-border/50 flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-              <span className="text-xs font-bold text-primary">SJ</span>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-card-foreground">Sarah Johnson</p>
-              <p className="text-[11px] text-success font-medium">● Online</p>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-auto p-4 space-y-3">
-            {messages.map((msg) => (
-              <div key={msg.id} className={`flex ${msg.sender === "provider" ? "justify-end" : "justify-start"}`}>
-                <div className={`max-w-[70%] rounded-2xl px-4 py-3 ${
-                  msg.sender === "provider"
-                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/10"
-                    : "bg-secondary/50 text-card-foreground"
-                }`}>
-                  <p className="text-sm leading-relaxed">{msg.text}</p>
-                  <p className={`text-[11px] mt-1.5 ${msg.sender === "provider" ? "text-primary-foreground/60" : "text-muted-foreground"}`}>
-                    {msg.time}
+          {selectedConversation ? (
+            <>
+              <div className="p-4 border-b border-border/50 flex items-center gap-3">
+                <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                  <span className="text-xs font-bold text-primary">
+                    {getInitials(selectedConversation.participant?.name || "")}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-card-foreground">
+                    {selectedConversation.participant?.name}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {selectedConversation.participant?.email}
                   </p>
                 </div>
               </div>
-            ))}
-          </div>
 
-          <div className="p-4 border-t border-border/50">
-            <div className="flex gap-2">
-              <Input
-                placeholder="Type a message..."
-                className="bg-secondary/30 border-border/50 rounded-xl"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-              />
-              <Button size="icon" className="rounded-xl shrink-0 shadow-lg shadow-primary/20"><Send className="h-4 w-4" /></Button>
+              <div className="flex-1 overflow-auto p-4 space-y-3">
+                {messages.map((msg) => {
+                  const isMe = msg.senderId === currentUserId;
+                  return (
+                    <div key={msg.id} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
+                      <div className={`max-w-[70%] rounded-2xl px-4 py-3 ${
+                        isMe
+                          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/10"
+                          : "bg-secondary/50 text-card-foreground"
+                      }`}>
+                        <p className="text-sm leading-relaxed">{msg.text}</p>
+                        <p className={`text-[11px] mt-1.5 ${isMe ? "text-primary-foreground/60" : "text-muted-foreground"}`}>
+                          {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+                <div ref={messagesEndRef} />
+              </div>
+
+              <div className="p-4 border-t border-border/50">
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Type a message..."
+                    className="bg-secondary/30 border-border/50 rounded-xl"
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                  />
+                  <Button
+                    size="icon"
+                    className="rounded-xl shrink-0 shadow-lg shadow-primary/20"
+                    onClick={handleSend}
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex items-center justify-center text-center p-8 bg-secondary/10">
+              <p className="text-sm text-muted-foreground">Select a conversation to start chatting</p>
             </div>
-          </div>
+          )}
         </Card>
       </div>
     </div>

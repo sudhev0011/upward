@@ -28,9 +28,9 @@ const BookingsPage = () => {
     if (!data?.data) return { pending: 0, confirmed: 0, completed: 0 };
     return data.data.reduce(
       (acc, booking) => {
-        if (booking.status === "PENDING") acc.pending++;
-        if (booking.status === "CONFIRMED") acc.confirmed++;
-        if (booking.status === "COMPLETED") acc.completed++;
+        if (booking.status === "pending") acc.pending++;
+        if (booking.status === "confirmed") acc.confirmed++;
+        if (booking.status === "completed") acc.completed++;
         return acc;
       },
       { pending: 0, confirmed: 0, completed: 0 }

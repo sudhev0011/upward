@@ -23,7 +23,7 @@ const manageNav = [
   { title: "Orders",       url: "orders",              icon: ShoppingCart },
   { title: "Payouts",      url: "payouts",             icon: Wallet },
   { title: "Availability", url: "availability",        icon: CalendarDays },
-  { title: "Messages",     url: "/provider/messages",  icon: MessageSquare },
+  { title: "Messages",     url: "messages",  icon: MessageSquare },
   { title: "Settings",     url: "settings",            icon: Settings },
 ];
 

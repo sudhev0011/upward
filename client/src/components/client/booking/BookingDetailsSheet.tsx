@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Sheet,
   SheetContent,
@@ -10,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin, CreditCard, MessageSquare, AlertTriangle } from "lucide-react";
 import { BookingListItem } from "@/interfaces/bookings/bookings.interface";
+import { chatApi } from "@/api/chat.api";
 import { cn } from "@/lib/utils";
 
 interface BookingDetailsSheetProps {
@@ -26,6 +29,9 @@ const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
 };
 
 export const BookingDetailsSheet = ({ booking, open, onOpenChange }: BookingDetailsSheetProps) => {
+  const navigate = useNavigate();
+  const [isMessaging, setIsMessaging] = useState(false);
+
   if (!booking) return null;
 
   const providerInitials = booking.provider.name
@@ -36,6 +42,24 @@ export const BookingDetailsSheet = ({ booking, open, onOpenChange }: BookingDeta
     .toUpperCase() || "P";
 
   const currentStatus = STATUS_CONFIG[booking.status] || { label: booking.status, className: "" };
+
+  const handleMessageProvider = async () => {
+    if (!booking?.provider?.id) return;
+    setIsMessaging(true);
+    try {
+      const response = await chatApi.findOrCreateConversation(booking.provider.id);
+      if (response.success && response.data) {
+        onOpenChange(false);
+        navigate("/client/dashboard/messages", {
+          state: { conversationId: response.data.id },
+        });
+      }
+    } catch (error) {
+      console.error("Failed to start conversation:", error);
+    } finally {
+      setIsMessaging(false);
+    }
+  };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -163,9 +187,13 @@ export const BookingDetailsSheet = ({ booking, open, onOpenChange }: BookingDeta
 
         {/* Action Panel Sheet Footing Controls panel block layout */}
         <div className="p-4 border-t bg-slate-50/50 dark:bg-zinc-900/40 flex flex-col gap-2.5">
-          <Button className="w-full gap-2 h-11 font-medium shadow-sm">
+          <Button
+            onClick={handleMessageProvider}
+            disabled={isMessaging}
+            className="w-full gap-2 h-11 font-medium shadow-sm"
+          >
             <MessageSquare className="h-4 w-4" />
-            Message Provider
+            {isMessaging ? "Initializing..." : "Message Provider"}
           </Button>
 
           {booking.status === "CONFIRMED" && (
@@ -179,4 +207,4 @@ export const BookingDetailsSheet = ({ booking, open, onOpenChange }: BookingDeta
       </SheetContent>
     </Sheet>
   );
-};
+};

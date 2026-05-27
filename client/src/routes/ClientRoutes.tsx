@@ -3,7 +3,6 @@ import ClientLayout from "@/layouts/ClientLayout";
 
 import { DashboardOverview } from "@/components/client/DashboardOverview";
 import BookingsPage  from "@/pages/client/BookingsPage";
-import ExplorePage   from "@/pages/client/ExplorePage";
 import MessagesPage  from "@/pages/client/MessagesPage";
 import SavedPage     from "@/pages/client/SavedPage";
 import PaymentsPage  from "@/pages/client/PaymentsPage";
@@ -29,7 +28,6 @@ const ClientRoutes = () => {
       <Route path="dashboard" element={<ClientLayout />}>
         <Route index            element={<DashboardOverview />} />
         <Route path="bookings"  element={<BookingsPage />}      />
-        <Route path="explore"   element={<ExplorePage />}       />
         <Route path="messages"  element={<MessagesPage />}      />
         <Route path="saved"     element={<SavedPage />}         />
         <Route path="payments"  element={<PaymentsPage />}      />

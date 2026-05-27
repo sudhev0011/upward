@@ -17,6 +17,8 @@ import { PublicRouter } from "../routes/public-router";
 import { bookingExpirationJob } from "../../infrastructure/di/jobsDi";
 import { WebhookRouter } from "../routes/webhook-router";
 import router from "../routes/location.router";
+import { ChatRouter } from "../routes/chat-router";
+import { initSocketServer } from "./socket-server";
 
 export class AppServer {
   private _app: express.Application;
@@ -57,6 +59,7 @@ export class AppServer {
     this._app.use("/api/admin", new AdminRouter().router);
     this._app.use("/api/public", new PublicRouter().router);
     this._app.use("/api/location",router);
+    this._app.use("/api/chat", new ChatRouter().router);
 
 
     this._app.use(errorHandler);
@@ -91,6 +94,7 @@ export class AppServer {
       await this.connectDatabase();
       this.init();
       this.initializeJobs();
+      initSocketServer(this._httpServer);
 
       this._httpServer.listen(this._port, () => {
         winstonLogger.info(`Server running on http://localhost:${this._port}`);

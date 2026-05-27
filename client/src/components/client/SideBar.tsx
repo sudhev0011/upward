@@ -33,12 +33,10 @@ const NAV_ITEMS: NavItem[] = [
     icon: CalendarCheck,
     label: "My Bookings",
   },
-  { to: "/client/dashboard/explore", icon: Search, label: "Explore" },
   {
     to: "/client/dashboard/messages",
     icon: MessageSquare,
     label: "Messages",
-    badge: 2,
   },
   { to: "/client/dashboard/saved", icon: Heart, label: "Saved Pros" },
   { to: "/client/dashboard/payments", icon: CreditCard, label: "Payments" },

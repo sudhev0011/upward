@@ -10,12 +10,15 @@ import {
   ArrowLeft,
   Languages,
   ChevronRight,
+  MessageSquare,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useGetProviderProfile } from "@/hooks/public/providers/useGetProviderProfile";
 import { PortfolioSection } from "@/components/common/portfolio/PortfolioSection";
 import { AvailabilitySection } from "@/components/common/availability/AvailabilitySection";
 import { ServicesSection } from "@/components/common/provider-service/ServiceSection";
+import { useAppSelector } from "@/hooks/useRedux";
+import { chatApi } from "@/api/chat.api";
 
 type Tab = "services" | "portfolio" | "availability";
 
@@ -24,8 +27,29 @@ export const ProviderProfilePage = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("services");
 
+  const currentUser = useAppSelector((state) => state.auth.user);
+  const isClient = currentUser?.roles?.includes("client");
+  const [isMessaging, setIsMessaging] = useState(false);
+
   const { data, isLoading, isError } = useGetProviderProfile(providerId!);
   const provider = data?.data;
+
+  const handleMessageProvider = async () => {
+    if (!providerId) return;
+    setIsMessaging(true);
+    try {
+      const response = await chatApi.findOrCreateConversation(providerId);
+      if (response.success && response.data) {
+        navigate("/client/dashboard/messages", {
+          state: { conversationId: response.data.id },
+        });
+      }
+    } catch (error) {
+      console.error("Failed to start conversation:", error);
+    } finally {
+      setIsMessaging(false);
+    }
+  };
 
   // ── Loading ──────────────────────────────────────────────
   if (isLoading) {
@@ -99,15 +123,28 @@ export const ProviderProfilePage = () => {
                   </div>
                 </div>
 
-                {/* Rating */}
-                <div className="flex items-center gap-1.5 bg-amber-50 text-amber-600 rounded-xl px-3 py-1.5 shrink-0">
-                  <Star size={13} className="fill-amber-400 text-amber-400" />
-                  <span className="text-sm font-bold">
-                    {provider.ratingAvg.toFixed(1)}
-                  </span>
-                  <span className="text-xs text-amber-400">
-                    ({provider.ratingCount})
-                  </span>
+                {/* Actions (Rating / Message) */}
+                <div className="flex flex-col items-end gap-2 shrink-0">
+                  <div className="flex items-center gap-1.5 bg-amber-50 text-amber-600 rounded-xl px-3 py-1.5">
+                    <Star size={13} className="fill-amber-400 text-amber-400" />
+                    <span className="text-sm font-bold">
+                      {provider.ratingAvg.toFixed(1)}
+                    </span>
+                    <span className="text-xs text-amber-400">
+                      ({provider.ratingCount})
+                    </span>
+                  </div>
+
+                  {isClient && (
+                    <button
+                      onClick={handleMessageProvider}
+                      disabled={isMessaging}
+                      className="flex items-center gap-1.5 rounded-xl bg-[#719FC4] hover:bg-[#5585A8] px-4 py-2 text-xs font-bold text-white transition-all shadow-sm disabled:opacity-50"
+                    >
+                      <MessageSquare size={13} />
+                      {isMessaging ? "Starting..." : "Message"}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
