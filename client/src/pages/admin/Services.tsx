@@ -1,7 +1,14 @@
 import { useState, useEffect, useMemo } from "react";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, MoreHorizontal, Power, Loader2, TimerOff, Edit2 } from "lucide-react";
+import {
+  Plus,
+  MoreHorizontal,
+  Power,
+  Loader2,
+  TimerOff,
+  Edit2,
+} from "lucide-react";
 import { toast } from "sonner";
 
 // Components
@@ -26,6 +33,8 @@ import {
   PaginationItem,
   PaginationPrevious,
   PaginationNext,
+  PaginationEllipsis,
+  PaginationLink,
 } from "@/components/ui/pagination";
 import {
   Select,
@@ -60,7 +69,9 @@ export default function Services() {
   // --- STATE ---
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
+    null,
+  );
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -78,20 +89,27 @@ export default function Services() {
     return () => clearTimeout(t);
   }, [search]);
 
-  const params = useMemo(() => ({
-    page,
-    limit,
-    search: debouncedSearch,
-    mode,
-    isActive,
-    sortBy,
-    sortOrder,
-  }), [page, debouncedSearch, mode, isActive, sortBy, sortOrder]);
+  const params = useMemo(
+    () => ({
+      page,
+      limit,
+      search: debouncedSearch,
+      mode,
+      isActive,
+      sortBy,
+      sortOrder,
+    }),
+    [page, debouncedSearch, mode, isActive, sortBy, sortOrder],
+  );
 
   // --- QUERIES & MUTATIONS ---
-  const { data: servicesRes, isLoading, isFetching } = useGetAllPaginatedServices(params);
+  const {
+    data: servicesRes,
+    isLoading,
+    isFetching,
+  } = useGetAllPaginatedServices(params);
   const { data: categoriesRes } = useGetAllCategoriesAdmin();
-  
+
   const createService = useCreateServiceMutation();
   const updateService = useUpdateServiceMutation();
   const toggleService = useToggleService();
@@ -121,9 +139,9 @@ export default function Services() {
   });
 
   const selectedCategoryId = useWatch({ control, name: "categoryId" });
-  const selectedCategory = useMemo(() => 
-    categories.find((c) => c.id === selectedCategoryId), 
-    [selectedCategoryId, categories]
+  const selectedCategory = useMemo(
+    () => categories.find((c) => c.id === selectedCategoryId),
+    [selectedCategoryId, categories],
   );
 
   useEffect(() => {
@@ -141,13 +159,13 @@ export default function Services() {
       setIsEditing(false);
       setSelectedServiceId(null);
       reset({
-      name: "",
-      description: "",
-      categoryId: "",
-      maxHour: 1,
-      mode: "onsite",
-      isActive: true,
-    });
+        name: "",
+        description: "",
+        categoryId: "",
+        maxHour: 1,
+        mode: "onsite",
+        isActive: true,
+      });
     }
   };
 
@@ -187,10 +205,10 @@ export default function Services() {
             toast.success(res.message || "Service updated successfully");
             onOpenChange(false);
           },
-          onError: (error)=>{
-            toast.error(error.message || "Error updating service")
-          }
-        }
+          onError: (error) => {
+            toast.error(error.message || "Error updating service");
+          },
+        },
       );
     } else {
       createService.mutate(data, {
@@ -198,14 +216,15 @@ export default function Services() {
           toast.success(res.message || "Service created successfully");
           onOpenChange(false);
         },
-        onError:(error)=>{
-          toast.error(error.message || "Error creating service")
-        }
+        onError: (error) => {
+          toast.error(error.message || "Error creating service");
+        },
       });
     }
   };
 
-  const getCategoryName = (id: string) => categories.find((c) => c.id === id)?.name || "Unknown";
+  const getCategoryName = (id: string) =>
+    categories.find((c) => c.id === id)?.name || "Unknown";
 
   return (
     <div className="space-y-6">
@@ -213,7 +232,9 @@ export default function Services() {
       <div className="flex justify-between items-end">
         <div>
           <h1 className="text-2xl font-bold">Services</h1>
-          <p className="text-sm text-muted-foreground">Manage marketplace services</p>
+          <p className="text-sm text-muted-foreground">
+            Manage marketplace services
+          </p>
         </div>
         <Button onClick={() => setDialogOpen(true)}>
           <Plus className="mr-2 h-4 w-4" /> Add Service
@@ -225,12 +246,23 @@ export default function Services() {
         <Input
           placeholder="Search..."
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           className="max-w-xs"
         />
 
-        <Select value={mode || "all"} onValueChange={(val) => { setMode(val === "all" ? undefined : (val as typeof mode)); setPage(1); }}>
-          <SelectTrigger className="w-[140px]"><SelectValue placeholder="Mode" /></SelectTrigger>
+        <Select
+          value={mode || "all"}
+          onValueChange={(val) => {
+            setMode(val === "all" ? undefined : (val as typeof mode));
+            setPage(1);
+          }}
+        >
+          <SelectTrigger className="w-[140px]">
+            <SelectValue placeholder="Mode" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Modes</SelectItem>
             <SelectItem value="onsite">Onsite</SelectItem>
@@ -239,8 +271,16 @@ export default function Services() {
           </SelectContent>
         </Select>
 
-        <Select value={isActive === undefined ? "all" : String(isActive)} onValueChange={(val) => { setIsActive(val === "all" ? undefined : val === "true"); setPage(1); }}>
-          <SelectTrigger className="w-[130px]"><SelectValue placeholder="Status" /></SelectTrigger>
+        <Select
+          value={isActive === undefined ? "all" : String(isActive)}
+          onValueChange={(val) => {
+            setIsActive(val === "all" ? undefined : val === "true");
+            setPage(1);
+          }}
+        >
+          <SelectTrigger className="w-[130px]">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="true">Active</SelectItem>
@@ -248,16 +288,33 @@ export default function Services() {
           </SelectContent>
         </Select>
 
-        <Select value={sortBy} onValueChange={(val: "name" | "createdAt") => { setSortBy(val); setSortOrder(val === "name" ? "asc" : "desc"); setPage(1); }}>
-          <SelectTrigger className="w-[150px]"><SelectValue placeholder="Sort By" /></SelectTrigger>
+        <Select
+          value={sortBy}
+          onValueChange={(val: "name" | "createdAt") => {
+            setSortBy(val);
+            setSortOrder(val === "name" ? "asc" : "desc");
+            setPage(1);
+          }}
+        >
+          <SelectTrigger className="w-[150px]">
+            <SelectValue placeholder="Sort By" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="createdAt">Recent</SelectItem>
             <SelectItem value="name">Name</SelectItem>
           </SelectContent>
         </Select>
 
-        <Select value={sortOrder} onValueChange={(val: "asc" | "desc") => { setSortOrder(val); setPage(1); }}>
-          <SelectTrigger className="w-[100px]"><SelectValue placeholder="Order" /></SelectTrigger>
+        <Select
+          value={sortOrder}
+          onValueChange={(val: "asc" | "desc") => {
+            setSortOrder(val);
+            setPage(1);
+          }}
+        >
+          <SelectTrigger className="w-[100px]">
+            <SelectValue placeholder="Order" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="desc">Desc</SelectItem>
             <SelectItem value="asc">Asc</SelectItem>
@@ -275,16 +332,23 @@ export default function Services() {
         <>
           {isFetching && (
             <div className="flex items-center gap-2 text-[10px] text-primary animate-pulse">
-              <div className="h-1.5 w-1.5 rounded-full bg-primary" /> Syncing data...
+              <div className="h-1.5 w-1.5 rounded-full bg-primary" /> Syncing
+              data...
             </div>
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {services.map((s) => (
-              <Card key={s.id} className="group shadow-sm hover:shadow-md transition-all border-muted/60">
+              <Card
+                key={s.id}
+                className="group shadow-sm hover:shadow-md transition-all border-muted/60"
+              >
                 <CardContent className="p-5">
                   <div className="flex items-start justify-between mb-3">
-                    <Badge variant="secondary" className="capitalize text-[10px] font-medium px-2 py-0">
+                    <Badge
+                      variant="secondary"
+                      className="capitalize text-[10px] font-medium px-2 py-0"
+                    >
                       {s.mode}
                     </Badge>
 
@@ -298,11 +362,13 @@ export default function Services() {
                         <DropdownMenuItem onClick={() => handleEditClick(s)}>
                           <Edit2 className="mr-2 h-3.5 w-3.5" /> Edit Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          disabled={updateService.isPending} 
+                        <DropdownMenuItem
+                          disabled={updateService.isPending}
                           onClick={() => handleToggleStatus(s)}
                         >
-                          <Power className={`mr-2 h-3.5 w-3.5 ${s.isActive ? 'text-destructive' : 'text-green-500'}`} />
+                          <Power
+                            className={`mr-2 h-3.5 w-3.5 ${s.isActive ? "text-destructive" : "text-green-500"}`}
+                          />
                           {s.isActive ? "Deactivate" : "Activate"}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -317,19 +383,31 @@ export default function Services() {
                   <div className="flex flex-col gap-1.5 text-[11px] border-t pt-3">
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">Category</span>
-                      <span className="font-medium bg-muted px-2 py-0.5 rounded">{getCategoryName(s.categoryId)}</span>
+                      <span className="font-medium bg-muted px-2 py-0.5 rounded">
+                        {getCategoryName(s.categoryId)}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">Work Unit</span>
-                      <span className={`font-medium ${s.maxHour ? "text-primary" : "text-orange-500"}`}>
+                      <span
+                        className={`font-medium ${s.maxHour ? "text-primary" : "text-orange-500"}`}
+                      >
                         {s.maxHour ? `${s.maxHour} Hours Max` : "Fixed Project"}
                       </span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-1.5 text-[10px] mt-4">
-                    <div className={`h-2 w-2 rounded-full ${s.isActive ? "bg-green-500 animate-pulse" : "bg-gray-300"}`} />
-                    <span className={s.isActive ? "text-green-600 font-medium" : "text-muted-foreground"}>
+                    <div
+                      className={`h-2 w-2 rounded-full ${s.isActive ? "bg-green-500 animate-pulse" : "bg-gray-300"}`}
+                    />
+                    <span
+                      className={
+                        s.isActive
+                          ? "text-green-600 font-medium"
+                          : "text-muted-foreground"
+                      }
+                    >
                       {s.isActive ? "Active" : "Inactive"}
                     </span>
                   </div>
@@ -340,7 +418,9 @@ export default function Services() {
 
           {services.length === 0 && (
             <div className="col-span-full py-20 text-center border-2 border-dashed rounded-xl bg-muted/10">
-              <p className="text-muted-foreground">No services match your criteria.</p>
+              <p className="text-muted-foreground">
+                No services match your criteria.
+              </p>
             </div>
           )}
 
@@ -348,17 +428,56 @@ export default function Services() {
             <Pagination className="mt-8">
               <PaginationContent>
                 <PaginationItem>
-                  <PaginationPrevious 
-                    onClick={() => setPage((p) => Math.max(1, p - 1))} 
-                    className={page === 1 ? "pointer-events-none opacity-40" : "cursor-pointer"} 
+                  <PaginationPrevious
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    className={
+                      page === 1
+                        ? "pointer-events-none opacity-40"
+                        : "cursor-pointer"
+                    }
                   />
                 </PaginationItem>
-                {/* Simplified pagination logic for brevity */}
-                <PaginationItem><span className="text-xs text-muted-foreground px-4">Page {page} of {totalPages}</span></PaginationItem>
+
+                {Array.from({ length: totalPages }, (_, i) => {
+                  const pageNumber = i + 1;
+
+                  // Show first page, last page, current page, and pages around current page
+                  if (
+                    pageNumber === 1 ||
+                    pageNumber === totalPages ||
+                    (pageNumber >= page - 1 && pageNumber <= page + 1)
+                  ) {
+                    return (
+                      <PaginationItem key={i}>
+                        <PaginationLink
+                          onClick={() => setPage(pageNumber)}
+                          isActive={page === pageNumber}
+                        >
+                          {pageNumber}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  }
+
+                  // Show ellipsis for gaps
+                  if (
+                    (pageNumber === page - 2 && pageNumber > 1) ||
+                    (pageNumber === page + 2 && pageNumber < totalPages)
+                  ) {
+                    return <PaginationEllipsis key={i} />;
+                  }
+
+                  return null;
+                })}
+                
                 <PaginationItem>
-                  <PaginationNext 
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))} 
-                    className={page === totalPages ? "pointer-events-none opacity-40" : "cursor-pointer"} 
+                  <PaginationNext
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    className={
+                      page === totalPages
+                        ? "pointer-events-none opacity-40"
+                        : "cursor-pointer"
+                    }
                   />
                 </PaginationItem>
               </PaginationContent>
@@ -372,9 +491,13 @@ export default function Services() {
         <DialogContent className="max-w-md">
           <form onSubmit={handleSubmit(onSubmit)}>
             <DialogHeader>
-              <DialogTitle>{isEditing ? "Edit Service" : "Create New Service"}</DialogTitle>
+              <DialogTitle>
+                {isEditing ? "Edit Service" : "Create New Service"}
+              </DialogTitle>
               <DialogDescription>
-                {isEditing ? "Modify the service details below." : "Add a specific service offering to the platform."}
+                {isEditing
+                  ? "Modify the service details below."
+                  : "Add a specific service offering to the platform."}
               </DialogDescription>
             </DialogHeader>
 
@@ -386,24 +509,42 @@ export default function Services() {
                   control={control}
                   render={({ field }) => (
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className={errors.categoryId ? "border-destructive" : ""}>
+                      <SelectTrigger
+                        className={
+                          errors.categoryId ? "border-destructive" : ""
+                        }
+                      >
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
                         {categories.map((c) => (
-                          <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.name}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   )}
                 />
-                {errors.categoryId && <p className="text-[10px] text-destructive">{errors.categoryId.message}</p>}
+                {errors.categoryId && (
+                  <p className="text-[10px] text-destructive">
+                    {errors.categoryId.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
                 <Label>Service Name</Label>
-                <Input {...register("name")} placeholder="e.g. 4K Video Editing" className={errors.name ? "border-destructive" : ""} />
-                {errors.name && <p className="text-[10px] text-destructive">{errors.name.message}</p>}
+                <Input
+                  {...register("name")}
+                  placeholder="e.g. 4K Video Editing"
+                  className={errors.name ? "border-destructive" : ""}
+                />
+                {errors.name && (
+                  <p className="text-[10px] text-destructive">
+                    {errors.name.message}
+                  </p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -415,43 +556,83 @@ export default function Services() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={selectedCategory?.mode === "offsite" ? "text-muted-foreground/50" : ""}>Max Hours</Label>
+                  <Label
+                    className={
+                      selectedCategory?.mode === "offsite"
+                        ? "text-muted-foreground/50"
+                        : ""
+                    }
+                  >
+                    Max Hours
+                  </Label>
                   {selectedCategory?.mode === "offsite" ? (
                     <div className="h-10 flex items-center justify-center bg-muted/30 border border-dashed rounded-md text-[10px] text-muted-foreground uppercase">
                       <TimerOff className="h-3 w-3 mr-1" /> Fixed Price
                     </div>
                   ) : (
-                    <Input type="number" {...register("maxHour")} className={errors.maxHour ? "border-destructive" : ""} />
+                    <Input
+                      type="number"
+                      {...register("maxHour")}
+                      className={errors.maxHour ? "border-destructive" : ""}
+                    />
                   )}
-                  {errors.maxHour && <p className="text-[10px] text-destructive">{errors.maxHour.message}</p>}
+                  {errors.maxHour && (
+                    <p className="text-[10px] text-destructive">
+                      {errors.maxHour.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label>Description</Label>
-                <Textarea {...register("description")} placeholder="Details about this offering..." className={`min-h-[80px] ${errors.description ? "border-destructive" : ""}`} />
-                {errors.description && <p className="text-[10px] text-destructive">{errors.description.message}</p>}
+                <Textarea
+                  {...register("description")}
+                  placeholder="Details about this offering..."
+                  className={`min-h-[80px] ${errors.description ? "border-destructive" : ""}`}
+                />
+                {errors.description && (
+                  <p className="text-[10px] text-destructive">
+                    {errors.description.message}
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center justify-between border p-3 rounded-lg bg-muted/10">
                 <div className="space-y-0.5">
                   <Label className="text-sm">Available for use</Label>
-                  <p className="text-[10px] text-muted-foreground">Allow providers to select this service</p>
+                  <p className="text-[10px] text-muted-foreground">
+                    Allow providers to select this service
+                  </p>
                 </div>
                 <Controller
                   name="isActive"
                   control={control}
                   render={({ field }) => (
-                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
                   )}
                 />
               </div>
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
-              <Button type="submit" disabled={updateService.isPending || createService.isPending}>
-                {(updateService.isPending || createService.isPending) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={updateService.isPending || createService.isPending}
+              >
+                {(updateService.isPending || createService.isPending) && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 {isEditing ? "Update Service" : "Create Service"}
               </Button>
             </DialogFooter>

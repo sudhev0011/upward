@@ -8,10 +8,7 @@ export interface CreateProviderServiceResponse {
   updatedAt: Date;
 }
 
-export interface SetProviderServicePriceRequest {
-  providerServiceId: string;
-  price: number;
-}
+
 
 export interface Services {
   providerServiceId: string;
@@ -20,6 +17,7 @@ export interface Services {
   mode: "onstie" | "offsite" | "both";
   maxHour: number;
   price: number | null;
+  dailyCapacity: number | null;
   status: "draft" | "active" | "inactive";
 }
 

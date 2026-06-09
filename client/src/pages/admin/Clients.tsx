@@ -55,7 +55,7 @@ export default function Clients() {
       cell: (c: ClientProfile) => (
         <div className="flex items-center gap-3">
           <Avatar className="h-9 w-9 border">
-            <img src={c.profilePicture ?? ""} alt="" className="object-cover" />
+            <img src={c.avatarUrl ?? ""} alt="" className="object-cover" />
             <AvatarFallback className="bg-primary/5 text-primary text-xs">
               {c.name?.[0] || <User className="h-4 w-4" />}
             </AvatarFallback>
@@ -168,7 +168,7 @@ export default function Clients() {
                 {/* Header Profile Section */}
                 <div className="flex items-center gap-6">
                   <Avatar className="h-20 w-20 border-2 border-primary/10 shadow-sm">
-                    <img src={client.profilePicture ?? undefined} alt={client.name} className="object-cover" />
+                    <img src={client.avatarUrl ?? undefined} alt={client.name} className="object-cover" />
                     <AvatarFallback className="text-xl bg-muted">{client.name?.[0]}</AvatarFallback>
                   </Avatar>
 

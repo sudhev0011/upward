@@ -8,9 +8,14 @@ import {
   CreditCard,
   User,
   Loader2,
+  ListChecks,
 } from "lucide-react";
-import type { BookingFormState, CreateBookingRequest } from "@/interfaces/client/booking.interface";
-import { useCreateBooking } from "@/hooks/client/useBooking";
+import type {
+  BookingFormState,
+  CreateOnsiteBookingRequest,
+  CreateOffsiteBookingRequest,
+} from "@/interfaces/client/booking.interface";
+import { useCreateOnsiteBooking, useCreateOffsiteBooking } from "@/hooks/client/useBooking";
 import { clientApi } from "@/api/client.api";
 import { format, parse } from "date-fns";
 import { PaymentType } from "@/enums/payment-type.enum";
@@ -49,55 +54,100 @@ const SummaryRow = ({ icon, label, value }: SummaryRowProps) => (
   </div>
 );
 
+// requirements rendered as chips, not a single string
+const RequirementsSummary = ({ requirements }: { requirements: string[] }) => (
+  <div className="flex items-start gap-3">
+    <div className="mt-0.5 text-primary shrink-0">
+      <ListChecks className="h-4 w-4" />
+    </div>
+    <div className="flex flex-col gap-1.5">
+      <p className="text-xs text-muted-foreground">Requirements</p>
+      <div className="flex flex-wrap gap-1.5">
+        {requirements.map((req, i) => (
+          <span
+            key={i}
+            className="text-xs bg-primary/10 text-primary border border-primary/20 rounded-lg px-2.5 py-1 font-medium"
+          >
+            {req}
+          </span>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
 export default function ConfirmStep({
   formState,
   onBack,
   onBookingCreated,
   onError,
 }: Props) {
-  const { mutate: createBooking, isPending } = useCreateBooking(
-    // onSuccess — booking created, now get payment intent
-    async (data) => {
-      const booking = data?.data;
+  const isOnsite = formState.mode === "onsite";
 
-      if (!booking?.bookingId) {
-        onError("Booking was created but we could not retrieve the booking ID. Please contact support.");
+  // shared success handler — same for both flows
+  const handleSuccess = async (data: Awaited<ReturnType<typeof clientApi.createOnsiteBooking>>) => {
+    const booking = data?.data;
+
+    if (!booking?.id) {
+      onError("Booking was created but we could not retrieve the booking ID. Please contact support.");
+      return;
+    }
+
+    try {
+      const intentResponse = await clientApi.createPaymentIntent({
+        bookingId: booking.id,
+      });
+
+      const intent = intentResponse?.data;
+
+      if (!intent?.clientSecret) {
+        onError("Booking created but payment setup failed. Please try again.");
         return;
       }
 
-      try {
-        const intentResponse = await clientApi.createPaymentIntent({
-          bookingId: booking.bookingId,
-        });
-
-        const intent = intentResponse?.data;
-
-        if (!intent?.clientSecret) {
-          onError("Booking created but payment setup failed. Please try again.");
-          return;
-        }
-        console.log("clientSecret received:", intent.clientSecret)
-        onBookingCreated(booking.bookingId, intent.clientSecret);
-      } catch {
-        onError("Booking created but we could not initialize payment. Please try again.");
-      }
-    },
-    (error) => {
-      onError(error?.message ?? "Something went wrong while creating your booking. Please try again.");
+      onBookingCreated(booking.id, intent.clientSecret);
+    } catch {
+      onError("Booking created but we could not initialize payment. Please try again.");
     }
-  );
+  };
+
+  // shared error handler
+  const handleError = (error: Error) => {
+    onError(
+      error?.message ?? "Something went wrong while creating your booking. Please try again."
+    );
+  };
+
+  const { mutate: createOnsiteBooking, isPending: isOnsitePending } =
+    useCreateOnsiteBooking(handleSuccess, handleError);
+
+  const { mutate: createOffsiteBooking, isPending: isOffsitePending } =
+    useCreateOffsiteBooking(handleSuccess, handleError);
+
+  const isPending = isOnsitePending || isOffsitePending;
 
   const handleConfirm = () => {
-    const payload: CreateBookingRequest = {
-      providerServiceId: formState.providerServiceId,
-      bookingDate: formState.bookingDate,
-      startTime: formState.startTime,
-      paymentType: formState.paymentType!,
-      location: formState.location!,
-      notes: formState.notes.trim() || null,
-    };
-
-    createBooking(payload);
+    if (isOnsite) {
+      const payload: CreateOnsiteBookingRequest = {
+        providerServiceId: formState.providerServiceId,
+        bookingDate: formState.bookingDate,
+        startTime: formState.startTime,
+        paymentType: formState.paymentType!,
+        notes: formState.notes.trim() || null,
+        location: formState.location!,
+        requirements: formState.requirements,
+      };
+      createOnsiteBooking(payload);
+    } else {
+      const payload: CreateOffsiteBookingRequest = {
+        providerServiceId: formState.providerServiceId,
+        bookingDate: formState.bookingDate,
+        paymentType: formState.paymentType!,
+        notes: formState.notes.trim() || null,
+        requirements: formState.requirements,
+      };
+      createOffsiteBooking(payload);
+    }
   };
 
   return (
@@ -121,15 +171,20 @@ export default function ConfirmStep({
           value={formatDate(formState.bookingDate)}
         />
 
-        <Separator className="opacity-50" />
+        {/* slot time — onsite only */}
+        {isOnsite && formState.startTime && (
+          <>
+            <Separator className="opacity-50" />
+            <SummaryRow
+              icon={<Clock className="h-4 w-4" />}
+              label="Time"
+              value={`${formatTime(formState.startTime)} — ${formatTime(formState.endTime)}`}
+            />
+          </>
+        )}
 
-        <SummaryRow
-          icon={<Clock className="h-4 w-4" />}
-          label="Time"
-          value={`${formatTime(formState.startTime)} — ${formatTime(formState.endTime)}`}
-        />
-
-        {formState.location && (
+        {/* location — onsite only */}
+        {isOnsite && formState.location && (
           <>
             <Separator className="opacity-50" />
             <SummaryRow
@@ -140,6 +195,15 @@ export default function ConfirmStep({
           </>
         )}
 
+        {/* requirements — both flows */}
+        {formState.requirements.length > 0 && (
+          <>
+            <Separator className="opacity-50" />
+            <RequirementsSummary requirements={formState.requirements} />
+          </>
+        )}
+
+        {/* notes — both flows */}
         {formState.notes.trim().length > 0 && (
           <>
             <Separator className="opacity-50" />

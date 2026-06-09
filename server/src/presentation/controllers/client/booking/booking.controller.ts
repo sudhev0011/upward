@@ -20,14 +20,20 @@ import { ICreateBookingUseCase } from "../../../../domain/interfaces/usecases/bo
 import { UserRole } from "../../../../domain/enums/user-role.enum";
 import { IListBookingsUseCase } from "../../../../domain/interfaces/usecases/booking/IListBookingUseCase";
 import { ListBookingsRequestDtoSchema } from "../../../../application/dtos/client/booking/request/list-bookings-request.dto";
-import { NotFound } from "@aws-sdk/client-s3";
-import { NotFoundError } from "../../../../domain/errors/errors";
+import { CancelBookingUseCase } from "../../../../application/use-cases/booking/cancel-booking.use-case";
+import { CancelBookingRequestDtoSchema } from "../../../../application/dtos/booking/cancel-booking-request.dto";
+import { ICreateOffsiteBookingUseCase } from "../../../../domain/interfaces/usecases/booking/ICreateOffsiteBookingUseCase";
+import { CreateOffsiteBookingRequestDtoSchema } from "../../../../application/dtos/client/booking/request/Create-offsite-booking-request.dto";
 
 export class BookingController {
   constructor(
     private readonly _createBookingUseCase: ICreateBookingUseCase,
 
     private readonly _listBookingsUseCase: IListBookingsUseCase,
+
+    private readonly _cancelBookingUseCase: CancelBookingUseCase,
+
+    private readonly _createOffsiteBookingUseCase: ICreateOffsiteBookingUseCase,
   ) {}
 
   /**
@@ -62,6 +68,32 @@ export class BookingController {
     }
   };
 
+  createOffsiteBooking = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+
+    const clientId = validateUserId(req);
+
+    const parsed = CreateOffsiteBookingRequestDtoSchema.safeParse(req.body);
+
+    if (!parsed.success) {
+      return handleValidationError(formatZodErrors(parsed.error), next);
+    }
+
+    try {
+      const result = await this._createOffsiteBookingUseCase.execute(
+        clientId,
+        parsed.data,
+      );
+
+      sendSuccessResponse(res, successResponse.CREATE_BOOKING_SUCCESS, result);
+    } catch (error) {
+      handleAsyncError(error, next);
+    }
+  };
+
   listBookings =
     (role: UserRole) =>
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -81,6 +113,32 @@ export class BookingController {
         );
 
         sendSuccessResponse(res, successResponse.GET_BOOKINGS_SUCCESS, result);
+      } catch (error) {
+        handleAsyncError(error, next);
+      }
+    };
+
+  cancelBooking =
+    (role: UserRole) =>
+    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+      const userId = validateUserId(req);
+      const bookingId = req.params.id as string;
+
+      const parsed = CancelBookingRequestDtoSchema.safeParse(req.body);
+
+      if (!parsed.success) {
+        return handleValidationError(formatZodErrors(parsed.error), next);
+      }
+
+      try {
+        await this._cancelBookingUseCase.execute({
+          bookingId,
+          userId,
+          role,
+          reason: parsed.data.reason ?? null,
+        });
+
+        sendSuccessResponse(res, successResponse.CANCEL_BOOKING_SUCCESS, null);
       } catch (error) {
         handleAsyncError(error, next);
       }

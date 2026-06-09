@@ -2,8 +2,6 @@ import { Types } from "mongoose";
 import { RepositoryBase } from "./base.repository";
 import {
   Availability,
-  DaySchedule,
-  WeeklySchedule,
 } from "../../../../domain/entities/availability.entity";
 import { AvailabilityModel, AvailabilityDocument } from "../models/availability.model";
 import { AvailabilityInfraMapper } from "../../../mapers.persistence/availability/availability-mapper";

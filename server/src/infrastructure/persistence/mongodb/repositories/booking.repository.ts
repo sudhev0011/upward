@@ -12,6 +12,7 @@ import {
   BookingListItemResponse,
 } from "../../../../domain/queries/booking/list-bookings-response";
 import { PaymentStatus } from "../../../../domain/enums/payment-status.enum";
+import { BookingMode } from "../../../../domain/enums/bookingMode.enum";
 export class BookingRepository
   extends RepositoryBase<Booking, BookingDocument>
   implements IBookingRepository
@@ -303,6 +304,7 @@ export class BookingRepository
           {
             $project: {
               id: "$_id",
+              bookingId: 1,
 
               status: 1,
               paymentStatus: 1,
@@ -315,10 +317,14 @@ export class BookingRepository
 
               bookingDate: 1,
 
+              bookingMode: 1,
+
               startDateTime: 1,
               endDateTime: 1,
 
               notes: 1,
+
+              requirements: 1,
 
               location: 1,
 
@@ -445,5 +451,29 @@ export class BookingRepository
       .session(session ?? null);
 
     return document ? this.mapToEntity(document) : null;
+  }
+
+  async countActiveOffsiteBookingsForDate(
+    providerServiceId: string,
+
+    bookingDate: string,
+
+    transaction?: ITransactionContext,
+  ): Promise<number> {
+    const session = MongoSessionUtil.getSession(transaction);
+
+    return this.model
+      .countDocuments({
+        providerServiceId,
+
+        bookingDate,
+
+        bookingMode: BookingMode.OFFSITE,
+
+        status: {
+          $in: [BookingStatus.PENDING, BookingStatus.CONFIRMED],
+        },
+      })
+      .session(session ?? null);
   }
 }

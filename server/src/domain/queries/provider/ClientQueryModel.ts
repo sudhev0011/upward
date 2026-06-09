@@ -6,7 +6,7 @@ export interface ClientQueryModel {
   password: string;
   phone: string | null;
   location: string | null;
-  profilePicture: string | null;
+  avatarUrl: string | null;
   isVerified: boolean;
   isBlocked: boolean;
   createdAt: string;

@@ -1,16 +1,16 @@
 import { BookingStatus } from "../enums/booking-status.enum";
 import { PaymentStatus } from "../enums/payment-status.enum";
 import { PaymentType } from "../enums/payment-type.enum";
-import { Location } from '../interfaces/provider-profile.interface';
+import { Location } from "../interfaces/provider-profile.interface";
 
-import {
-  UnprocessableEntityError,
-  ValidationError,
-} from "../errors/errors";
+import { UnprocessableEntityError, ValidationError } from "../errors/errors";
+import { BookingMode } from "../enums/bookingMode.enum";
 
 export class Booking {
   constructor(
     public readonly id: string | undefined,
+
+    public readonly bookingId: string,
 
     public readonly clientId: string,
     public readonly providerId: string,
@@ -29,12 +29,14 @@ export class Booking {
     public readonly refundAmount: number,
 
     public readonly bookingDate: string,
+    public readonly bookingMode: BookingMode,
 
-    public readonly startDateTime: Date,
-    public readonly endDateTime: Date,
-    public readonly location: Location,
+    public readonly startDateTime: Date | null,
+    public readonly endDateTime: Date | null,
+    public readonly location: Location | null,
 
     public readonly notes: string | null,
+    public readonly requirements: string[],
 
     public readonly cancelledBy: string | null,
     public readonly cancellationReason: string | null,
@@ -43,12 +45,12 @@ export class Booking {
     public readonly expiresAt: Date | null,
 
     public readonly createdAt: Date,
-    public readonly updatedAt: Date
+    public readonly updatedAt: Date,
   ) {}
 
   static create(data: {
     id?: string;
-
+    bookingId: string;
     clientId: string;
     providerId: string;
     serviceId: string;
@@ -60,12 +62,14 @@ export class Booking {
     paidAmount: number;
 
     bookingDate: string;
+    bookingMode: BookingMode;
 
-    startDateTime: Date;
-    endDateTime: Date;
-    location: Location;
+    startDateTime: Date | null;
+    endDateTime: Date | null;
+    location: Location | null;
 
     notes?: string | null;
+    requirements: string[];
 
     expiresAt?: Date | null;
 
@@ -86,36 +90,29 @@ export class Booking {
      */
 
     if (data.totalAmount <= 0) {
-      throw new ValidationError(
-        "Total amount must be greater than zero"
-      );
+      throw new ValidationError("Total amount must be greater than zero");
     }
 
     if (data.paidAmount < 0) {
-      throw new ValidationError(
-        "Paid amount cannot be negative"
-      );
+      throw new ValidationError("Paid amount cannot be negative");
     }
 
     if (data.paidAmount > data.totalAmount) {
-      throw new ValidationError(
-        "Paid amount cannot exceed total amount"
-      );
+      throw new ValidationError("Paid amount cannot exceed total amount");
     }
 
-    if (data.startDateTime >= data.endDateTime) {
-      throw new ValidationError(
-        "End datetime must be after start datetime"
-      );
+    if (data.startDateTime && data.endDateTime) {
+      if (data.startDateTime >= data.endDateTime) {
+        throw new ValidationError("End datetime must be after start datetime");
+      }
     }
 
     const now = new Date();
-    const remainingAmount =
-      data.totalAmount - data.paidAmount;
+    const remainingAmount = data.totalAmount - data.paidAmount;
 
     return new Booking(
       data.id,
-
+      data.bookingId,
       data.clientId,
       data.providerId,
       data.serviceId,
@@ -125,8 +122,7 @@ export class Booking {
 
       data.paymentType,
 
-      data.paymentStatus ??
-        PaymentStatus.UNPAID,
+      data.paymentStatus ?? PaymentStatus.UNPAID,
 
       data.totalAmount,
       data.paidAmount,
@@ -136,11 +132,15 @@ export class Booking {
 
       data.bookingDate,
 
+      data.bookingMode,
+
       data.startDateTime,
       data.endDateTime,
       data.location,
 
       data.notes ?? null,
+
+      data.requirements ?? [],
 
       data.cancelledBy ?? null,
       data.cancellationReason ?? null,
@@ -149,7 +149,7 @@ export class Booking {
       data.expiresAt ?? null,
 
       data.createdAt ?? now,
-      data.updatedAt ?? now
+      data.updatedAt ?? now,
     );
   }
 
@@ -160,13 +160,13 @@ export class Booking {
   confirm(): Booking {
     if (this.status !== BookingStatus.PENDING) {
       throw new UnprocessableEntityError(
-        "Only pending bookings can be confirmed"
+        "Only pending bookings can be confirmed",
       );
     }
 
     return new Booking(
       this.id,
-
+      this.bookingId,
       this.clientId,
       this.providerId,
       this.serviceId,
@@ -188,11 +188,15 @@ export class Booking {
 
       this.bookingDate,
 
+      this.bookingMode,
+
       this.startDateTime,
       this.endDateTime,
       this.location,
 
       this.notes,
+
+      this.requirements,
 
       this.cancelledBy,
       this.cancellationReason,
@@ -201,7 +205,7 @@ export class Booking {
       this.expiresAt,
 
       this.createdAt,
-      new Date()
+      new Date(),
     );
   }
 
@@ -211,14 +215,12 @@ export class Booking {
 
   expire(): Booking {
     if (this.status !== BookingStatus.PENDING) {
-      throw new UnprocessableEntityError(
-        "Only pending bookings can expire"
-      );
+      throw new UnprocessableEntityError("Only pending bookings can expire");
     }
 
     return new Booking(
       this.id,
-
+      this.bookingId,
       this.clientId,
       this.providerId,
       this.serviceId,
@@ -238,11 +240,15 @@ export class Booking {
 
       this.bookingDate,
 
+      this.bookingMode,
+
       this.startDateTime,
       this.endDateTime,
       this.location,
 
       this.notes,
+
+      this.requirements,
 
       this.cancelledBy,
       this.cancellationReason,
@@ -251,7 +257,7 @@ export class Booking {
       this.expiresAt,
 
       this.createdAt,
-      new Date()
+      new Date(),
     );
   }
 
@@ -268,14 +274,12 @@ export class Booking {
       this.status === BookingStatus.CANCELLED ||
       this.status === BookingStatus.EXPIRED
     ) {
-      throw new UnprocessableEntityError(
-        "Booking already inactive"
-      );
+      throw new UnprocessableEntityError("Booking already inactive");
     }
 
     return new Booking(
       this.id,
-
+      this.bookingId,
       this.clientId,
       this.providerId,
       this.serviceId,
@@ -297,11 +301,15 @@ export class Booking {
 
       this.bookingDate,
 
+      this.bookingMode,
+
       this.startDateTime,
       this.endDateTime,
       this.location,
-      
+
       this.notes,
+
+      this.requirements,
 
       data.cancelledBy,
       data.reason ?? null,
@@ -310,7 +318,7 @@ export class Booking {
       this.expiresAt,
 
       this.createdAt,
-      new Date()
+      new Date(),
     );
   }
 

@@ -59,7 +59,10 @@ const MessagesPage = () => {
       // Reset unread count for client
       chatApi.resetUnreadCount(activeThread, "client").then(() => {
         // Emit read event to socket
-        socket?.emit("read_messages", { conversationId: activeThread, role: "client" });
+        socket?.emit("read_messages", {
+          conversationId: activeThread,
+          role: "client",
+        });
       });
     }
   }, [activeThread, socket]);
@@ -73,7 +76,10 @@ const MessagesPage = () => {
         setMessages((prev) => [...prev, message]);
         // Reset unread counts on server since we are active in this room
         chatApi.resetUnreadCount(activeThread, "client").then(() => {
-          socket.emit("read_messages", { conversationId: activeThread, role: "client" });
+          socket.emit("read_messages", {
+            conversationId: activeThread,
+            role: "client",
+          });
         });
       }
     };
@@ -109,7 +115,7 @@ const MessagesPage = () => {
         if (!res.success) {
           console.error("Failed to send message:", res.error);
         }
-      }
+      },
     );
 
     setInput("");
@@ -131,7 +137,7 @@ const MessagesPage = () => {
   const filteredThreads = conversations.filter(
     (t) =>
       t.participant?.name.toLowerCase().includes(search.toLowerCase()) ||
-      t.participant?.email.toLowerCase().includes(search.toLowerCase())
+      t.participant?.email.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -155,6 +161,7 @@ const MessagesPage = () => {
             const hasUnread = t.unreadCountClient > 0;
             const participantName = t.participant?.name || "User";
             const initials = getInitials(participantName);
+            const imageUrl = t.participant?.avatar;
 
             return (
               <div
@@ -165,22 +172,40 @@ const MessagesPage = () => {
                 }`}
               >
                 <div className="relative shrink-0">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#719FC4] text-xs font-bold text-white">
-                    {initials}
+                  <div className="h-10 w-10 overflow-hidden rounded-full ring-2 ring-white shadow-sm bg-gradient-to-br from-[#719FC4] to-[#5A87B0]">
+                    {!imageUrl ? (
+                      <div className="flex h-full w-full items-center justify-center text-xs font-bold text-white">
+                        {initials}
+                      </div>
+                    ) : (
+                      <img
+                        src={imageUrl}
+                        alt="Profile"
+                        className="h-full w-full object-cover"
+                      />
+                    )}
                   </div>
+
                   {hasUnread && (
-                    <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#719FC4] text-[9px] font-bold text-white border-2 border-white">
-                      {t.unreadCountClient}
+                    <span className="absolute -top-1 -right-1 flex min-h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#719FC4] px-1 text-[10px] font-bold text-white ring-2 ring-white">
+                      {t.unreadCountClient > 99 ? "99+" : t.unreadCountClient}
                     </span>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <p className={`text-sm truncate ${hasUnread ? "font-bold text-gray-900" : "font-semibold text-gray-700"}`}>
+                    <p
+                      className={`text-sm truncate ${hasUnread ? "font-bold text-gray-900" : "font-semibold text-gray-700"}`}
+                    >
                       {participantName}
                     </p>
                     <p className="text-[10px] text-gray-400 shrink-0 ml-1">
-                      {t.lastMessage ? new Date(t.lastMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
+                      {t.lastMessage
+                        ? new Date(t.lastMessage.createdAt).toLocaleTimeString(
+                            [],
+                            { hour: "2-digit", minute: "2-digit" },
+                          )
+                        : ""}
                     </p>
                   </div>
                   <p className="text-xs text-gray-400 truncate mt-0.5">
@@ -203,15 +228,27 @@ const MessagesPage = () => {
         {selectedThread ? (
           <>
             {/* Chat header */}
-            <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#719FC4] text-xs font-bold text-white">
-                {getInitials(selectedThread.participant?.name || "")}
+            <div className="flex items-center gap-3 border-b border-gray-100 bg-white px-5 py-4">
+              <div className="h-11 w-11 overflow-hidden rounded-full ring-2 ring-gray-100 shadow-sm bg-gradient-to-br from-[#719FC4] to-[#5A87B0] shrink-0">
+                {!selectedThread.participant?.avatar ? (
+                  <div className="flex h-full w-full items-center justify-center text-sm font-bold text-white">
+                    {getInitials(selectedThread.participant?.name || "")}
+                  </div>
+                ) : (
+                  <img
+                    src={selectedThread.participant?.avatar}
+                    alt={selectedThread.participant?.name || "Profile"}
+                    className="h-full w-full object-cover"
+                  />
+                )}
               </div>
-              <div>
-                <p className="text-sm font-bold text-gray-900">
+
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-gray-900">
                   {selectedThread.participant?.name}
                 </p>
-                <p className="text-xs text-gray-400">
+
+                <p className="truncate text-xs text-gray-500">
                   {selectedThread.participant?.email}
                 </p>
               </div>
@@ -237,7 +274,10 @@ const MessagesPage = () => {
                       <p
                         className={`text-[10px] mt-1 ${isMe ? "text-white/60 text-right" : "text-gray-400"}`}
                       >
-                        {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {new Date(m.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </p>
                     </div>
                   </div>
@@ -268,7 +308,9 @@ const MessagesPage = () => {
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-gray-50/50">
-            <p className="text-sm text-gray-400">Select a conversation to start chatting</p>
+            <p className="text-sm text-gray-400">
+              Select a conversation to start chatting
+            </p>
           </div>
         )}
       </div>

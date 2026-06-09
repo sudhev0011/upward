@@ -14,6 +14,8 @@ import {
 } from "../../infrastructure/di/provider.Di";
 import { UserBlockedMiddleware } from "../middleware/user-blocked.middleware";
 import { getUserByIdUseCase } from "../../infrastructure/di/authDi";
+import { UserRole } from "../../domain/enums/user-role.enum";
+import { bookingController } from "../../infrastructure/di/clientDi";
 export class ProviderRouter {
   public router: Router;
 
@@ -105,5 +107,8 @@ export class ProviderRouter {
     this.router.delete("/portfolio/:id", portfolioController.deletePortfolioItem);
     this.router.delete("/portfolio/:id/images", portfolioController.removePortfolioImage);
     this.router.patch("/portfolio/:id", portfolioController.updatePortfolioItem);
+
+    this.router.get("/bookings", bookingController.listBookings(UserRole.PROVIDER));
+    this.router.patch("/bookings/:id/cancel", bookingController.cancelBooking(UserRole.PROVIDER));
   }
 }

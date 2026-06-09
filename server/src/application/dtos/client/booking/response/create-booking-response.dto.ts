@@ -1,6 +1,8 @@
 import { Location } from "../../../common/location/location.dto";
 
 export interface CreateBookingResponseDto {
+  id: string;
+  
   bookingId: string;
 
   status: string;
@@ -15,7 +17,7 @@ export interface CreateBookingResponseDto {
 
   remainingAmount: number;
 
-  location: Location;
+  location: Location | null;
 
   expiresAt: Date | null;
 }

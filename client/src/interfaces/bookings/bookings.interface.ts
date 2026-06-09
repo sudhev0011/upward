@@ -17,6 +17,8 @@ export interface ListBookingsRequest {
 export interface BookingListItem {
   id: string;
 
+  bookingId: string;
+  
   status: string;
 
   paymentStatus: string;
@@ -33,11 +35,15 @@ export interface BookingListItem {
 
   bookingDate: string;
 
-  startDateTime: string;
+  bookingMode: string;
 
-  endDateTime: string;
+  startDateTime: string | null;
+
+  endDateTime: string | null;
 
   notes: string | null;
+
+  requirements: string[];
 
   location: {
     placeId: string;
@@ -55,7 +61,7 @@ export interface BookingListItem {
 
       coordinates: [number, number];
     };
-  };
+  } | null;
 
   client: {
     id: string;
@@ -111,4 +117,18 @@ export interface ListBookingsResponse {
   limit: number;
 
   totalPages: number;
+}
+
+export interface WalletTransactionResponse {
+  id: string;
+  amount: number;
+  type: "credit" | "debit";
+  description: string;
+  bookingId: string | null;
+  createdAt: string;
+}
+
+export interface WalletResponse {
+  balance: number;
+  transactions: WalletTransactionResponse[];
 }

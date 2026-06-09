@@ -39,7 +39,7 @@ import {
 import { ProviderServicesGroupedByCategory } from "@/interfaces/admin/provider-service.interface";
 // Hooks
 import { useGetProviderSericeByCategoryQuery } from "@/hooks/provider/providerService/useGetProviderServiceByCategory";
-import { useSetProviderServicePriceMutation } from "@/hooks/provider/providerService/useSetProviderServicePrice";
+import { useConfigureProviderServiceMutation } from "@/hooks/provider/providerService/useConfigureProviderServiceMutation";
 import { useDebounce } from "@/hooks/useDebounce";
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -49,7 +49,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
   "Photo & Video Editing": Palette,
 };
 
-type mode = "onsite" | "offsite" | "both" | "all"
+type mode = "onsite" | "offsite" | "both" | "all";
 
 const getCategoryIcon = (name: string) => ICON_MAP[name] || Settings2;
 
@@ -58,9 +58,7 @@ export default function PricingPage() {
   const debouncedSearch = useDebounce(search, 500);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
-  const [mode, setMode] = useState<mode>(
-    "all",
-  );
+  const [mode, setMode] = useState<mode>("all");
 
   const {
     data: response,
@@ -75,25 +73,41 @@ export default function PricingPage() {
     sortOrder: "asc",
   });
 
-  const [localPrices, setLocalPrices] = useState<Record<string, string>>({});
-  const updatePriceMutation = useSetProviderServicePriceMutation();
+  const [serviceConfig, setServiceConfig] = useState<
+    Record<
+      string,
+      {
+        price: string;
+        dailyCapacity: string;
+      }
+    >
+  >({});
+  const updatePriceMutation = useConfigureProviderServiceMutation();
 
   const categories = response?.data?.data || [];
   const meta = response?.data;
 
-  const onCategoriesUpdate = useEffectEvent((latestCategories: ProviderServicesGroupedByCategory[]) => {
-    setLocalPrices((prev) => {
-      const next = { ...prev };
-      latestCategories.forEach((group) => {
-        group.services.forEach((s) => {
-          if (!(s.providerServiceId in next)) {
-            next[s.providerServiceId] = s.price ? s.price.toString() : "";
-          }
+  const onCategoriesUpdate = useEffectEvent(
+    (latestCategories: ProviderServicesGroupedByCategory[]) => {
+      setServiceConfig((prev) => {
+        const next = { ...prev };
+
+        latestCategories.forEach((group) => {
+          group.services.forEach((s) => {
+            if (!(s.providerServiceId in next)) {
+              next[s.providerServiceId] = {
+                price: s.price?.toString() ?? "",
+
+                dailyCapacity: s.dailyCapacity?.toString() ?? "",
+              };
+            }
+          });
         });
+
+        return next;
       });
-      return next;
-    });
-  });
+    },
+  );
   // 3. Sync local prices only for new data arriving
   useEffect(() => {
     if (categories.length > 0) {
@@ -101,13 +115,36 @@ export default function PricingPage() {
     }
   }, [categories]);
 
-  const handleSave = async (providerServiceId: string) => {
-    const price = parseFloat(localPrices[providerServiceId]);
-    if (isNaN(price) || price < 0) return toast.error("Invalid price");
+  const handleSave = async (providerServiceId: string, mode: string) => {
+    const config = serviceConfig[providerServiceId];
+
+    const price = parseFloat(config?.price ?? "");
+
+    if (isNaN(price) || price < 0) {
+      return toast.error("Invalid price");
+    }
+
+    let dailyCapacity: number | null = null;
+
+    if (mode === "offsite") {
+      dailyCapacity = parseInt(config?.dailyCapacity ?? "");
+
+      if (isNaN(dailyCapacity) || dailyCapacity <= 0) {
+        return toast.error("Daily capacity must be greater than 0");
+      }
+    }
 
     updatePriceMutation.mutate(
-      { providerServiceId, price },
-      { onSuccess: () => toast.success("Price updated") },
+      {
+        providerServiceId,
+
+        price,
+
+        dailyCapacity,
+      },
+      {
+        onSuccess: () => toast.success("Service updated"),
+      },
     );
   };
 
@@ -207,9 +244,14 @@ export default function PricingPage() {
                         updatePriceMutation.isPending &&
                         updatePriceMutation.variables?.providerServiceId ===
                           service.providerServiceId;
+                      const currentConfig =
+                        serviceConfig[service.providerServiceId];
+
                       const hasChanged =
-                        localPrices[service.providerServiceId] !==
-                        (service.price?.toString() || "");
+                        currentConfig?.price !==
+                          (service.price?.toString() ?? "") ||
+                        currentConfig?.dailyCapacity !==
+                          (service.dailyCapacity?.toString() ?? "");
 
                       return (
                         <div
@@ -234,31 +276,69 @@ export default function PricingPage() {
                           </div>
 
                           <div className="flex items-center gap-2">
+                            {/* Price Input */}
                             <div className="relative">
                               <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
                                 ₹
                               </span>
+
                               <Input
                                 type="number"
                                 className="w-24 pl-6 h-8 text-right"
                                 value={
-                                  localPrices[service.providerServiceId] || ""
+                                  serviceConfig[service.providerServiceId]
+                                    ?.price ?? ""
                                 }
                                 onChange={(e) =>
-                                  setLocalPrices((prev) => ({
+                                  setServiceConfig((prev) => ({
                                     ...prev,
-                                    [service.providerServiceId]: e.target.value,
+
+                                    [service.providerServiceId]: {
+                                      ...prev[service.providerServiceId],
+
+                                      price: e.target.value,
+                                    },
                                   }))
                                 }
                               />
                             </div>
+
+                            {/* Daily Capacity Input */}
+                            {service.mode === "offsite" && (
+                              <Input
+                                type="number"
+                                min={1}
+                                placeholder="Capacity"
+                                className="w-24 h-8"
+                                value={
+                                  serviceConfig[service.providerServiceId]
+                                    ?.dailyCapacity ?? ""
+                                }
+                                onChange={(e) =>
+                                  setServiceConfig((prev) => ({
+                                    ...prev,
+
+                                    [service.providerServiceId]: {
+                                      ...prev[service.providerServiceId],
+
+                                      dailyCapacity: e.target.value,
+                                    },
+                                  }))
+                                }
+                              />
+                            )}
+
+                            {/* Save Button */}
                             <Button
                               size="sm"
                               variant={hasChanged ? "default" : "secondary"}
                               className="h-8 w-8 p-0"
                               disabled={!hasChanged || isMutating}
                               onClick={() =>
-                                handleSave(service.providerServiceId)
+                                handleSave(
+                                  service.providerServiceId,
+                                  service.mode,
+                                )
                               }
                             >
                               {isMutating ? (

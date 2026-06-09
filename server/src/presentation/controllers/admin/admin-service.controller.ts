@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ICreateServiceUseCase } from "../../../domain/interfaces/usecases/service/ICreateServiceUseCase";
 import { CreateServiceRequestDtoSchema } from "../../../application/dtos/admin/service/request/create-service-request.dto";
-import { ValidationError } from "../../../domain/errors/errors";
 import {
   handleAsyncError,
   handleValidationError,

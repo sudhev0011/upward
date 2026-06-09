@@ -31,6 +31,7 @@ import { CookieService } from "../http/cookie.service";
 import { EmailTemplateService } from "../mailing/email-template.service";
 import { GoogleTokenVerifier } from "../security/google-token-verifier";
 import { PasswordResetService } from "../security/password-reset-service";
+import { WinstonLogger } from "../services/logger.service";
 
 
 //repo init
@@ -44,7 +45,8 @@ const mailerService = new NodemailerService();
 const cookieService = new CookieService();
 const emailTemplateService = new EmailTemplateService();
 const googleTokenVerifier = new GoogleTokenVerifier();
-const passwordResetService = new PasswordResetService(mailerService,emailTemplateService);
+const logger = new WinstonLogger()
+const passwordResetService = new PasswordResetService(mailerService,emailTemplateService, logger);
 
 
 //useCase init

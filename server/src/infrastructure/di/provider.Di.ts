@@ -20,7 +20,6 @@ import { ProviderServiceController } from "../../presentation/controllers/provid
 import { CreateProviderServiceUseCase } from "../../application/use-cases/provider/providerService/create-provider-service.use-case";
 import { GetProviderServicesByCategoryUseCase } from "../../application/use-cases/provider/providerService/get-provider-services-by-category.use-case";
 import { ProviderServiceRepository } from "../persistence/mongodb/repositories/provider-service.repository";
-import { SetProviderServicePriceUseCase } from "../../application/use-cases/provider/providerService/set-provider-service-price.use-case";
 import { DeleteProviderServiceUseCase } from "../../application/use-cases/provider/providerService/delete-provider-service.use-case";
 import { AvailabilityController } from "../../presentation/controllers/provider/availability/avaliability.controller";
 import { SetAvailabilityUseCase } from "../../application/use-cases/provider/availability/setAvailability.use-case";
@@ -50,8 +49,7 @@ import { SlotController } from "../../presentation/controllers/provider/slot/slo
 import { GetAvailableSlotsUseCase } from "../../application/use-cases/slot/get-available-slots.use-case";
 import { WorkingHoursResolverService } from "../../application/services/working-hours-resolver.service";
 import { UnavailabilityResolverService } from "../../application/services/unavailability-resolver.service";
-import { SlotValidationService } from "../../application/services/slot-validation.service";
-import { BookingRepository } from "../persistence/mongodb/repositories/booking.repository";
+import { ConfigureProviderServiceUseCase } from "../../application/use-cases/provider/providerService/set-provider-service-price.use-case";
 
 //repo init
 const userRepository = new UserRepository(); 
@@ -84,7 +82,7 @@ export const getProviderKycUseCase = new GetProviderKycUseCase(providerKycReposi
 const getProviderBankUseCase = new GetProviderBankUseCase(providerBankRepository,s3Service,encryptionService);
 const createProviderServiceUseCase = new CreateProviderServiceUseCase(providerServiceRepository);
 const getProviderServicesByCategoryUseCase = new GetProviderServicesByCategoryUseCase(userRepository,providerServiceRepository)
-const setProviderServicePriceUseCase = new SetProviderServicePriceUseCase(providerServiceRepository, serviceRespository,providerProfileRepository,categoryRepository,logger);
+const configureProviderServiceUseCase = new ConfigureProviderServiceUseCase(providerServiceRepository, serviceRespository,providerProfileRepository,categoryRepository,logger);
 const deleteProviderServiceUseCase = new DeleteProviderServiceUseCase(providerServiceRepository)
 const setAvailabilityUseCase = new SetAvailabilityUseCase(avaliabilityRepository)
 export const getAvailabilityUseCase = new GetAvailabilityUseCase(avaliabilityRepository)
@@ -111,7 +109,7 @@ const getAvailableSlotsUseCase = new GetAvailableSlotsUseCase(providerServiceRep
 // contrller init
 export const providerProfileController = new ProviderProfileController(uploadAvatarUseCase,createProviderProfileUseCase,getProviderProfileUseCase,updateProviderProfileUseCase, getProvidersByCategoryUseCase);
 export const kycController = new KycController(submitProviderKycUseCase,saveProviderBankUseCase,getProviderKycUseCase,getProviderBankUseCase,uploadKycDocumentUseCase)
-export const providerServiceController = new ProviderServiceController(createProviderServiceUseCase,getProviderServicesByCategoryUseCase,setProviderServicePriceUseCase, deleteProviderServiceUseCase)
+export const providerServiceController = new ProviderServiceController(createProviderServiceUseCase,getProviderServicesByCategoryUseCase,configureProviderServiceUseCase, deleteProviderServiceUseCase)
 
 export const availabilityController = new AvailabilityController(setAvailabilityUseCase,getAvailabilityUseCase)
 export const unavaliabilityController = new UnavailabilityController(createUnavailabilityUseCase, getUnavailabilitiesUseCase,deleteUnavailabilityUseCase)

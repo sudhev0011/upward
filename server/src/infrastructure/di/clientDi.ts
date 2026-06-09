@@ -6,7 +6,7 @@ import { CreateClientProfileUseCase } from "../../application/use-cases/client/p
 import { GetClientProfileUseCase } from "../../application/use-cases/client/profile/get-client-profile.use-case";
 import { UpdateClientProfileUseCase } from "../../application/use-cases/client/profile/update-client-profile.use-case";
 import { UploadAvatarUseCase } from "../../application/use-cases/client/media/upload-avatar.use-case";
-import { listBookingUseCase } from "./bookingDi";
+import { listBookingUseCase, cancelBookingUseCase } from "./bookingDi";
 // repository import
 import { ClientProfileRepository } from "../persistence/mongodb/repositories/client-profile.repository";
 import { UserRepository } from "../persistence/mongodb/repositories/user.repository";
@@ -34,6 +34,12 @@ import { StripeService } from "../external-services/stripe/stripe.service";
 import { BookingTravelValidationService } from "../../application/services/booking-travel-validation.service";
 import { ProviderProfileRepository } from "../persistence/mongodb/repositories/provider-profile.repository";
 import { GeoapifyMapsService } from "../external-services/maps/geopify-maps.service";
+import { WalletRepository } from "../persistence/mongodb/repositories/wallet.repository";
+import { WalletTransactionRepository } from "../persistence/mongodb/repositories/wallet-transaction.repository";
+import { GetClientWalletUseCase } from "../../application/use-cases/wallet/get-client-wallet.use-case";
+import { WalletController } from "../../presentation/controllers/client/wallet/wallet.controller";
+import { NanoIdBookingIdtor } from "../services/NanoIdBookingNumberGenerator";
+import { createOffsiteBookingUseCase } from "./bookingDi";
 
 
 
@@ -52,6 +58,8 @@ const categoryRepository = new CategoryRepository()
 const unavailabilityResolver = new UnavailabilityResolverService(unavailabilityRepository)
 const mongoTransactionManager = new MongoTransactionManager()
 const paymentRepository = new PaymentRepository()
+const walletRepository = new WalletRepository()
+const walletTransactionRepository = new WalletTransactionRepository()
 
 // service init
 
@@ -63,19 +71,25 @@ const stripeService = new StripeService()
 const geoapifyMapService = new GeoapifyMapsService()
 const transactionManager = new MongoTransactionManager()
 const bookingTravelValidationService = new BookingTravelValidationService(bookingRepository,providerProfileRepository,geoapifyMapService)
+const bookingIdGenerator = new NanoIdBookingIdtor();
+
 //useCase init
 const createClientProfileUseCase = new CreateClientProfileUseCase(clientProfileRepository)
 export const getClientProfileUseCase = new GetClientProfileUseCase(clientProfileRepository,userRepository)
 const updateClientProfileUseCase = new UpdateClientProfileUseCase(clientProfileRepository,userRepository,s3Service,logger)
 const uploadAvatarUseCase = new UploadAvatarUseCase(s3Service)
 
-const createBookingUseCase = new CreateBookingUseCase(bookingRepository,unavailabilityRepository,slotValidationService,bookingTravelValidationService,mongoTransactionManager)
+const createBookingUseCase = new CreateBookingUseCase(bookingRepository,unavailabilityRepository,slotValidationService,bookingTravelValidationService,mongoTransactionManager,bookingIdGenerator)
 
 const createPaymentIntentUseCase = new CreatePaymentIntentUseCase(bookingRepository,paymentRepository,stripeService,transactionManager)
+
+const getClientWalletUseCase = new GetClientWalletUseCase(walletRepository, walletTransactionRepository)
 
 // controller inint
 export const clientProfileController = new ClientProfileController(uploadAvatarUseCase,createClientProfileUseCase,getClientProfileUseCase,updateClientProfileUseCase)
 
-export const bookingController = new BookingController(createBookingUseCase,listBookingUseCase)
+export const bookingController = new BookingController(createBookingUseCase,listBookingUseCase,cancelBookingUseCase,createOffsiteBookingUseCase)
 
 export const paymentController = new PaymentController(createPaymentIntentUseCase)
+
+export const walletController = new WalletController(getClientWalletUseCase)

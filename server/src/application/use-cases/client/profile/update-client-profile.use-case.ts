@@ -1,6 +1,5 @@
 import { IClientProfileRepository } from '../../../../domain/interfaces/repositories/client/IClientProfileRepository';
 import { IUpdateClientProfileUseCase } from '../../../../domain/interfaces/usecases/client/profile/IUpdateClientProfileUseCase';
-import { ClientProfile } from '../../../../domain/entities/client-profile.entity';
 import { NotFoundError } from '../../../../domain/errors/errors';
 import { ClientProfileMapper } from '../../../mapers/client/client-profile.mappers';
 import { ClientProfileResponseDto } from '../../../dtos/client/profile/info/response/client-profile-response.dto';
@@ -36,19 +35,13 @@ export class UpdateClientProfileUseCase implements IUpdateClientProfileUseCase {
         await this._userRepository.update(userId, { name: dto.name });
       }
     }
-    
-    if (dto?.email !== undefined) {
-      if (user) {
-        await this._userRepository.update(userId, { email: dto.email });
-      }
-    }
 
     if (
-      dto.profilePicture !== undefined && 
-      existingProfile.profilePicture && 
-      dto.profilePicture !== existingProfile.profilePicture
+      dto.avatarUrl !== undefined && 
+      existingProfile.avatarUrl && 
+      dto.avatarUrl !== existingProfile.avatarUrl
     ) {
-      await this._s3Service.deleteFile(existingProfile.profilePicture).catch((err) => {
+      await this._s3Service.deleteFile(existingProfile.avatarUrl).catch((err) => {
         this._logger.error("Failed to delete old profile picture:", err);
       });
     }
@@ -59,6 +52,10 @@ export class UpdateClientProfileUseCase implements IUpdateClientProfileUseCase {
     
     if (!updatedProfile) {
       throw new NotFoundError('Failed to update seeker profile');
+    }
+
+    if(!user.avatarFileName){
+      await this._userRepository.update(userId, {avatarFileName: updatedProfile.avatarUrl})
     }
     
 

@@ -147,7 +147,7 @@ const SettingsPage = () => {
 
       // 🔹 Step 3: save avatar in DB
       updateProfile(
-        { profilePicture: fileUrl },
+        { avatarUrl: fileUrl },
         {
           onSuccess: () => {
             toast.success("Profile picture updated!");
@@ -219,9 +219,9 @@ const SettingsPage = () => {
               <Section title="Avatar">
                 <div className="flex items-center gap-5">
                   <div className="relative shrink-0">
-                    {response?.data?.profilePicture ? (
+                    {response?.data?.avatarUrl ? (
                       <img
-                        src={response?.data?.profilePicture}
+                        src={response?.data?.avatarUrl}
                         alt="Profile"
                         className="h-20 w-20 rounded-2xl object-cover"
                       />

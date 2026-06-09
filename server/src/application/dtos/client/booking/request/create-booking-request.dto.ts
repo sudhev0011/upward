@@ -19,7 +19,8 @@ export const CreateBookingRequestDtoSchema = z.object({
   paymentType: z.nativeEnum(PaymentType),
 
   location: LocationSchema,
-  notes: z.string().trim().nullable().optional(),
+  notes: z.string().trim().max(1000).nullable().optional(),
+  requirements: z.array(z.string().trim().min(1).max(500)).max(20).default([]),
 });
 
 export type CreateBookingRequestDto = z.infer<

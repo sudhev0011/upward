@@ -126,7 +126,7 @@ export class BookingTravelValidationService {
     const durationMinutes = result.durationSeconds / 60;
 
     const availableGapMinutes =
-      (input.startDateTime.getTime() - previousBooking.endDateTime.getTime()) /
+      (input.startDateTime.getTime() - previousBooking.endDateTime!.getTime()) /
       (1000 * 60);
 
     /**
@@ -177,7 +177,7 @@ export class BookingTravelValidationService {
     const durationMinutes = result.durationSeconds / 60;
 
     const availableGapMinutes =
-      (nextBooking.startDateTime.getTime() - input.endDateTime.getTime()) /
+      (nextBooking.startDateTime!.getTime() - input.endDateTime.getTime()) /
       (1000 * 60);
 
     /**

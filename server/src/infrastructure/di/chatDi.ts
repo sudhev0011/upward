@@ -11,6 +11,7 @@ import { ChatController } from '../../presentation/controllers/chat.controller';
 const chatRepository = new MongoChatRepository();
 const userRepository = new UserRepository();
 
+
 // Initialize usecases
 export const getConversationsUseCase = new GetConversationsUseCase(chatRepository, userRepository);
 export const getMessagesUseCase = new GetMessagesUseCase(chatRepository);

@@ -9,7 +9,7 @@ export class ClientProfileMapper {
       userId: String(doc.userId),
       location: doc.location || undefined,
       phone: doc.phone || undefined,
-      profilePicture: doc.profilePicture || null,
+      avatarUrl: doc.avatarUrl || null,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     });
@@ -21,7 +21,7 @@ export class ClientProfileMapper {
     if (entity.userId !== undefined) doc.userId = new Types.ObjectId(entity.userId);
     if (entity.location !== undefined) doc.location = entity.location || undefined;
     if (entity.phone !== undefined) doc.phone = entity.phone || undefined;
-    if (entity.profilePicture !== undefined) doc.profilePicture = entity.profilePicture || undefined;
+    if (entity.avatarUrl !== undefined) doc.avatarUrl = entity.avatarUrl || undefined;
 
     return doc;
   }

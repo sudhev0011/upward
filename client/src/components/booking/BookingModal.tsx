@@ -17,12 +17,14 @@ import ConfirmStep from "./steps/ConfirmStep";
 import StripeStep from "./steps/StripeStep";
 import SuccessScreen from "./screens/SuccessScreen";
 import FailureScreen from "./screens/FailureScreen";
-
+import { BookingMode } from "@/enums/booking-mode";
+import RequirementsStep from "./steps/RequirementsStep";
 
 export type BookingStep =
   | "date"
   | "slot"
   | "location"
+  | "requirements"
   | "details"
   | "paymentType"
   | "confirm"
@@ -37,6 +39,7 @@ interface Props {
   providerServiceId: string;
   providerName: string;
   serviceLabel: string;
+  mode: BookingMode;
 }
 
 const INITIAL_FORM_STATE: BookingFormState = {
@@ -44,31 +47,43 @@ const INITIAL_FORM_STATE: BookingFormState = {
   providerServiceId: "",
   providerName: "",
   serviceLabel: "",
+  mode: "onsite",
   bookingDate: "",
   startTime: "",
   endTime: "",
   paymentType: null,
   notes: "",
   location: null,
+  requirements: [],
 };
 
-const STEPS: BookingStep[] = [
+const ONSITE_STEPS: BookingStep[] = [
   "date",
   "slot",
   "location",
+  "requirements",
   "details",
   "paymentType",
   "confirm",
   "stripe",
 ];
 
-// success and failure are screens, not counted as steps
+const OFFSITE_STEPS: BookingStep[] = [
+  "date",
+  "requirements",
+  "details",
+  "paymentType",
+  "confirm",
+  "stripe",
+];
+
 const STEP_LABELS: Record<BookingStep, string> = {
-  date: "Select Date",
-  slot: "Select Slot",
+  date: "Select date",
+  slot: "Select slot",
   location: "Location",
+  requirements: "Requirements",
   details: "Details",
-  paymentType: "Payment",
+  paymentType: "Payment type",
   confirm: "Confirm",
   stripe: "Pay",
   success: "",
@@ -82,14 +97,17 @@ export default function BookingModal({
   providerServiceId,
   providerName,
   serviceLabel,
+  mode,
 }: Props) {
-  const [currentStep, setCurrentStep] = useState<BookingStep>("date");
+  const STEPS = mode === "onsite" ? ONSITE_STEPS : OFFSITE_STEPS;
+  const [currentStep, setCurrentStep] = useState<BookingStep>(STEPS[0]);
   const [formState, setFormState] = useState<BookingFormState>({
     ...INITIAL_FORM_STATE,
     providerId,
     providerServiceId,
     providerName,
     serviceLabel,
+    mode,
   });
 
   // bookingId and clientSecret are set after POST /bookings and POST /payments/create-intent
@@ -111,14 +129,14 @@ export default function BookingModal({
   };
 
   const handleClose = () => {
-    // reset everything on close
-    setCurrentStep("date");
+    setCurrentStep(STEPS[0]);
     setFormState({
       ...INITIAL_FORM_STATE,
       providerId,
       providerServiceId,
       providerName,
       serviceLabel,
+      mode,
     });
     setBookingId(null);
     setClientSecret(null);
@@ -137,54 +155,71 @@ export default function BookingModal({
             formState={formState}
             onNext={(date) => {
               updateForm({ bookingDate: date });
-              goTo("slot");
+              goTo(STEPS[1]);
             }}
           />
         );
+
       case "slot":
         return (
           <SlotPickerStep
             formState={formState}
             onNext={(startTime, endTime) => {
               updateForm({ startTime, endTime });
-              goTo("location");
+              goTo(STEPS[STEPS.indexOf("slot") + 1]);
             }}
             onBack={goBack}
           />
         );
+
       case "location":
         return (
           <LocationStep
             formState={formState}
-            onNext={(location: Location) => {
+            onNext={(location: Location | null) => {
               updateForm({ location });
-              goTo("details");
+              goTo(STEPS[STEPS.indexOf("location") + 1]);
             }}
             onBack={goBack}
           />
         );
+
+      case "requirements":
+        return (
+          <RequirementsStep
+            formState={formState}
+            onNext={(requirements) => {
+              updateForm({ requirements });
+              goTo(STEPS[STEPS.indexOf("requirements") + 1]);
+            }}
+            onBack={goBack}
+          />
+        );
+
       case "details":
         return (
           <DetailsStep
             formState={formState}
             onNext={(notes) => {
               updateForm({ notes });
-              goTo("paymentType");
+              goTo(STEPS[STEPS.indexOf("details") + 1]);
             }}
             onBack={goBack}
           />
         );
+
       case "paymentType":
         return (
           <PaymentTypeStep
             formState={formState}
             onNext={(paymentType: PaymentType) => {
               updateForm({ paymentType });
-              goTo("confirm");
+              goTo(STEPS[STEPS.indexOf("paymentType") + 1]);
             }}
             onBack={goBack}
           />
         );
+
       case "confirm":
         return (
           <ConfirmStep
@@ -201,6 +236,7 @@ export default function BookingModal({
             }}
           />
         );
+
       case "stripe":
         return (
           <StripeStep
@@ -213,15 +249,15 @@ export default function BookingModal({
             }}
           />
         );
+
       case "success":
         return <SuccessScreen onClose={handleClose} />;
+
       case "failure":
         return (
           <FailureScreen
             message={failureMessage}
             onRetry={() => {
-              // if booking exists, go back to stripe (reuse same bookingId)
-              // if booking failed, go back to confirm
               if (bookingId && clientSecret) {
                 goTo("stripe");
               } else {
@@ -236,47 +272,49 @@ export default function BookingModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>
-            {isScreen ? (
-              // no title on success/failure screens
-              null
-            ) : (
-              <span>
-                Book{" "}
-                <span className="text-primary">{serviceLabel}</span>
-              </span>
-            )}
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent
+        className="sm:max-w-md md:max-w-xl lg:max-w-2xl p-0 gap-0 max-h-[90vh] flex flex-col overflow-hidden"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
+        {/* Fixed header */}
+        <div className="px-6 pt-6 pb-3 shrink-0">
+          <DialogHeader>
+            <DialogTitle>
+              {isScreen ? null : (
+                <span>
+                  Book <span className="text-primary">{serviceLabel}</span>
+                </span>
+              )}
+            </DialogTitle>
+          </DialogHeader>
 
-        {/* Step indicator — only shown during actual steps */}
-        {!isScreen && stepIndex !== -1 && (
-          <div className="flex items-center gap-1.5 pb-2">
-            {STEPS.map((step, i) => (
-              <div
-                key={step}
-                className={`h-1 flex-1 rounded-full transition-colors ${
-                  i <= stepIndex
-                    ? "bg-primary"
-                    : "bg-muted"
-                }`}
-              />
-            ))}
-          </div>
-        )}
+          {/* Step indicator */}
+          {!isScreen && stepIndex !== -1 && (
+            <div className="flex items-center gap-1.5 pt-3 pb-1">
+              {STEPS.map((step, i) => (
+                <div
+                  key={step}
+                  className={`h-1 flex-1 rounded-full transition-colors ${
+                    i <= stepIndex ? "bg-primary" : "bg-muted"
+                  }`}
+                />
+              ))}
+            </div>
+          )}
 
-        {/* Step label */}
-        {!isScreen && (
-          <p className="text-xs text-muted-foreground -mt-2 mb-1">
-            Step {stepIndex + 1} of {STEPS.length} —{" "}
-            {STEP_LABELS[currentStep]}
-          </p>
-        )}
+          {/* Step label */}
+          {!isScreen && (
+            <p className="text-xs text-muted-foreground mt-1">
+              Step {stepIndex + 1} of {STEPS.length} —{" "}
+              {STEP_LABELS[currentStep]}
+            </p>
+          )}
+        </div>
 
-        {/* Active step or screen */}
-        <div className="mt-2">{renderStep()}</div>
+        {/* Scrollable body */}
+        <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-0">
+          {renderStep()}
+        </div>
       </DialogContent>
     </Dialog>
   );

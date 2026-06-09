@@ -81,6 +81,7 @@ export const successResponse = {
   CREATE_BOOKING_SUCCESS: "Booking created successfully",
 
   CREATE_PAYMENT_INTENT_SUCCESS:"Payment intend created succcessfully",
-  GET_BOOKINGS_SUCCESS: "Booking listed successfully"
-  
+  GET_BOOKINGS_SUCCESS: "Booking listed successfully",
+  CANCEL_BOOKING_SUCCESS: "Booking cancelled successfully",
+  GET_WALLET_SUCCESS: "Wallet retrieved successfully"
 } as const;

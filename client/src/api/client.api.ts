@@ -12,14 +12,17 @@ import type {
 import type {
   AvailableSlot,
   GetAvailableSlotsRequest,
-  CreateBookingRequest,
+  CreateOnsiteBookingRequest,
   Booking,
   CreatePaymentIntentRequest,
   PaymentIntentResponse,
+  CreateOffsiteBookingRequest,
 } from "@/interfaces/client/booking.interface";
-import { ListBookingsRequest, ListBookingsResponse } from "@/interfaces/bookings/bookings.interface";
-
-
+import {
+  ListBookingsRequest,
+  ListBookingsResponse,
+  WalletResponse,
+} from "@/interfaces/bookings/bookings.interface";
 
 export const clientApi = {
   async getProfile(): Promise<ApiEnvelope<ClientProfile>> {
@@ -66,11 +69,20 @@ export const clientApi = {
     ).data;
   },
 
-  async createBooking(
-    data: CreateBookingRequest,
+  async createOnsiteBooking(
+    data: CreateOnsiteBookingRequest,
   ): Promise<ApiEnvelope<Booking>> {
-    return (await api.post<ApiEnvelope<Booking>>(ClientRoutes.BOOKINGS, data))
-      .data;
+    return (
+      await api.post<ApiEnvelope<Booking>>(ClientRoutes.BOOKINGS_ONSITE, data)
+    ).data;
+  },
+
+  async createOffsiteBooking(
+    data: CreateOffsiteBookingRequest,
+  ): Promise<ApiEnvelope<Booking>> {
+    return (
+      await api.post<ApiEnvelope<Booking>>(ClientRoutes.BOOKINGS_OFFSITE, data)
+    ).data;
   },
 
   async createPaymentIntent(
@@ -92,5 +104,22 @@ export const clientApi = {
         params,
       })
     ).data;
+  },
+
+  async cancelBooking(
+    bookingId: string,
+    reason?: string | null,
+  ): Promise<ApiEnvelope<void>> {
+    return (
+      await api.patch<ApiEnvelope<void>>(
+        `${ClientRoutes.BOOKINGS}/${bookingId}/cancel`,
+        { reason },
+      )
+    ).data;
+  },
+
+  async getWallet(): Promise<ApiEnvelope<WalletResponse>> {
+    return (await api.get<ApiEnvelope<WalletResponse>>("/api/client/wallet"))
+      .data;
   },
 };

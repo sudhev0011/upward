@@ -1,4 +1,4 @@
-import { Document, model, Model, Schema } from "mongoose";
+import { Document, model, Schema } from "mongoose";
 import { ServiceMode } from "../../../../domain/entity.types";
 
 export interface CategoryDocument extends Document {

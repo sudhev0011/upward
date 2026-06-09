@@ -2,9 +2,10 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { clientApi } from "@/api/client.api";
 import type {
   GetAvailableSlotsRequest,
-  CreateBookingRequest,
   Booking,
   AvailableSlot,
+  CreateOffsiteBookingRequest,
+  CreateOnsiteBookingRequest,
 } from "@/interfaces/client/booking.interface";
 import type { ApiEnvelope } from "@/interfaces/auth";
 
@@ -34,12 +35,27 @@ export const useAvailableSlots = (
 
 // --- Create Booking Mutation ---
 
-export const useCreateBooking = (
+export const useCreateOnsiteBooking = (
   onSuccess?: (data: ApiEnvelope<Booking>) => void,
   onError?: (error: Error) => void
 ) => {
-  return useMutation<ApiEnvelope<Booking>, Error, CreateBookingRequest>({
-    mutationFn: (data: CreateBookingRequest) => clientApi.createBooking(data),
+  return useMutation<ApiEnvelope<Booking>, Error, CreateOnsiteBookingRequest>({
+    mutationFn: (data: CreateOnsiteBookingRequest) =>
+      clientApi.createOnsiteBooking(data),
+    onSuccess,
+    onError,
+  });
+};
+
+// --- Offsite Booking Mutation ---
+
+export const useCreateOffsiteBooking = (
+  onSuccess?: (data: ApiEnvelope<Booking>) => void,
+  onError?: (error: Error) => void
+) => {
+  return useMutation<ApiEnvelope<Booking>, Error, CreateOffsiteBookingRequest>({
+    mutationFn: (data: CreateOffsiteBookingRequest) =>
+      clientApi.createOffsiteBooking(data),
     onSuccess,
     onError,
   });

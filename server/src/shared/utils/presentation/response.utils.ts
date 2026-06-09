@@ -4,7 +4,7 @@ interface ApiResponse<T = unknown> {
   data: T;
 }
 
-export const createSuccessResponse = <T>(message: string, data: T, token?: string): ApiResponse<T> => {
+export const createSuccessResponse = <T>(message: string, data: T): ApiResponse<T> => {
   const response: ApiResponse<T> = {
     success: true,
     message,

@@ -1,7 +1,7 @@
 import { providerApi } from "@/api/provider.api"
 import { useMutation } from "@tanstack/react-query"
 
-export const useSetProviderServicePriceMutation = ()=>{
+export const useConfigureProviderServiceMutation = ()=>{
     return useMutation({
         mutationFn: providerApi.setProviderServicePrice
     })

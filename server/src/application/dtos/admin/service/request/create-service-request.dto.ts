@@ -1,5 +1,4 @@
 import z from "zod";
-import { ServiceMode } from "../../../../../domain/entity.types";
 
 export const CreateServiceRequestDtoSchema = z.object({
     categoryId: z.string(),

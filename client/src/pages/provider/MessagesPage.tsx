@@ -60,7 +60,10 @@ export default function MessagesPage() {
 
       // Reset unread count for provider
       chatApi.resetUnreadCount(activeChat, "provider").then(() => {
-        socket?.emit("read_messages", { conversationId: activeChat, role: "provider" });
+        socket?.emit("read_messages", {
+          conversationId: activeChat,
+          role: "provider",
+        });
       });
     }
   }, [activeChat, socket]);
@@ -74,7 +77,10 @@ export default function MessagesPage() {
         setMessages((prev) => [...prev, message]);
         // Reset unread counts on server since we are active in this room
         chatApi.resetUnreadCount(activeChat, "provider").then(() => {
-          socket.emit("read_messages", { conversationId: activeChat, role: "provider" });
+          socket.emit("read_messages", {
+            conversationId: activeChat,
+            role: "provider",
+          });
         });
       }
     };
@@ -110,7 +116,7 @@ export default function MessagesPage() {
         if (!res.success) {
           console.error("Failed to send message:", res.error);
         }
-      }
+      },
     );
 
     setNewMessage("");
@@ -132,13 +138,15 @@ export default function MessagesPage() {
   const filteredConversations = conversations.filter(
     (c) =>
       c.participant?.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.participant?.email.toLowerCase().includes(search.toLowerCase())
+      c.participant?.email.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground tracking-tight">Messages</h1>
+        <h1 className="text-3xl font-bold text-foreground tracking-tight">
+          Messages
+        </h1>
         <p className="text-muted-foreground mt-1.5">Chat with your clients.</p>
       </div>
 
@@ -161,29 +169,52 @@ export default function MessagesPage() {
               const hasUnread = conv.unreadCountProvider > 0;
               const participantName = conv.participant?.name || "Client";
               const initials = getInitials(participantName);
-
+              const imageUrl = conv.participant?.avatar;
               return (
                 <button
                   key={conv.id}
                   onClick={() => setActiveChat(conv.id)}
                   className={`w-full flex items-center gap-3 p-4 text-left transition-all duration-200 border-b border-border/30 ${
-                    activeChat === conv.id ? "bg-primary/5 border-l-2 border-l-primary" : "hover:bg-secondary/30"
+                    activeChat === conv.id
+                      ? "bg-primary/5 border-l-2 border-l-primary"
+                      : "hover:bg-secondary/30"
                   }`}
                 >
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
-                    <span className="text-xs font-bold text-primary">{initials}</span>
+                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0 overflow-hidden">
+                    {!imageUrl ? (
+                      <span className="text-xs font-bold text-primary">
+                        {initials}
+                      </span>
+                    ) : (
+                      <img
+                        src={imageUrl}
+                        alt="Profile"
+                        className="h-full w-full object-cover"
+                      />
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <span className={`text-sm ${hasUnread ? "font-bold text-card-foreground" : "font-semibold text-muted-foreground"}`}>
+                      <span
+                        className={`text-sm ${hasUnread ? "font-bold text-card-foreground" : "font-semibold text-muted-foreground"}`}
+                      >
                         {participantName}
                       </span>
                       <span className="text-[11px] text-muted-foreground">
-                        {conv.lastMessage ? new Date(conv.lastMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
+                        {conv.lastMessage
+                          ? new Date(
+                              conv.lastMessage.createdAt,
+                            ).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : ""}
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground truncate mt-0.5">
-                      {conv.lastMessage ? conv.lastMessage.text : "No messages yet"}
+                      {conv.lastMessage
+                        ? conv.lastMessage.text
+                        : "No messages yet"}
                     </p>
                   </div>
                   {hasUnread && (
@@ -206,17 +237,31 @@ export default function MessagesPage() {
         <Card className="border-border/50 bg-card/80 backdrop-blur-sm lg:col-span-2 flex flex-col overflow-hidden">
           {selectedConversation ? (
             <>
-              <div className="p-4 border-b border-border/50 flex items-center gap-3">
-                <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                  <span className="text-xs font-bold text-primary">
-                    {getInitials(selectedConversation.participant?.name || "")}
-                  </span>
+              <div className="flex items-center gap-3 border-b border-border/50 bg-background px-4 py-4">
+                <div className="h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 ring-1 ring-border/50 shadow-sm">
+                  {!selectedConversation.participant?.avatar ? (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <span className="text-xs font-bold text-primary">
+                        {getInitials(
+                          selectedConversation.participant?.name || "",
+                        )}
+                      </span>
+                    </div>
+                  ) : (
+                    <img
+                      src={selectedConversation.participant?.avatar}
+                      alt={selectedConversation.participant?.name || "Profile"}
+                      className="h-full w-full object-cover"
+                    />
+                  )}
                 </div>
-                <div>
-                  <p className="text-sm font-semibold text-card-foreground">
+
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-card-foreground">
                     {selectedConversation.participant?.name}
                   </p>
-                  <p className="text-[11px] text-muted-foreground">
+
+                  <p className="truncate text-xs text-muted-foreground">
                     {selectedConversation.participant?.email}
                   </p>
                 </div>
@@ -226,15 +271,25 @@ export default function MessagesPage() {
                 {messages.map((msg) => {
                   const isMe = msg.senderId === currentUserId;
                   return (
-                    <div key={msg.id} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
-                      <div className={`max-w-[70%] rounded-2xl px-4 py-3 ${
-                        isMe
-                          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/10"
-                          : "bg-secondary/50 text-card-foreground"
-                      }`}>
+                    <div
+                      key={msg.id}
+                      className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+                    >
+                      <div
+                        className={`max-w-[70%] rounded-2xl px-4 py-3 ${
+                          isMe
+                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/10"
+                            : "bg-secondary/50 text-card-foreground"
+                        }`}
+                      >
                         <p className="text-sm leading-relaxed">{msg.text}</p>
-                        <p className={`text-[11px] mt-1.5 ${isMe ? "text-primary-foreground/60" : "text-muted-foreground"}`}>
-                          {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        <p
+                          className={`text-[11px] mt-1.5 ${isMe ? "text-primary-foreground/60" : "text-muted-foreground"}`}
+                        >
+                          {new Date(msg.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
                         </p>
                       </div>
                     </div>
@@ -264,7 +319,9 @@ export default function MessagesPage() {
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center text-center p-8 bg-secondary/10">
-              <p className="text-sm text-muted-foreground">Select a conversation to start chatting</p>
+              <p className="text-sm text-muted-foreground">
+                Select a conversation to start chatting
+              </p>
             </div>
           )}
         </Card>

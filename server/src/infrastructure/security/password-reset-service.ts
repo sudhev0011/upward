@@ -4,6 +4,7 @@ import { IMailerService } from '../../domain/interfaces/services/IEmailServices'
 import { IPasswordResetService } from '../../domain/interfaces/services/IPasswordResetService';
 import { env } from '../config/env';
 import { IEmailTemplateService } from '../../domain/interfaces/services/IEmailTemplateService';
+import { ILogger } from '../../domain/interfaces/services/ILogger';
 
 interface PasswordResetToken {
   userId: string;
@@ -15,7 +16,8 @@ interface PasswordResetToken {
 export class PasswordResetService implements IPasswordResetService {
   constructor(
     private readonly _mailerService: IMailerService,
-    private readonly _emailTemplateService: IEmailTemplateService
+    private readonly _emailTemplateService: IEmailTemplateService,
+    private readonly _logger: ILogger
     ) {}
 
   async generateResetToken(userId: string, email: string): Promise<string> {
@@ -56,6 +58,7 @@ export class PasswordResetService implements IPasswordResetService {
         email: resetData.email,
       };
     } catch (error) {
+      this._logger.error(error as string)
       return null;
     }
   }

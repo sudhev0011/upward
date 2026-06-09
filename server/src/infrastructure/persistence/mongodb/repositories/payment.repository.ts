@@ -1,4 +1,4 @@
-import { QueryFilter, Types } from "mongoose";
+import { QueryFilter } from "mongoose";
 import { Payment } from "../../../../domain/entities/payment.entity";
 import { IPaymentRepository } from "../../../../domain/interfaces/repositories/payment/IPaymentRepository";
 import { ITransactionContext } from "../../../../domain/interfaces/database/transaction-context.interface";

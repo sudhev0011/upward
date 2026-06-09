@@ -5,7 +5,7 @@ export interface ClientProfile {
   location: string | null;
   phone: string | null;
   email: string;
-  profilePicture: string | null;
+  avatarUrl: string | null;
   isBlocked: boolean;
   isVerified: boolean;
   createdAt: string;
@@ -22,7 +22,7 @@ export interface UpdateClientProfileRequest {
   phone?: string | null;
   email?: string | null;
   name?: string | null;
-  profilePicture?: string | null;
+  avatarUrl?: string | null;
 }
 
 export interface ProfileUpdateUrlRequest{

@@ -13,13 +13,12 @@ export const UpdateClientProfileRequestDtoSchema = z.object({
     .optional(),
   phone: z
     .string()
-    .regex(/^\+?[\d\s\-\(\)]+$/, "Please enter a valid phone number")
+    .regex(/^\+?[\d\s-()]+$/, "Please enter a valid phone number")
     .optional(),
-  email: z.string().email('Please enter a valid email address').optional(),
-  profilePicture: z.string().url('Must be a valid URL').optional(),
+  email: z.string().email("Please enter a valid email address").optional(),
+  avatarUrl: z.string().url("Must be a valid URL").optional(),
 });
 
 export type UpdateClientProfileRequestDto = z.infer<
   typeof UpdateClientProfileRequestDtoSchema
 >;
-

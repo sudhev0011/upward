@@ -1,10 +1,12 @@
 import { BookingStatus } from "../../../domain/enums/booking-status.enum";
+import { BookingMode } from "../../../domain/enums/bookingMode.enum";
 import { PaymentStatus } from "../../../domain/enums/payment-status.enum";
 import { PaymentType } from "../../../domain/enums/payment-type.enum";
 
 export interface BookingListItemResponseDto {
   id: string;
-
+  
+  bookingId: string;
   status: BookingStatus;
   paymentStatus: PaymentStatus;
   paymentType: PaymentType;
@@ -16,10 +18,14 @@ export interface BookingListItemResponseDto {
 
   bookingDate: string;
 
-  startDateTime: Date;
-  endDateTime: Date;
+  bookingMode: BookingMode;
+
+  startDateTime: Date | null;
+  endDateTime: Date | null;
 
   notes: string | null;
+
+  requirements: string[];
 
   location: {
     placeId: string;
@@ -32,7 +38,7 @@ export interface BookingListItemResponseDto {
       type: "Point";
       coordinates: [number, number];
     };
-  };
+  } | null;
 
   client: {
     id: string;

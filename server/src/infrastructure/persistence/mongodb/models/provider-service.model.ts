@@ -4,6 +4,7 @@ export interface ProviderServiceDocument extends Document {
   providerId: Types.ObjectId;
   serviceId: Types.ObjectId;
   price: number | null;
+  dailyCapacity: number | null;
   status: ProviderServiceStatus;
   isActive: boolean;
   createdAt: Date;
@@ -29,13 +30,18 @@ const ProviderServiceSchema = new Schema(
       default: null,
     },
 
+    dailyCapacity: {
+      type: Number,
+      default: null,
+    },
+
     status: {
       type: String,
       enum: Object.values(ProviderServiceStatus),
       default: ProviderServiceStatus.DRAFT,
     },
 
-    isActive: {type: Boolean, default: true}
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true },
 );

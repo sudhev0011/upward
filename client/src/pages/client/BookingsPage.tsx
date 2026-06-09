@@ -1,19 +1,36 @@
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, SlidersHorizontal, CalendarDays, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import {
+  SlidersHorizontal,
+  CalendarDays,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import {
   BookingListItem,
   ListBookingsRequest,
 } from "@/interfaces/bookings/bookings.interface";
 import { useListBookings } from "@/hooks/booking/use-list-bookings";
-import { BookingFilters } from "@/components/client/booking/BookingFilters";
-import { BookingCardSkeleton } from "@/components/client/booking/BookingCardSkeleton";
-import { BookingCard } from "@/components/client/booking/BookingCard";
-import { BookingDetailsSheet } from "@/components/client/booking/BookingDetailsSheet";
+import { BookingFilters } from "@/components/booking-listing/BookingFilters";
+import { BookingCardSkeleton } from "@/components/booking-listing/BookingCardSkeleton";
+import { BookingCard } from "@/components/booking-listing/BookingCard";
+import { BookingDetailsSheet } from "@/components/booking-listing/BookingDetailsSheet";
+import { usePagination } from "@/hooks/usePagination";
 
 const BookingsPage = () => {
-  const [selectedBooking, setSelectedBooking] = useState<BookingListItem | null>(null);
+  const [selectedBooking, setSelectedBooking] =
+    useState<BookingListItem | null>(null);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [filters, setFilters] = useState<ListBookingsRequest>({
     page: 1,
@@ -22,6 +39,10 @@ const BookingsPage = () => {
   });
 
   const { data, isLoading, isFetching } = useListBookings(filters);
+
+  // Fallback pagination data safely handled
+  const currentPage = data?.page || filters.page || 1;
+  const totalPages = data?.totalPages || 1;
 
   // Fast Summary Stats Calculator
   const stats = useMemo(() => {
@@ -33,14 +54,15 @@ const BookingsPage = () => {
         if (booking.status === "completed") acc.completed++;
         return acc;
       },
-      { pending: 0, confirmed: 0, completed: 0 }
+      { pending: 0, confirmed: 0, completed: 0 },
     );
   }, [data?.data]);
+
+  const { pageNumbers } = usePagination({ currentPage, totalPages });
 
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-zinc-900/20">
       <div className="container max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
-        
         {/* Header Section */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b pb-5">
           <div>
@@ -48,7 +70,8 @@ const BookingsPage = () => {
               My Bookings
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Monitor schedules, track payment balances, and manage your provider interactions.
+              Monitor schedules, track payment balances, and manage your
+              provider interactions.
             </p>
           </div>
         </div>
@@ -62,7 +85,9 @@ const BookingsPage = () => {
                   <CalendarDays className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground font-medium">Total Bookings</p>
+                  <p className="text-xs text-muted-foreground font-medium">
+                    Total Bookings
+                  </p>
                   <h3 className="text-xl font-bold">{data.total || 0}</h3>
                 </div>
               </CardContent>
@@ -73,7 +98,9 @@ const BookingsPage = () => {
                   <Clock className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground font-medium">Pending Setup</p>
+                  <p className="text-xs text-muted-foreground font-medium">
+                    Pending Setup
+                  </p>
                   <h3 className="text-xl font-bold">{stats.pending}</h3>
                 </div>
               </CardContent>
@@ -84,7 +111,9 @@ const BookingsPage = () => {
                   <CheckCircle2 className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground font-medium">Confirmed</p>
+                  <p className="text-xs text-muted-foreground font-medium">
+                    Confirmed
+                  </p>
                   <h3 className="text-xl font-bold">{stats.confirmed}</h3>
                 </div>
               </CardContent>
@@ -95,7 +124,9 @@ const BookingsPage = () => {
                   <CheckCircle2 className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground font-medium">Completed</p>
+                  <p className="text-xs text-muted-foreground font-medium">
+                    Completed
+                  </p>
                   <h3 className="text-xl font-bold">{stats.completed}</h3>
                 </div>
               </CardContent>
@@ -106,19 +137,25 @@ const BookingsPage = () => {
         {/* Filter Toolbar Interface */}
         <div className="space-y-4">
           <div className="flex items-center justify-between lg:hidden">
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setShowMobileFilters(!showMobileFilters)}
               className="gap-2"
             >
               <SlidersHorizontal className="h-4 w-4" />
               {showMobileFilters ? "Hide Filters" : "Show Filters"}
             </Button>
-            {isFetching && <p className="text-xs text-muted-foreground animate-pulse">Syncing shifts...</p>}
+            {isFetching && (
+              <p className="text-xs text-muted-foreground animate-pulse">
+                Syncing shifts...
+              </p>
+            )}
           </div>
 
-          <div className={`${showMobileFilters ? "block" : "hidden"} lg:block backdrop-blur-sm bg-background/60 p-4 rounded-xl border border-slate-100 dark:border-zinc-800/80 shadow-sm`}>
+          <div
+            className={`${showMobileFilters ? "block" : "hidden"} lg:block backdrop-blur-sm bg-background/60 p-4 rounded-xl border border-slate-100 dark:border-zinc-800/80 shadow-sm`}
+          >
             <BookingFilters filters={filters} onChange={setFilters} />
           </div>
         </div>
@@ -131,13 +168,18 @@ const BookingsPage = () => {
             ))}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="flex items-center justify-between px-1">
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Showing {data?.data.length || 0} of {data?.total || 0} matching records
+                Showing {data?.data.length || 0} of {data?.total || 0} matching
+                records
               </p>
               <div className="hidden lg:block">
-                {isFetching && <p className="text-xs text-muted-foreground animate-pulse">Updating tracking pipeline...</p>}
+                {isFetching && (
+                  <p className="text-xs text-muted-foreground animate-pulse">
+                    Updating tracking pipeline...
+                  </p>
+                )}
               </div>
             </div>
 
@@ -146,64 +188,131 @@ const BookingsPage = () => {
                 <div className="h-12 w-12 bg-slate-100 dark:bg-zinc-800 flex items-center justify-center rounded-full text-muted-foreground mb-4">
                   <AlertCircle className="h-6 w-6" />
                 </div>
-                <h3 className="text-lg font-semibold tracking-tight">No match found</h3>
+                <h3 className="text-lg font-semibold tracking-tight">
+                  No match found
+                </h3>
                 <p className="text-sm text-muted-foreground mt-2 max-w-sm mx-auto">
-                  We couldn't find any historical items fitting these filters. Try modifying your dynamic queries.
+                  We couldn't find any historical items fitting these filters.
+                  Try modifying your dynamic queries.
                 </p>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   className="mt-5"
-                  onClick={() => setFilters({ page: 1, limit: 10, sortOrder: "desc" })}
+                  onClick={() =>
+                    setFilters({ page: 1, limit: 10, sortOrder: "desc" })
+                  }
                 >
                   Clear All Filters
                 </Button>
               </div>
             ) : (
-              <>
-                <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-1 xl:grid-cols-2">
-                  {data.data.map((booking) => (
-                    <BookingCard
-                      key={booking.id}
-                      booking={booking}
-                      onClick={() => setSelectedBooking(booking)}
-                    />
-                  ))}
-                </div>
-
-                {/* Micro-Pagination Controller */}
-                {data.totalPages > 1 && (
-                  <div className="flex items-center justify-between border-t pt-6 mt-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={filters.page === 1}
-                      onClick={() => setFilters((prev) => ({ ...prev, page: (prev.page || 1) - 1 }))}
-                    >
-                      Previous
-                    </Button>
-
-                    <div className="text-xs font-medium text-muted-foreground">
-                      Page <span className="text-foreground font-semibold">{data.page}</span> of <span className="text-foreground font-semibold">{data.totalPages}</span>
-                    </div>
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={data.page >= data.totalPages}
-                      onClick={() => setFilters((prev) => ({ ...prev, page: (prev.page || 1) + 1 }))}
-                    >
-                      Next
-                    </Button>
-                  </div>
-                )}
-              </>
+              <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-1 xl:grid-cols-2">
+                {data.data.map((booking) => (
+                  <BookingCard
+                    key={booking.id}
+                    booking={booking}
+                    onClick={() => setSelectedBooking(booking)}
+                  />
+                ))}
+              </div>
             )}
+
+            {/* Shadcn Permanent Numbered Pagination Controller */}
+            <div className="flex flex-col gap-4 sm:flex-row items-center justify-between border-t pt-6 mt-6">
+              <div className="text-xs font-medium text-muted-foreground order-2 sm:order-1">
+                Page{" "}
+                <span className="text-foreground font-semibold">
+                  {currentPage}
+                </span>{" "}
+                of{" "}
+                <span className="text-foreground font-semibold">
+                  {totalPages}
+                </span>
+              </div>
+
+              <div className="order-1 sm:order-2 w-full sm:w-auto">
+                <Pagination>
+                  <PaginationContent className="flex-wrap justify-end gap-1">
+                    {/* Previous Page Link */}
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage > 1) {
+                            setFilters((prev) => ({
+                              ...prev,
+                              page: Math.max((prev.page || 1) - 1, 1),
+                            }));
+                          }
+                        }}
+                        className={
+                          currentPage === 1 || isLoading
+                            ? "pointer-events-none opacity-50"
+                            : "cursor-pointer"
+                        }
+                      />
+                    </PaginationItem>
+
+                    {/* Numbered Page List mappings */}
+                    {pageNumbers.map((pageNumber, idx) => (
+                      <PaginationItem key={`page-item-${idx}`}>
+                        {pageNumber === "ellipsis" ? (
+                          <PaginationEllipsis />
+                        ) : (
+                          <PaginationLink
+                            href="#"
+                            isActive={currentPage === pageNumber}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setFilters((prev) => ({
+                                ...prev,
+                                page: Number(pageNumber),
+                              }));
+                            }}
+                            className={
+                              isLoading
+                                ? "pointer-events-none opacity-50"
+                                : "cursor-pointer"
+                            }
+                          >
+                            {pageNumber}
+                          </PaginationLink>
+                        )}
+                      </PaginationItem>
+                    ))}
+
+                    {/* Next Page Link */}
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage < totalPages) {
+                            setFilters((prev) => ({
+                              ...prev,
+                              page: (prev.page || 1) + 1,
+                            }));
+                          }
+                        }}
+                        className={
+                          currentPage >= totalPages || isLoading
+                            ? "pointer-events-none opacity-50"
+                            : "cursor-pointer"
+                        }
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            </div>
           </div>
         )}
 
         <BookingDetailsSheet
           booking={selectedBooking}
+          role="client"
           open={!!selectedBooking}
           onOpenChange={(open) => !open && setSelectedBooking(null)}
         />

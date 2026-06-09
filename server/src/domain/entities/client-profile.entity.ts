@@ -4,7 +4,7 @@ export class ClientProfile {
     public readonly userId: string,
     public readonly phone: string | null,
     public readonly location: string | null,
-    public readonly profilePicture: string | null,
+    public readonly avatarUrl: string | null,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
   ) {}
@@ -14,7 +14,7 @@ export class ClientProfile {
     userId: string;
     phone?: string;
     location?: string;
-    profilePicture?: string | null;
+    avatarUrl?: string | null;
     createdAt?: Date;
     updatedAt?: Date;
   }): ClientProfile {
@@ -24,7 +24,7 @@ export class ClientProfile {
       data.userId,
       data.phone ?? null,
       data.location ?? null,
-      data.profilePicture ?? null,
+      data.avatarUrl ?? null,
       data.createdAt ?? now,
       data.updatedAt ?? now,
     );

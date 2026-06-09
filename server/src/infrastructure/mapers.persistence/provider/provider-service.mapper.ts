@@ -9,6 +9,7 @@ export class ProviderServiceMapper {
       providerId: doc.providerId.toString(),
       serviceId: doc.serviceId.toString(),
       price: doc.price,
+      dailyCapacity: doc.dailyCapacity,
       status: doc.status,
       isActive: doc.isActive,
       createdAt: doc.createdAt,
@@ -25,6 +26,7 @@ export class ProviderServiceMapper {
     if (entity.serviceId) doc.serviceId = new Types.ObjectId(entity.serviceId);
 
     if (entity.price !== undefined) doc.price = entity.price;
+    if (entity.dailyCapacity !== undefined) doc.dailyCapacity = entity.dailyCapacity;
     if (entity.status !== undefined) doc.status = entity.status;
     if (entity.isActive !== undefined) doc.isActive = entity.isActive;
 

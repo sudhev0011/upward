@@ -133,6 +133,7 @@ export const ServicesSection = ({ providerId, providerName }: Props) => {
           providerServiceId={selectedService.providerServiceId}
           providerName={providerName}
           serviceLabel={selectedService.serviceName}
+          mode={selectedService.mode}
         />
       )}
     </>

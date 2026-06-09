@@ -1,10 +1,23 @@
 import { useState } from "react";
-import { Plus, Loader2, MoreHorizontal, CheckCircle, XCircle, Trash2, Crown } from "lucide-react";
+import {
+  Plus,
+  Loader2,
+  MoreHorizontal,
+  CheckCircle,
+  Trash2,
+  Crown,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 
 // UI Components
-import { Card, CardContent, CardTitle, CardHeader, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardTitle,
+  CardHeader,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -46,7 +59,7 @@ import { SubscriptionPlanDto } from "@/api/subscription.api";
 interface PlanFormData {
   name: string;
   price: number;
-  billingCycle: "monthly" | "yearly";
+  billingCycle: "monthly" | "yearly" | "";
   featuresString: string;
   isActive: boolean;
 }
@@ -59,22 +72,30 @@ export default function Subscriptions() {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlanDto | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlanDto | null>(
+    null,
+  );
   const [isEditing, setIsEditing] = useState(false);
 
   const plans = response?.data || [];
 
-  const { register, handleSubmit, reset, setValue, watch } = useForm<PlanFormData>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<PlanFormData>({
     defaultValues: {
       name: "",
       price: 0,
-      billingCycle: "monthly",
+      billingCycle: "",
       featuresString: "",
       isActive: true,
     },
   });
 
-  const billingCycleValue = watch("billingCycle");
   const isActiveValue = watch("isActive");
 
   const openCreateDialog = () => {
@@ -83,7 +104,7 @@ export default function Subscriptions() {
     reset({
       name: "",
       price: 0,
-      billingCycle: "monthly",
+      billingCycle: "",
       featuresString: "",
       isActive: true,
     });
@@ -131,7 +152,9 @@ export default function Subscriptions() {
       },
       {
         onSuccess: () => {
-          toast.success(`Plan set to ${!plan.isActive ? "active" : "inactive"}`);
+          toast.success(
+            `Plan set to ${!plan.isActive ? "active" : "inactive"}`,
+          );
         },
         onError: (err) => {
           toast.error(err.message || "Failed to update plan status");
@@ -141,10 +164,17 @@ export default function Subscriptions() {
   };
 
   const onSubmit = (values: PlanFormData) => {
+    // Explicitly guard against empty string to ensure type safety before mutation
+    if (values.billingCycle === "") {
+      toast.error("Please select a billing interval.");
+      return;
+    }
+
     const parsedRequest = {
       name: values.name,
       price: Number(values.price),
-      billingCycle: values.billingCycle,
+      // Force casting here is now 100% safe because the guard clause above blocks ""
+      billingCycle: values.billingCycle as "monthly" | "yearly",
       features: values.featuresString
         .split("\n")
         .map((f) => f.trim())
@@ -156,7 +186,7 @@ export default function Subscriptions() {
       updateMutation.mutate(
         {
           id: selectedPlan.id,
-          data: parsedRequest,
+          data: parsedRequest, // TypeScript is happy now!
         },
         {
           onSuccess: () => {
@@ -189,12 +219,17 @@ export default function Subscriptions() {
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight">Subscriptions</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight">
+            Subscriptions
+          </h1>
           <p className="text-muted-foreground text-sm">
             Manage provider subscription tiers, visibility levels, and pricing
           </p>
         </div>
-        <Button onClick={openCreateDialog} className="bg-primary hover:bg-primary/95 text-primary-foreground shadow-lg transition-transform active:scale-[0.98]">
+        <Button
+          onClick={openCreateDialog}
+          className="bg-primary hover:bg-primary/95 text-primary-foreground shadow-lg transition-transform active:scale-[0.98]"
+        >
           <Plus className="h-4 w-4 mr-2" />
           Create Plan
         </Button>
@@ -206,8 +241,12 @@ export default function Subscriptions() {
           <CardContent className="p-6">
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Total Subscriber Base</p>
-                <p className="text-3xl font-black mt-1 text-primary">{totalSubscribers}</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Total Subscriber Base
+                </p>
+                <p className="text-3xl font-black mt-1 text-primary">
+                  {totalSubscribers}
+                </p>
               </div>
               <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center">
                 <Crown className="h-5 w-5 text-primary" />
@@ -219,8 +258,12 @@ export default function Subscriptions() {
           <CardContent className="p-6">
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Active Tiers</p>
-                <p className="text-3xl font-black mt-1 text-emerald-600">{activePlansCount}</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Active Tiers
+                </p>
+                <p className="text-3xl font-black mt-1 text-emerald-600">
+                  {activePlansCount}
+                </p>
               </div>
               <div className="h-10 w-10 bg-emerald-50 rounded-full flex items-center justify-center">
                 <CheckCircle className="h-5 w-5 text-emerald-600" />
@@ -232,8 +275,12 @@ export default function Subscriptions() {
           <CardContent className="p-6">
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Total Tiers Configured</p>
-                <p className="text-3xl font-black mt-1 text-indigo-600">{plans.length}</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Total Tiers Configured
+                </p>
+                <p className="text-3xl font-black mt-1 text-indigo-600">
+                  {plans.length}
+                </p>
               </div>
               <div className="h-10 w-10 bg-indigo-50 rounded-full flex items-center justify-center">
                 <Crown className="h-5 w-5 text-indigo-600" />
@@ -247,24 +294,40 @@ export default function Subscriptions() {
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-20">
           <Loader2 className="h-10 w-10 animate-spin mb-4 text-primary" />
-          <p className="text-muted-foreground text-sm">Fetching plan configurations...</p>
+          <p className="text-muted-foreground text-sm">
+            Fetching plan configurations...
+          </p>
         </div>
       ) : plans.length === 0 ? (
         <div className="rounded-xl border border-dashed p-16 text-center text-muted-foreground bg-card/25">
           <Crown className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
-          <h3 className="font-semibold text-lg text-foreground mb-1">No plans available</h3>
-          <p className="text-sm max-w-md mx-auto mb-4">You have not created any subscription plans yet. Create one to allow providers to subscribe.</p>
-          <Button onClick={openCreateDialog} size="sm">Create Plan</Button>
+          <h3 className="font-semibold text-lg text-foreground mb-1">
+            No plans available
+          </h3>
+          <p className="text-sm max-w-md mx-auto mb-4">
+            You have not created any subscription plans yet. Create one to allow
+            providers to subscribe.
+          </p>
+          <Button onClick={openCreateDialog} size="sm">
+            Create Plan
+          </Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {plans.map((p) => (
-            <Card key={p.id} className={`bg-card/50 backdrop-blur-sm border shadow-sm relative overflow-hidden transition-all hover:shadow-lg hover:-translate-y-0.5 ${!p.isActive ? "opacity-75" : ""}`}>
-              <div className={`absolute top-0 left-0 w-full h-1.5 ${p.isActive ? "bg-indigo-500" : "bg-muted"}`} />
+            <Card
+              key={p.id}
+              className={`bg-card/50 backdrop-blur-sm border shadow-sm relative overflow-hidden transition-all hover:shadow-lg hover:-translate-y-0.5 ${!p.isActive ? "opacity-75" : ""}`}
+            >
+              <div
+                className={`absolute top-0 left-0 w-full h-1.5 ${p.isActive ? "bg-indigo-500" : "bg-muted"}`}
+              />
               <CardHeader className="pb-4">
                 <div className="flex justify-between items-start">
                   <div>
-                    <CardTitle className="text-xl font-bold">{p.name}</CardTitle>
+                    <CardTitle className="text-xl font-bold">
+                      {p.name}
+                    </CardTitle>
                     <CardDescription className="text-xs uppercase mt-0.5 tracking-wider font-semibold">
                       {p.billingCycle} billing
                     </CardDescription>
@@ -276,13 +339,22 @@ export default function Subscriptions() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => openEditDialog(p)} className="cursor-pointer">
+                      <DropdownMenuItem
+                        onClick={() => openEditDialog(p)}
+                        className="cursor-pointer"
+                      >
                         Edit Configuration
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleStatusToggle(p)} className="cursor-pointer">
+                      <DropdownMenuItem
+                        onClick={() => handleStatusToggle(p)}
+                        className="cursor-pointer"
+                      >
                         {p.isActive ? "Deactivate Tier" : "Activate Tier"}
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => triggerDeletePlan(p)} className="text-destructive focus:text-destructive cursor-pointer">
+                      <DropdownMenuItem
+                        onClick={() => triggerDeletePlan(p)}
+                        className="text-destructive focus:text-destructive cursor-pointer"
+                      >
                         Delete Tier
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -293,22 +365,32 @@ export default function Subscriptions() {
                 {/* PRICE */}
                 <div className="flex items-baseline gap-1">
                   <span className="text-3xl font-black">₹{p.price}</span>
-                  <span className="text-xs text-muted-foreground font-semibold">/{p.billingCycle === "yearly" ? "yr" : "mo"}</span>
+                  <span className="text-xs text-muted-foreground font-semibold">
+                    /{p.billingCycle === "yearly" ? "yr" : "mo"}
+                  </span>
                 </div>
 
                 {/* VISUAL INDICATORS */}
                 <div className="flex flex-wrap gap-2 text-[10px] font-semibold uppercase">
-                  <Badge variant={p.isActive ? "default" : "secondary"} className="h-5 px-2">
+                  <Badge
+                    variant={p.isActive ? "default" : "secondary"}
+                    className="h-5 px-2"
+                  >
                     {p.isActive ? "Active" : "Inactive"}
                   </Badge>
-                  <Badge variant="outline" className="h-5 px-2 bg-background/50">
+                  <Badge
+                    variant="outline"
+                    className="h-5 px-2 bg-background/50"
+                  >
                     {p.subscriberCount} Subscribers
                   </Badge>
                 </div>
 
                 {/* FEATURES LIST */}
                 <div className="pt-3 border-t">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Features Included</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                    Features Included
+                  </p>
                   <ul className="space-y-1.5">
                     {p.features.map((f, i) => (
                       <li key={i} className="text-xs flex items-start gap-2">
@@ -317,7 +399,9 @@ export default function Subscriptions() {
                       </li>
                     ))}
                     {p.features.length === 0 && (
-                      <li className="text-xs text-muted-foreground/50 italic">No features specified</li>
+                      <li className="text-xs text-muted-foreground/50 italic">
+                        No features specified
+                      </li>
                     )}
                   </ul>
                 </div>
@@ -332,40 +416,76 @@ export default function Subscriptions() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">
-              {isEditing ? "Edit Subscription Tier" : "Create New Subscription Tier"}
+              {isEditing
+                ? "Edit Subscription Tier"
+                : "Create New Subscription Tier"}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-2">
+            {/* PLAN NAME FIELD */}
             <div className="space-y-1">
               <Label htmlFor="name">Plan Name</Label>
               <Input
                 id="name"
                 placeholder="e.g. Professional Premium"
-                {...register("name", { required: true })}
+                {...register("name", {
+                  required: "Plan name is required",
+                  pattern: {
+                    value: /[A-Za-z]{3}/,
+                    message: "Atleast 3 lettter name preffered",
+                  },
+                })}
               />
+              {errors.name && (
+                <p className="text-xs font-medium text-destructive mt-1">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
+              {/* PRICE FIELD */}
               <div className="space-y-1">
                 <Label htmlFor="price">Price (₹)</Label>
                 <Input
                   id="price"
                   type="number"
                   placeholder="e.g. 499"
-                  {...register("price", { required: true, min: 0 })}
+                  {...register("price", {
+                    required: "Price is required",
+                    min: { value: 0, message: "Price cannot be negative" },
+                  })}
                 />
+                {errors.price && (
+                  <p className="text-xs font-medium text-destructive mt-1">
+                    {errors.price.message}
+                  </p>
+                )}
               </div>
 
+              {/* BILLING INTERVAL FIELD */}
               <div className="space-y-1">
                 <Label htmlFor="billingCycle">Billing Interval</Label>
                 <select
                   id="billingCycle"
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  {...register("billingCycle")}
+                  className={`flex h-9 w-full rounded-md border px-3 py-1.5 text-sm bg-background ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+                    errors.billingCycle ? "border-destructive" : "border-input"
+                  }`}
+                  {...register("billingCycle", {
+                    required: "Please pick an interval",
+                  })}
                 >
+                  <option value="" disabled hidden>
+                    Select interval...
+                  </option>
                   <option value="monthly">Monthly</option>
                   <option value="yearly">Yearly</option>
                 </select>
+                {errors.billingCycle && (
+                  <p className="text-xs font-medium text-destructive mt-1">
+                    {errors.billingCycle.message}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -383,7 +503,9 @@ export default function Subscriptions() {
             <div className="flex items-center justify-between border p-3 rounded-lg bg-muted/20">
               <div className="space-y-0.5">
                 <Label className="text-sm font-semibold">Active Tier</Label>
-                <p className="text-xs text-muted-foreground">Allow providers to see and subscribe to this plan.</p>
+                <p className="text-xs text-muted-foreground">
+                  Allow providers to see and subscribe to this plan.
+                </p>
               </div>
               <Switch
                 checked={isActiveValue}
@@ -392,10 +514,17 @@ export default function Subscriptions() {
             </div>
 
             <DialogFooter className="pt-2">
-              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDialogOpen(false)}
+              >
                 Cancel
               </Button>
-              <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
+              <Button
+                type="submit"
+                disabled={createMutation.isPending || updateMutation.isPending}
+              >
                 {(createMutation.isPending || updateMutation.isPending) && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
@@ -416,13 +545,21 @@ export default function Subscriptions() {
             </div>
             <AlertDialogDescription>
               Are you sure you want to permanently delete the subscription plan{" "}
-              <span className="font-bold text-foreground">"{selectedPlan?.name}"</span>? 
-              This action cannot be undone. Active subscribers will not be affected but no new subscriptions can be created under this tier.
+              <span className="font-bold text-foreground">
+                "{selectedPlan?.name}"
+              </span>
+              ? This action cannot be undone. Active subscribers will not be
+              affected but no new subscriptions can be created under this tier.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeleteOpen(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive hover:bg-destructive/95">
+            <AlertDialogCancel onClick={() => setDeleteOpen(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-destructive hover:bg-destructive/95"
+            >
               Confirm Delete
             </AlertDialogAction>
           </AlertDialogFooter>

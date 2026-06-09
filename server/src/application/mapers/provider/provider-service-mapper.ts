@@ -15,6 +15,7 @@ export class ProviderServiceMapper {
       providerId: providerService.providerId,
       serviceId: providerService.serviceId,
       price: providerService.price,
+      dailyCapacity: providerService.dailyCapacity,
       status: providerService.status,
       isActive: providerService.isActive,
       createdAt: providerService.createdAt,

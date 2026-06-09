@@ -25,7 +25,7 @@ export function handleAsyncError(error: unknown, next: NextFunction): void {
 }
 
 export function sendSuccessResponse<T>(res: Response, message: string, data: T, token?: string, statusCode: number = HttpStatus.OK): void {
-  res.status(statusCode).json(createSuccessResponse(message, data, token));
+  res.status(statusCode).json(createSuccessResponse(message, data));
 }
 
 export function sendErrorResponse<T>(res: Response, message: string, data: T = null as T, statusCode: number = HttpStatus.BAD_REQUEST): void {

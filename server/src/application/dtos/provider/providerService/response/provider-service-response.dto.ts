@@ -3,6 +3,7 @@ export interface ProviderServiceResponseDto {
   providerId: string;
   serviceId: string;
   price: number | null;
+  dailyCapacity: number | null;
   status: "draft" | "active" | "inactive";
   isActive: boolean;
   createdAt: Date;

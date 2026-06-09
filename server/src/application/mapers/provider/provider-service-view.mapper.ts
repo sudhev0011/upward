@@ -18,6 +18,7 @@ export class ProviderServiceViewMapper {
         mode: s.mode,
         maxHour: s.maxHour,
         price: s.price,
+        dailyCapacity: s.dailyCapacity,
         status: s.status,
         isActive: s.isActive
       }))

@@ -8,13 +8,13 @@ export class ClientProfileMapper {
     userId: string;
     location?: string | null;
     phone?: string | null;
-    profilePicture?: string | null;
+    avatarUrl?: string | null;
   }): CreateInput<ClientProfile> {
     return {
       userId: data.userId,
       location: data.location ?? null,
       phone: data.phone ?? null,
-      profilePicture: data.profilePicture ?? null,
+      avatarUrl: data.avatarUrl ?? null,
     };
   }
 
@@ -29,7 +29,7 @@ export class ClientProfileMapper {
       name: user?.name ?? null,
       location: profile.location,
       phone: profile.phone,
-      profilePicture: profile.profilePicture,
+      avatarUrl: profile.avatarUrl,
       isBlocked: user?.isBlocked ?? null,
       isVerified: user?.isVerified ?? null,
       createdAt: profile.createdAt.toISOString(),
@@ -40,12 +40,12 @@ export class ClientProfileMapper {
   static toUpdateEntity(dto: Partial<{
     location: string | null;
     phone: string | null;
-    profilePicture: string | null;
+    avatarUrl: string | null;
   }>): Partial<ClientProfile> {
     const updateData: Record<string, unknown> = {};
     if (dto.location !== undefined) updateData.location = dto.location;
     if (dto.phone !== undefined) updateData.phone = dto.phone;
-    if (dto.profilePicture !== undefined) updateData.profilePicture = dto.profilePicture;
+    if (dto.avatarUrl !== undefined) updateData.avatarUrl = dto.avatarUrl;
     return updateData;
   }
 

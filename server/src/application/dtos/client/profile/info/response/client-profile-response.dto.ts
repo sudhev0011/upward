@@ -5,7 +5,7 @@ export interface ClientProfileResponseDto {
   name: string | null;
   email: string | null;
   phone: string | null;
-  profilePicture: string | null; 
+  avatarUrl: string | null; 
   isBlocked: boolean | null;
   isVerified: boolean | null;
   createdAt: string;

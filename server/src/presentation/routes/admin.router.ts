@@ -1,7 +1,6 @@
 import { Router } from "express";
 import {
   authenticateToken,
-  authorizeRoles,
 } from "../middleware/auth.middleware";
 import { adminProviderController, adminClientController, adminCategoryController, adminServiceController } from "../../infrastructure/di/adminDi";
 

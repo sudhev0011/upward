@@ -4,7 +4,6 @@ import { S3Service } from "../../../../infrastructure/external-services/s3/s3.se
 import { IGetAllClientsUseCase } from "../../../../domain/interfaces/usecases/admin/client/IGetAllClientsUseCase";
 import { GetClientsQueryDto } from "../../../dtos/admin/user/request/get-clients-query.dto";
 import { PaginatedClientsResultDto } from "../../../dtos/admin/user/response/paginated-client-result.dto";
-import { ClientProfileMapper } from "../../../mapers/client/client-profile.mappers";
 export class GetAllClientsUseCase implements IGetAllClientsUseCase {
   constructor(
     private readonly _userRepository: IUserRepository,
@@ -33,9 +32,9 @@ export class GetAllClientsUseCase implements IGetAllClientsUseCase {
     const userResponses = await Promise.all(
       clients.map(async (item) => {
         // 3. Resolve the S3 Signed URL for the profile picture
-        if (item.profilePicture) {
-          item.profilePicture = await this._s3Service.generateDownloadUrl(
-            item.profilePicture,
+        if (item.avatarUrl) {
+          item.avatarUrl = await this._s3Service.generateDownloadUrl(
+            item.avatarUrl,
           );
         }
 

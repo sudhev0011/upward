@@ -17,8 +17,8 @@ import { ProviderRoutes } from "@/constants/api-routes";
 import {
   CreateProviderServiceResponse,
   PaginatedProviderServicesGroupedByCategory,
-  SetProviderServicePriceRequest,
 } from "@/interfaces/admin/provider-service.interface";
+import { SetProviderServicePriceRequest } from "@/interfaces/provider/provider-service.interface";
 import type {
   SetAvailabilityRequest,
   AvailabilityResponse,
@@ -43,6 +43,7 @@ import {
   UpdatePortfolioItemRequest,
 } from "@/interfaces/provider/portfolio.interface";
 import axios from "axios";
+import { ListBookingsRequest, ListBookingsResponse } from "@/interfaces/bookings/bookings.interface";
 
 export const providerApi = {
   async getProviderProfile(): Promise<ApiEnvelope<ProviderProfile>> {
@@ -300,5 +301,28 @@ export const providerApi = {
   ): Promise<ApiEnvelope<null>> {
     const url = ProviderRoutes.REMOVE_PORTFOLIO_IMAGE.replace(":id", id);
     return (await api.delete<ApiEnvelope<null>>(url, { data })).data;
+  },
+
+  async listBookings(
+    params: ListBookingsRequest
+  ): Promise<ApiEnvelope<ListBookingsResponse>> {
+    return (
+      await api.get<ApiEnvelope<ListBookingsResponse>>(
+        "/api/provider/bookings",
+        { params }
+      )
+    ).data;
+  },
+
+  async cancelBooking(
+    bookingId: string,
+    reason?: string | null
+  ): Promise<ApiEnvelope<void>> {
+    return (
+      await api.patch<ApiEnvelope<void>>(
+        `/api/provider/bookings/${bookingId}/cancel`,
+        { reason }
+      )
+    ).data;
   },
 };

@@ -14,6 +14,7 @@ export interface ProviderServicesGroupedByCategoryDto {
     mode: ServiceMode;
     maxHour: number;
     price: number | null;
+    dailyCapacity: number | null;
     status: ProviderServiceStatus;
     isActive: boolean;
   }[];

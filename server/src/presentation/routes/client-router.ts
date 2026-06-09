@@ -4,6 +4,7 @@ import {
   bookingController,
   clientProfileController,
   paymentController,
+  walletController,
 } from "../../infrastructure/di/clientDi";
 import { slotController } from "../../infrastructure/di/provider.Di";
 import { UserRole } from "../../domain/enums/user-role.enum";
@@ -31,7 +32,9 @@ export class ClientRouter {
       slotController.getAvailableSlots,
     );
 
-    this.router.post("/bookings", bookingController.createBooking);
+    this.router.post("/bookings/onsite", bookingController.createBooking);
+    this.router.post("/bookings/offsite", bookingController.createOffsiteBooking);
+    this.router.patch("/bookings/:id/cancel", bookingController.cancelBooking(UserRole.CLIENT));
     this.router.post(
       "/payments/create-intent",
       
@@ -39,5 +42,6 @@ export class ClientRouter {
     );
 
     this.router.get("/bookings", bookingController.listBookings(UserRole.CLIENT));
+    this.router.get("/wallet", walletController.getWallet);
   }
 }

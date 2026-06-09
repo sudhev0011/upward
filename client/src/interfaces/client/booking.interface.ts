@@ -1,10 +1,9 @@
 import { PaymentType } from "@/enums/payment-type.enum";
 import { Location } from "../location.interface";
-// --- Slot ---
-
+import { BookingMode } from "@/enums/booking-mode";
 export interface AvailableSlot {
   startTime: string; // HH:mm
-  endTime: string;   // HH:mm
+  endTime: string; // HH:mm
 }
 
 export interface GetAvailableSlotsRequest {
@@ -13,40 +12,48 @@ export interface GetAvailableSlotsRequest {
   date: string; // YYYY-MM-DD
 }
 
-// --- Booking ---
-
-export interface CreateBookingRequest {
+export interface CreateOnsiteBookingRequest {
   providerServiceId: string;
-  bookingDate: string; // YYYY-MM-DD
-  startTime: string;   // HH:mm
+  bookingDate: string;
+  startTime: string;
   paymentType: PaymentType;
   location: Location;
   notes?: string | null;
+  requirements: string[];
 }
 
-// Frontend-only — not sent to backend, used for UI state and confirmation display
+export interface CreateOffsiteBookingRequest {
+  providerServiceId: string;
+  bookingDate: string;
+  paymentType: PaymentType;
+  notes?: string | null;
+  requirements: string[];
+}
+
 export interface BookingFormState {
   providerId: string;
   providerServiceId: string;
-  providerName: string;        // display only
-  serviceLabel: string;        // display only
-  bookingDate: string;         // YYYY-MM-DD
-  startTime: string;           // HH:mm
-  endTime: string;             // HH:mm — from slot response, display only
+  providerName: string;
+  serviceLabel: string;
+  mode: BookingMode;
+  bookingDate: string;
+  startTime: string;
+  endTime: string;
   paymentType: PaymentType | null;
   notes: string;
-  location: Location | null;            // future backend field
+  location: Location | null;
+  requirements: string[];
 }
 
-// --- Response ---
-
 export interface Booking {
+  id: string;
   bookingId: string;
   providerServiceId: string;
   bookingDate: string;
   startTime: string;
   paymentType: PaymentType;
   notes?: string | null;
+  requirements: string[];
 }
 
 export interface CreatePaymentIntentRequest {

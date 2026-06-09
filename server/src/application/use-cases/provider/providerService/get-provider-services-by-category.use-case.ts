@@ -3,7 +3,7 @@ import { IProviderServiceRepository } from "../../../../domain/interfaces/reposi
 import { IUserRepository } from "../../../../domain/interfaces/repositories/user/IUserRepository";
 import { IGetProviderServicesByCategoryUseCase } from "../../../../domain/interfaces/usecases/provider/providerService/IGetProviderServiceByCategoryUseCase";
 import { GetPaginatedProviderServicesDto } from "../../../dtos/provider/providerService/request/get-paginates-provider-services.dto";
-import { ProviderServicesGroupedByCategoryDto, PaginatedProviderServicesGroupedByCategoryDto } from "../../../dtos/provider/providerService/response/provider-services-grouped-by-category.dto";
+import { PaginatedProviderServicesGroupedByCategoryDto } from "../../../dtos/provider/providerService/response/provider-services-grouped-by-category.dto";
 import { ProviderServiceViewMapper } from "../../../mapers/provider/provider-service-view.mapper";
 
 export class GetProviderServicesByCategoryUseCase implements IGetProviderServicesByCategoryUseCase {

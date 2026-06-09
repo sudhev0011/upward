@@ -5,6 +5,7 @@ import { BookingStatus } from "../../../../domain/enums/booking-status.enum";
 import { PaymentStatus } from "../../../../domain/enums/payment-status.enum";
 
 import { PaymentType } from "../../../../domain/enums/payment-type.enum";
+import { BookingMode } from "../../../../domain/enums/bookingMode.enum";
 
 interface GeoPoint {
   type: "Point";
@@ -20,6 +21,8 @@ interface ClientLocation {
   coordinates: GeoPoint;
 }
 export interface BookingDocument extends Document {
+  bookingId: string;
+
   clientId: Types.ObjectId;
 
   providerId: Types.ObjectId;
@@ -44,13 +47,17 @@ export interface BookingDocument extends Document {
 
   bookingDate: string;
 
-  startDateTime: Date;
+  bookingMode: BookingMode;
 
-  endDateTime: Date;
+  startDateTime: Date | null;
 
-  location: ClientLocation;
+  endDateTime: Date | null;
+
+  location: ClientLocation | null;
 
   notes: string | null;
+
+  requirements: string[];
 
   cancelledBy: Types.ObjectId | null;
 
@@ -108,6 +115,13 @@ const ClientLocationSchema = new Schema<ClientLocation>(
 
 const BookingSchema = new Schema<BookingDocument>(
   {
+    bookingId: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
+
     clientId: {
       type: Types.ObjectId,
       ref: "User",
@@ -184,26 +198,34 @@ const BookingSchema = new Schema<BookingDocument>(
       index: true,
     },
 
+    bookingMode: {
+      type: String,
+      enum: Object.values(BookingMode),
+      required: true,
+    },
+
     startDateTime: {
       type: Date,
-      required: true,
       index: true,
     },
 
     endDateTime: {
       type: Date,
-      required: true,
     },
 
     location: {
       type: ClientLocationSchema,
-      required: true,
     },
 
     notes: {
       type: String,
       trim: true,
       default: null,
+    },
+
+    requirements: {
+      type: [String],
+      default: [],
     },
 
     cancelledBy: {
@@ -238,16 +260,6 @@ BookingSchema.index({
   providerId: 1,
   startDateTime: 1,
   endDateTime: 1,
-});
-
-BookingSchema.pre("save", function () {
-  if (this.startDateTime >= this.endDateTime) {
-    throw new Error("endDateTime must be after startDateTime");
-  }
-
-  if (this.paidAmount > this.totalAmount) {
-    throw new Error("paidAmount cannot exceed totalAmount");
-  }
 });
 
 export const BookingModel = model<BookingDocument>("Booking", BookingSchema);

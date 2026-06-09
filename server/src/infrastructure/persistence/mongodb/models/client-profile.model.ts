@@ -4,7 +4,7 @@ export interface ClientProfileDocument extends Document {
   userId: Types.ObjectId;
   location?: string;
   phone?: string;
-  profilePicture?: string; 
+  avatarUrl?: string; 
   createdAt: Date;
   updatedAt: Date;
 }
@@ -14,7 +14,7 @@ const ClientProfileSchema = new Schema<ClientProfileDocument>(
     userId: { type: Schema.Types.ObjectId, required: true, ref: 'User', unique: true, index: true },
     location: { type: String },
     phone: { type: String },
-    profilePicture: { type: String }, 
+    avatarUrl: { type: String }, 
   },
   { timestamps: true },
 );

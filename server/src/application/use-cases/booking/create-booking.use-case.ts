@@ -1,11 +1,12 @@
 import { Booking } from "../../../domain/entities/booking.entity";
 import { BookingStatus } from "../../../domain/enums/booking-status.enum";
-import { PaymentStatus } from "../../../domain/enums/payment-status.enum";
+import { BookingMode } from "../../../domain/enums/bookingMode.enum";
 import { PaymentType } from "../../../domain/enums/payment-type.enum";
 import { UnavailabilitySource } from "../../../domain/enums/unavailability.enum";
 import { ITransactionManager } from "../../../domain/interfaces/database/transaction-manager.interface";
 import { IBookingRepository } from "../../../domain/interfaces/repositories/booking/IBookingRepository";
 import { IUnavailabilityRepository } from "../../../domain/interfaces/repositories/unavailability/IUnavaliability-repository";
+import { IBookingIdGenerator } from "../../../domain/interfaces/services/IBookingNumberGenerator";
 import { ICreateBookingUseCase } from "../../../domain/interfaces/usecases/booking/ICreateBookingUseCase";
 import { CreateBookingRequestDto } from "../../dtos/client/booking/request/create-booking-request.dto";
 import { CreateBookingResponseDto } from "../../dtos/client/booking/response/create-booking-response.dto";
@@ -26,6 +27,8 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
     private bookingTravelValidationService: BookingTravelValidationService,
 
     private transactionManager: ITransactionManager,
+
+    private bookingIdGenerator: IBookingIdGenerator,
   ) {}
 
   async execute(
@@ -67,13 +70,10 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
 
     const totalAmount = validationResult.totalAmount;
 
-    let paidAmount = 0;
-
-    if (data.paymentType === PaymentType.FULL) {
-      paidAmount = totalAmount;
-    } else {
-      paidAmount = (totalAmount * PLATFORM_ADVANCE_PERCENTAGE) / 100;
-    }
+    const paidAmount =
+      data.paymentType === PaymentType.FULL
+        ? totalAmount
+        : (totalAmount * PLATFORM_ADVANCE_PERCENTAGE) / 100;
 
     /**
      * STEP 3
@@ -89,8 +89,12 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
      * Create pending booking entity
      */
 
+    const bookingId = await this.bookingIdGenerator.generate();
+
     const booking = Booking.create({
       clientId,
+
+      bookingId,
 
       providerId: validationResult.providerId,
 
@@ -108,6 +112,8 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
 
       bookingDate: data.bookingDate,
 
+      bookingMode: BookingMode.ONSITE,
+
       startDateTime: validationResult.startDateTime,
 
       endDateTime: validationResult.endDateTime,
@@ -115,6 +121,8 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
       location: data.location,
 
       notes: data.notes ?? null,
+
+      requirements: data.requirements,
 
       expiresAt,
     });
@@ -160,7 +168,9 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
        */
 
       return {
-        bookingId: createdBooking.id!,
+        id: createdBooking.id!,
+        
+        bookingId: createdBooking.bookingId,
 
         status: createdBooking.status,
 

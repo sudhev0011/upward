@@ -1,7 +1,6 @@
 import { Payment } from "../../../domain/entities/payment.entity";
 import {
   NotFoundError,
-  UnprocessableEntityError,
 } from "../../../domain/errors/errors";
 import { ITransactionManager } from "../../../domain/interfaces/database/transaction-manager.interface";
 import { IBookingRepository } from "../../../domain/interfaces/repositories/booking/IBookingRepository";
