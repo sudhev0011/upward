@@ -3,6 +3,7 @@ import { NotFoundError } from "../../../domain/errors/errors";
 import { ITransactionManager } from "../../../domain/interfaces/database/transaction-manager.interface";
 import { IBookingRepository } from "../../../domain/interfaces/repositories/booking/IBookingRepository";
 import { IPaymentRepository } from "../../../domain/interfaces/repositories/payment/IPaymentRepository";
+import { INotificationService } from "../../../domain/interfaces/services/INotificationService";
 import { IConfirmPaymentUseCase } from "../../../domain/interfaces/usecases/payment/IConfirmPaymentUseCase";
 
 export class ConfirmPaymentUseCase
@@ -13,7 +14,9 @@ export class ConfirmPaymentUseCase
 
     private bookingRepository: IBookingRepository,
 
-    private transactionManager: ITransactionManager
+    private transactionManager: ITransactionManager,
+
+    private notificationService: INotificationService,
   ) {}
 
   async execute(
@@ -104,5 +107,14 @@ export class ConfirmPaymentUseCase
         );
       }
     );
+
+
+    await this.notificationService.sendNotification({
+      recipientId: booking.providerId,
+      title: "New booking",
+      message: "A new booking created for you!",
+      type: "booking",
+      data: {bookingId: booking.bookingId}
+    })
   }
 }

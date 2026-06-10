@@ -20,6 +20,7 @@ import router from "../routes/location.router";
 import { ChatRouter } from "../routes/chat-router";
 import { initSocketServer } from "./socket-server";
 import { SubscriptionRouter } from "../routes/subscription.router";
+import { NotificationRouter } from "../routes/notification-router";
 
 export class AppServer {
   private _app: express.Application;
@@ -62,6 +63,7 @@ export class AppServer {
     this._app.use("/api/location",router);
     this._app.use("/api/chat", new ChatRouter().router);
     this._app.use("/api/subscriptions", new SubscriptionRouter().router);
+    this._app.use("/api/notifications", new NotificationRouter().router);
 
 
     this._app.use(errorHandler);

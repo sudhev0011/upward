@@ -9,6 +9,7 @@ import { GetChatUploadUrlUseCase } from '../../application/use-cases/chat/get-ch
 import { ChatController } from '../../presentation/controllers/chat.controller';
 import { S3Service } from '../external-services/s3/s3.service';
 import { WinstonLogger } from '../services/logger.service';
+import { notificationService } from './notificationDi';
 
 // Initialize repositories
 const chatRepository = new MongoChatRepository();
@@ -23,7 +24,7 @@ export const getConversationsUseCase = new GetConversationsUseCase(chatRepositor
 export const getMessagesUseCase = new GetMessagesUseCase(chatRepository);
 export const findOrCreateConversationUseCase = new FindOrCreateConversationUseCase(chatRepository);
 export const resetUnreadCountUseCase = new ResetUnreadCountUseCase(chatRepository);
-export const sendMessageUseCase = new SendMessageUseCase(chatRepository);
+export const sendMessageUseCase = new SendMessageUseCase(chatRepository, userRepository, notificationService);
 export const getChatUploadUrlUseCase = new GetChatUploadUrlUseCase(s3Service);
 
 // Initialize controller

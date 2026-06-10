@@ -2,9 +2,15 @@ import { Message } from '../../../domain/entities/message.entity';
 import { IChatRepository } from '../../../domain/interfaces/repositories/chat/IChatRepository';
 import { ISendMessageUseCase } from '../../../domain/interfaces/usecases/chat/ISendMessageUseCase';
 import { NotFoundError } from '../../../domain/errors/errors';
+import { IUserRepository } from '../../../domain/interfaces/repositories/user/IUserRepository';
+import { INotificationService } from '../../../domain/interfaces/services/INotificationService';
 
 export class SendMessageUseCase implements ISendMessageUseCase {
-  constructor(private readonly _chatRepository: IChatRepository) {}
+  constructor(
+    private readonly _chatRepository: IChatRepository,
+    private readonly _userRepository: IUserRepository,
+    private readonly _notificationService: INotificationService
+  ) {}
 
   async execute(
     senderId: string,
@@ -32,6 +38,21 @@ export class SendMessageUseCase implements ISendMessageUseCase {
 
       const recipientRole = senderId === conversation.clientId ? 'provider' : 'client';
       await this._chatRepository.incrementUnreadCount(conversationId, recipientRole);
+
+      // Retrieve sender name and dispatch notification to recipient
+      const recipientId = senderId === conversation.clientId ? conversation.providerId : conversation.clientId;
+      const sender = await this._userRepository.findById(senderId);
+      const senderName = sender ? sender.name : 'Someone';
+      const notificationMessage = text ? text : 'Sent an attachment';
+
+      await this._notificationService.sendNotification({
+        recipientId,
+        senderId,
+        title: `New message from ${senderName}`,
+        message: notificationMessage,
+        type: 'chat',
+        data: { conversationId, messageId: savedMessage.id }
+      });
     }
 
     return savedMessage;

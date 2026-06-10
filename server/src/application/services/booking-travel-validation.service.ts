@@ -163,7 +163,6 @@ export class BookingTravelValidationService {
 
       input.endDateTime,
     );
-    console.log(nextBooking,'--------------')
     if (!nextBooking || !nextBooking.location) {
       return;
     }

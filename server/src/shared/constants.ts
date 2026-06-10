@@ -90,5 +90,12 @@ export const successResponse = {
   FOUND_OR_CREATE_CONVERSATION: 'Conversation found or created successfully',
   RESET_UNREAD_COUNT_SUCCESS: 'Unread count reset successfully',
   GENERATE_PRESIGNED_URL_SUCCESS: 'Presigned URL generated successfully',
+
+  GET_NOTIFICATIONS: 'Notifications retrieved successfully',
+  GET_UNREAD_NOTIFICATION_COUNT: 'Unread notification count retrieved successfully',
+  MARK_AS_READ: 'Notification marked as read successfully',
+  MARK_ALL_AS_READ: 'All notifications marked as read successfully',
+  DELETE_NOTIFICATION: 'Notification deleted successfully',
+  
   
 } as const;

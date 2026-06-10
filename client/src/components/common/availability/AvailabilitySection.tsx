@@ -49,7 +49,6 @@ function getDayStyle(status: DayStatus, isToday: boolean, isPast: boolean) {
   if (status.type === "available")
     return base + "bg-[#EEF5FB] text-[#4A86B0] font-medium cursor-default";
   if (status.type === "unavailable") {
-    console.log('found the culprit')
     return base + "bg-red-50 text-red-400 cursor-default";
   }
   return base + "bg-gray-50 text-gray-300 cursor-default";

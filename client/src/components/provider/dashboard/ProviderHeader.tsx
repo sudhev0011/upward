@@ -20,12 +20,62 @@ import { useGetProfileQuery } from "@/hooks/provider/useGetProfile";
 import { useLogoutMutation } from "@/hooks/auth/useLogout";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { logout } from "@/store/slices/authSlice";
+import {
+  useNotificationsQuery,
+  useUnreadNotificationCountQuery,
+  useMarkNotificationReadMutation,
+  useMarkAllNotificationsReadMutation,
+  useNotificationSocketListener,
+} from "@/hooks/notification/useNotifications";
 
 export function ProviderHeader() {
   const navigate = useNavigate();
   const { data: response, isLoading } = useGetProfileQuery();
   const { mutate: logoutMutation, isPending: isLoggingOut } = useLogoutMutation();
   const dispatch = useAppDispatch();
+
+  // Connect websocket listener for notifications
+  useNotificationSocketListener();
+
+  const { data: notificationsRes } = useNotificationsQuery(1, 10);
+  const { data: unreadCountRes } = useUnreadNotificationCountQuery();
+
+  const markReadMutation = useMarkNotificationReadMutation();
+  const markAllReadMutation = useMarkAllNotificationsReadMutation();
+
+  const notifications = notificationsRes?.data?.data || [];
+  const unreadCount = unreadCountRes?.data?.count || 0;
+
+  const handleNotificationClick = async (notif: any) => {
+    if (!notif.isRead) {
+      markReadMutation.mutate(notif.id);
+    }
+    if (notif.type === "chat") {
+      navigate("/provider/dashboard/messages");
+    } else if (notif.type === "booking") {
+      navigate("/provider/dashboard/orders");
+    }
+  };
+
+  const handleMarkAllRead = () => {
+    markAllReadMutation.mutate();
+  };
+
+  const formatTime = (dateStr: string) => {
+    try {
+      const date = new Date(dateStr);
+      const diffMs = Date.now() - date.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMins / 60);
+
+      if (diffMins < 1) return "Just now";
+      if (diffMins < 60) return `${diffMins}m ago`;
+      if (diffHours < 24) return `${diffHours}h ago`;
+      return date.toLocaleDateString([], { month: "short", day: "numeric" });
+    } catch {
+      return "";
+    }
+  };
 
   const handleLogout = async () => {
       logoutMutation(undefined, {
@@ -107,10 +157,72 @@ export function ProviderHeader() {
       </TooltipProvider>
 
       {/* ── Notifications ── */}
-      <button className="relative h-9 w-9 flex items-center justify-center rounded-xl border border-border bg-secondary/40 text-muted-foreground hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all duration-200">
-        <Bell className="h-4 w-4" />
-        <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary ring-2 ring-background" />
-      </button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="relative h-9 w-9 flex items-center justify-center rounded-xl border border-border bg-secondary/40 text-muted-foreground hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all duration-200">
+            <Bell className="h-4 w-4" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary ring-2 ring-background" />
+            )}
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          sideOffset={8}
+          className="w-80 rounded-2xl border border-border bg-popover shadow-xl shadow-black/[0.08] p-2 z-50"
+        >
+          <DropdownMenuLabel className="px-3 py-2 bg-secondary/50 rounded-xl mb-1 flex items-center justify-between">
+            <span className="text-xs font-bold text-foreground">Notifications</span>
+            <div className="flex items-center gap-2">
+              {unreadCount > 0 && (
+                <button
+                  onClick={handleMarkAllRead}
+                  className="text-[10px] text-primary hover:text-primary/80 flex items-center gap-1 font-bold transition-colors"
+                >
+                  Read All
+                </button>
+              )}
+              <span className="rounded-full bg-[#EAF2F9] px-2 py-0.5 text-[9px] font-extrabold text-[#5585A8]">
+                {unreadCount} new
+              </span>
+            </div>
+          </DropdownMenuLabel>
+          <div className="max-h-[300px] overflow-y-auto flex flex-col gap-1">
+            {notifications.map((n) => (
+              <DropdownMenuItem
+                key={n.id}
+                onClick={() => handleNotificationClick(n)}
+                className={`rounded-xl px-3 py-2.5 text-xs cursor-pointer hover:bg-accent focus:bg-accent flex gap-3 transition-colors ${
+                  !n.isRead ? "bg-[#EAF2F9]/40 text-foreground font-semibold" : "text-muted-foreground"
+                }`}
+              >
+                {!n.isRead && (
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#719FC4]" />
+                )}
+                {n.isRead && (
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0" />
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className={`font-bold leading-normal truncate ${!n.isRead ? "text-foreground" : "text-muted-foreground"}`}>
+                    {n.title}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground line-clamp-2 mt-0.5 leading-normal">
+                    {n.message}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">
+                    {formatTime(n.createdAt)}
+                  </p>
+                </div>
+              </DropdownMenuItem>
+            ))}
+            {notifications.length === 0 && (
+              <div className="py-8 text-center text-xs text-muted-foreground">
+                No notifications yet
+              </div>
+            )}
+          </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       {/* ── Profile dropdown ── */}
       <DropdownMenu>

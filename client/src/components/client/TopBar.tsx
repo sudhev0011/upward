@@ -1,36 +1,73 @@
 import { useState } from "react";
-import { Bell, Search, Menu, X } from "lucide-react";
+import { Bell, Search, Menu, X, CheckCheck } from "lucide-react";
 import { useAppSelector } from "@/hooks/useRedux";
 import type { RootState } from "@/store/store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useNavigate } from "react-router-dom";
+import {
+  useNotificationsQuery,
+  useUnreadNotificationCountQuery,
+  useMarkNotificationReadMutation,
+  useMarkAllNotificationsReadMutation,
+  useNotificationSocketListener,
+} from "@/hooks/notification/useNotifications";
 
 interface TopbarProps {
   onMenuToggle: () => void;
   sidebarOpen: boolean;
 }
 
-const NOTIFICATIONS = [
-  {
-    id: 1,
-    text: "Sarah M. confirmed your booking for Mar 11",
-    time: "2h ago",
-    unread: true,
-  },
-  { id: 2, text: "New message from Luca T.", time: "4h ago", unread: true },
-  {
-    id: 3,
-    text: "Your review for Tom R. was published",
-    time: "Feb 21",
-    unread: false,
-  },
-];
-
 export const Topbar = ({ onMenuToggle, sidebarOpen }: TopbarProps) => {
+  const navigate = useNavigate();
   const [showNotifs, setShowNotifs] = useState(false);
   const [search, setSearch] = useState("");
-  const unreadCount = NOTIFICATIONS.filter((n) => n.unread).length;
   const { user } = useAppSelector((state: RootState) => state.auth);
   const avatarUrl = user?.avatar ? user?.avatar : "";
+
+  // Connect websocket listener for notifications
+  useNotificationSocketListener();
+
+  const { data: notificationsRes } = useNotificationsQuery(1, 10);
+  const { data: unreadCountRes } = useUnreadNotificationCountQuery();
+
+  const markReadMutation = useMarkNotificationReadMutation();
+  const markAllReadMutation = useMarkAllNotificationsReadMutation();
+
+  const notifications = notificationsRes?.data?.data || [];
+  const unreadCount = unreadCountRes?.data?.count || 0;
+
+  const handleNotificationClick = async (notif: any) => {
+    if (!notif.isRead) {
+      markReadMutation.mutate(notif.id);
+    }
+    setShowNotifs(false);
+    if (notif.type === "chat") {
+      navigate("/client/dashboard/messages");
+    } else if (notif.type === "booking") {
+      navigate("/client/dashboard/bookings");
+    }
+  };
+
+  const handleMarkAllRead = () => {
+    markAllReadMutation.mutate();
+  };
+
+  const formatTime = (dateStr: string) => {
+    try {
+      const date = new Date(dateStr);
+      const diffMs = Date.now() - date.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMins / 60);
+
+      if (diffMins < 1) return "Just now";
+      if (diffMins < 60) return `${diffMins}m ago`;
+      if (diffHours < 24) return `${diffHours}h ago`;
+      return date.toLocaleDateString([], { month: "short", day: "numeric" });
+    } catch {
+      return "";
+    }
+  };
+
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-gray-100 bg-white/90 backdrop-blur-sm px-4 md:px-6">
       {/* Mobile menu toggle */}
@@ -72,33 +109,51 @@ export const Topbar = ({ onMenuToggle, sidebarOpen }: TopbarProps) => {
             <div className="absolute right-0 top-11 w-80 rounded-2xl border border-gray-100 bg-white shadow-xl shadow-gray-200/60 z-50">
               <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                 <p className="text-sm font-bold text-gray-900">Notifications</p>
-                <span className="rounded-full bg-[#EAF2F9] px-2 py-0.5 text-xs font-semibold text-[#5585A8]">
-                  {unreadCount} new
-                </span>
-              </div>
-              {NOTIFICATIONS.map((n) => (
-                <div
-                  key={n.id}
-                  className={`flex gap-3 px-4 py-3 border-b border-gray-50 last:border-0 cursor-pointer hover:bg-gray-50 transition-colors ${n.unread ? "bg-[#EAF2F9]/40" : ""}`}
-                >
-                  {n.unread && (
-                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#719FC4]" />
+                <div className="flex items-center gap-2">
+                  {unreadCount > 0 && (
+                    <button
+                      onClick={handleMarkAllRead}
+                      className="text-xs text-[#719FC4] hover:text-[#5585A8] flex items-center gap-1 font-semibold transition-colors"
+                      title="Mark all as read"
+                    >
+                      <CheckCheck className="h-3.5 w-3.5" />
+                      Read All
+                    </button>
                   )}
-                  {!n.unread && (
-                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0" />
-                  )}
-                  <div>
-                    <p className="text-xs text-gray-700 leading-relaxed">
-                      {n.text}
-                    </p>
-                    <p className="mt-0.5 text-[11px] text-gray-400">{n.time}</p>
-                  </div>
+                  <span className="rounded-full bg-[#EAF2F9] px-2 py-0.5 text-xs font-semibold text-[#5585A8]">
+                    {unreadCount} new
+                  </span>
                 </div>
-              ))}
-              <div className="px-4 py-2.5">
-                <button className="w-full text-center text-xs font-semibold text-[#719FC4] hover:text-[#5585A8] transition-colors">
-                  View all notifications
-                </button>
+              </div>
+              <div className="max-h-[300px] overflow-y-auto">
+                {notifications.map((n) => (
+                  <div
+                    key={n.id}
+                    onClick={() => handleNotificationClick(n)}
+                    className={`flex gap-3 px-4 py-3 border-b border-gray-50 last:border-0 cursor-pointer hover:bg-gray-50 transition-colors ${!n.isRead ? "bg-[#EAF2F9]/40" : ""}`}
+                  >
+                    {!n.isRead && (
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#719FC4]" />
+                    )}
+                    {n.isRead && (
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0" />
+                    )}
+                    <div>
+                      <p className={`text-xs leading-relaxed ${!n.isRead ? "font-bold text-gray-900" : "text-gray-700"}`}>
+                        {n.title}
+                      </p>
+                      <p className="text-xs text-gray-500 leading-normal mt-0.5">
+                        {n.message}
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-gray-400">{formatTime(n.createdAt)}</p>
+                    </div>
+                  </div>
+                ))}
+                {notifications.length === 0 && (
+                  <div className="p-8 text-center text-xs text-gray-400">
+                    No notifications yet
+                  </div>
+                )}
               </div>
             </div>
           )}

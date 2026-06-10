@@ -8,7 +8,6 @@ export const useUploadPortfolioFiles = () => {
       const results: { fileUrl: string; storageKey: string }[] = [];
  
       for (const file of files) {
-        console.log(file)
         const res = await providerApi.getUploadUrl({
           fileName: file.name,
           contentType: file.type as GetUploadUrlRequest["contentType"],

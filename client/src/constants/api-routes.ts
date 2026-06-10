@@ -121,3 +121,11 @@ export const ChatRoutes = {
   GET_UPLOAD_URL: "/api/chat/presigned-url"
 
 } as const;
+
+export const NotificationRoutes = {
+  GET_NOTIFICATIONS: "/api/notifications",
+  UNREAD_COUNT: "/api/notifications/unread-count",
+  MARK_READ: "/api/notifications/:id/read",
+  MARK_ALL_READ: "/api/notifications/read-all",
+  DELETE_NOTIFICATION: "/api/notifications/:id",
+} as const;

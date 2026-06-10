@@ -4,6 +4,7 @@ import { JwtTokenService } from '../../infrastructure/security/jwt-token-service
 import { env } from '../../infrastructure/config/env';
 import { winstonLogger } from '../../infrastructure/config/logger';
 import { sendMessageUseCase, resetUnreadCountUseCase } from '../../infrastructure/di/chatDi';
+import { socketService } from '../../infrastructure/services/socket.service';
 
 interface AuthenticatedSocket extends Socket {
   user?: {
@@ -35,6 +36,8 @@ export function initSocketServer(httpServer: HttpServer): SocketIOServer {
       credentials: true,
     },
   });
+
+  socketService.setIo(io);
 
   const tokenService = new JwtTokenService();
 
