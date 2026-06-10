@@ -16,7 +16,6 @@ export const subscriptionKeys = {
   providerStatus: () => [...subscriptionKeys.all, "provider", "status"] as const,
 };
 
-// --- Admin Hooks ---
 
 export const useAdminPlans = () => {
   return useQuery<ApiEnvelope<SubscriptionPlanDto[]>, Error>({
@@ -77,7 +76,6 @@ export const useDeleteSubscriptionPlan = (options?: {
   });
 };
 
-// --- Provider Hooks ---
 
 export const useProviderActivePlans = () => {
   return useQuery<ApiEnvelope<SubscriptionPlanDto[]>, Error>({

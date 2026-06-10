@@ -26,7 +26,7 @@ export class ConfirmSubscriptionPaymentUseCase {
     }
 
     if (subscription.status === "active") {
-      return; // Already processed (idempotent)
+      return; 
     }
 
     const plan = await this.subscriptionPlanRepository.findById(
@@ -43,7 +43,6 @@ export class ConfirmSubscriptionPaymentUseCase {
       throw new NotFoundError("Provider profile not found");
     }
 
-    // 1. Calculate subscription dates
     const startDate = new Date();
     const endDate = new Date();
     if (plan.billingCycle === "yearly") {
@@ -52,9 +51,7 @@ export class ConfirmSubscriptionPaymentUseCase {
       endDate.setMonth(endDate.getMonth() + 1);
     }
 
-    // 2. Perform transactional updates
     await this.transactionManager.runInTransaction(async (transaction) => {
-      // A. Activate Subscription
       const activeSubscription = ProviderSubscription.create({
         id: subscription.id,
         providerId: subscription.providerId,
@@ -73,7 +70,6 @@ export class ConfirmSubscriptionPaymentUseCase {
         transaction,
       );
 
-      // B. Update Provider Profile subscription parameters
       const updatedProfile = ProviderProfile.create({
         id: profile.id,
         userId: profile.userId,
@@ -102,7 +98,6 @@ export class ConfirmSubscriptionPaymentUseCase {
         transaction,
       );
 
-      // C. Increment plan's subscriberCount
       const updatedPlan = SubscriptionPlan.create({
         id: plan.id,
         name: plan.name,

@@ -79,12 +79,10 @@ export class ProviderServiceRepository
 
     const skip = (page - 1) * limit;
 
-    // 1. Build Initial Match (Filters on ProviderService collection)
     const matchQuery: Record<string, unknown> = {
       providerId: new Types.ObjectId(providerId),
     };
 
-    // Filter by isActive boolean if provided
     if (typeof isActive === "boolean") {
       matchQuery.isActive = isActive;
     }
@@ -92,10 +90,9 @@ export class ProviderServiceRepository
     const pipeline: PipelineStage[] = [
       { $match: matchQuery },
 
-      // Join services (needed for search/mode filters and grouping)
       {
         $lookup: {
-          from: "services", // Ensure this matches your Service collection name
+          from: "services", 
           localField: "serviceId",
           foreignField: "_id",
           as: "service",
@@ -104,7 +101,6 @@ export class ProviderServiceRepository
       { $unwind: "$service" },
     ];
 
-    // 2. Filter by Service attributes (Search or Mode)
     if (search || mode) {
       const serviceMatch: Record<string, unknown> = {};
       if (search) {
@@ -116,20 +112,17 @@ export class ProviderServiceRepository
       pipeline.push({ $match: serviceMatch });
     }
 
-    // 3. Use Facet for parallel Count and Paginated Data
     pipeline.push({
       $facet: {
         metadata: [{ $count: "total" }],
         docs: [
-          // Sort and Paginate the individual services first
           { $sort: { [sortBy]: sortOrder === "asc" ? 1 : -1 } },
           { $skip: skip },
           { $limit: limit },
 
-          // Join categories for the paginated services
           {
             $lookup: {
-              from: "categories", // Ensure this matches your Category collection name
+              from: "categories", 
               localField: "service.categoryId",
               foreignField: "_id",
               as: "category",
@@ -137,7 +130,6 @@ export class ProviderServiceRepository
           },
           { $unwind: "$category" },
 
-          // Group the paginated results by category
           {
             $group: {
               _id: "$category._id",
@@ -158,7 +150,6 @@ export class ProviderServiceRepository
             },
           },
 
-          // Final Output Projection
           {
             $project: {
               _id: 0,

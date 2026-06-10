@@ -5,7 +5,7 @@ export const SubmitProviderKycRequestDtoSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
   aadhaarNumber: z
     .string()
-    .length(12, "Aadhaar number must be exactly 12 digits"), // Can adjust length depending on format (e.g. spaces)
+    .length(12, "Aadhaar number must be exactly 12 digits"), 
   dateOfBirth: z
     .string()
     .refine((val) => !isNaN(Date.parse(val)), {

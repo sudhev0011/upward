@@ -19,7 +19,6 @@ export class DeletePortfolioItemUseCase implements IDeletePortfolioItemUseCase {
       throw new NotFoundError("Portfolio item not found");
     }
  
-    // Delete all images from S3
     await Promise.all(item.images.map((url) => this._s3Service.deleteFile(url)));
  
     await this._portfolioRepository.deleteByIdAndProviderId(id, providerId);

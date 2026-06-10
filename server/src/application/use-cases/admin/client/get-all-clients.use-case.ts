@@ -17,7 +17,6 @@ export class GetAllClientsUseCase implements IGetAllClientsUseCase {
     const page = Number(options.page) || 1;
     const limit = Number(options.limit) || 10;
 
-    // 1. Fetch data directly from Client Repository with built-in search/pagination
     const { clients, total } = await this._clientProfileRepository.getAll({
       page,
       limit,
@@ -28,10 +27,8 @@ export class GetAllClientsUseCase implements IGetAllClientsUseCase {
     });
 
 
-    // 2. Map the results to the response format
     const userResponses = await Promise.all(
       clients.map(async (item) => {
-        // 3. Resolve the S3 Signed URL for the profile picture
         if (item.avatarUrl) {
           item.avatarUrl = await this._s3Service.generateDownloadUrl(
             item.avatarUrl,

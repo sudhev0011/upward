@@ -1,4 +1,3 @@
-// hooks/public/providers/useGetProviderPortfolio.ts
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { publicApi } from '@/api/public.api';
 import { PORTFOLIO_LIMIT } from '@/constants/portfolio-limit';

@@ -11,8 +11,8 @@ export const usePaginatedCategories = (params: {
   sortOrder?: "asc" | "desc";
 }) => {
   return useQuery({
-    queryKey: ["categoriesAdmin", "list",params], // ✅ important
+    queryKey: ["categoriesAdmin", "list",params],
     queryFn: () => adminApi.getAllPaginatedCategories(params),
-    placeholderData: keepPreviousData, // ✅ smooth pagination UX
+    placeholderData: keepPreviousData,
   });
 };

@@ -58,7 +58,6 @@ export default function RequirementsStep({ formState, onNext, onBack }: Props) {
       e.preventDefault();
       addRequirement();
     }
-    // remove last tag on backspace if input is empty
     if (e.key === "Backspace" && input === "" && requirements.length > 0) {
       removeRequirement(requirements.length - 1);
     }

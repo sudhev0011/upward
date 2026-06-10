@@ -21,7 +21,6 @@ export class AdminCategoryController {
     private readonly _getAllCategoriesWithPaginationUseCase: IGetAllCategoriesWithPagination,
     private readonly _updateCategoryUseCase: IUpdateCategoryUseCase,
   ) {}
-  // create category in admin page
   createCategory = async (req: Request, res: Response, next: NextFunction) => {
     const parsed = CreateCategoryRequestDtoSchema.safeParse(req.body);
 

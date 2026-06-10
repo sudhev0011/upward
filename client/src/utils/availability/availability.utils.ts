@@ -3,7 +3,6 @@ import { AvailabilityResponse } from "@/interfaces/provider/availability.interfa
 import { AvailabilityOverride } from "@/interfaces/provider/availability-override.interface";
 import { Unavailability } from "@/interfaces/provider/unavailability.interface";
 
-// "09:00" → "9:00 AM" | "13:30" → "1:30 PM"
 export const to12h = (time: string | null): string => {
   if (!time) return "9:00 AM";
   const [h, m] = time.split(":").map(Number);
@@ -12,10 +11,8 @@ export const to12h = (time: string | null): string => {
   return `${hour}:${String(m).padStart(2, "0")} ${period}`;
 };
 
-// Date → "YYYY-MM-DD"
 export const toDateString = (date: Date): string => format(date, "yyyy-MM-dd");
 
-// "YYYY-MM-DD" → Date at local midnight (avoids UTC shift)
 export const fromDateString = (str: string): Date => {
   const [y, m, d] = str.split("-").map(Number);
   return new Date(y, m - 1, d);
@@ -42,9 +39,8 @@ export function resolveDayStatus(
   overrides: AvailabilityOverride[],
   unavailabilities: Unavailability[],
 ): DayStatus {
-  const dateStr = date.toISOString().split("T")[0]; // "YYYY-MM-DD"
+  const dateStr = date.toISOString().split("T")[0];
 
-  // 1. Check unavailability — highest priority (manual blocks + bookings)
   const unavail = unavailabilities.find((u) => {
     const start = new Date(u.startDate);
     const end = new Date(u.endDate);
@@ -54,7 +50,6 @@ export function resolveDayStatus(
     return { type: "unavailable", reason: unavail.reason ?? undefined };
   }
 
-  // 2. Check override for this specific date
   const override = overrides.find((o) => o.date === dateStr);
   if (override) {
     if (!override.isWorking) return { type: "unavailable" };
@@ -67,7 +62,6 @@ export function resolveDayStatus(
     }
   }
 
-  // 3. Fall back to weekly schedule
   const dayName = DAYS[date.getDay()];
   const schedule = availability.weeklySchedule[dayName];
 

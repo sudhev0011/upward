@@ -15,18 +15,15 @@ class ErrorBoundary extends Component<Props, State> {
     error: null,
   };
 
-  // Capture the exact error object so we can read its message
   public static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Log this to your backend service or tracking console
     console.error("Critical Application Crash:", error, errorInfo);
   }
 
   private handleReset = () => {
-    // Clear the error state and redirect back to home safely
     this.setState({ hasError: false, error: null });
     window.location.href = "/";
   };

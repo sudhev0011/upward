@@ -7,7 +7,7 @@ interface SocialLink {
 
 interface GeoPoint {
   type: "Point";
-  coordinates: [number, number]; // [lng, lat]
+  coordinates: [number, number]; 
 }
 
 interface ProviderLocation {
@@ -93,7 +93,7 @@ const ProviderLocationSchema = new Schema<ProviderLocation>(
       },
 
       coordinates: {
-        type: [Number], // [lng, lat]
+        type: [Number], 
         required: true,
       },
     },
@@ -194,7 +194,6 @@ const ProviderProfileSchema = new Schema<ProviderProfileDocument>(
   { timestamps: true },
 );
 
-// GEO INDEX
 ProviderProfileSchema.index({
   "location.coordinates": "2dsphere",
 });

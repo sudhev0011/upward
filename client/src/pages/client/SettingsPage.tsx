@@ -20,16 +20,13 @@ import {
   type ProfileFormData,
 } from "@/utils/validations/client/profile.schema";
 
-/* ─── Types ─────────────────────────────────────────── */
 type Tab = "profile" | "notifications" | "security" | "billing" | "preferences";
 
-/* ─── Sidebar tabs ───────────────────────────────────── */
 const TABS: { id: Tab; label: string; icon: typeof User }[] = [
   { id: "profile", label: "Profile", icon: User },
   { id: "security", label: "Security", icon: Lock },
 ];
 
-/* ─── Reusable field (Refactored for React Hook Form) ── */
 const Field = React.forwardRef<HTMLInputElement, any>(
   ({ label, error, hint, type = "text", ...props }, ref) => (
     <div>
@@ -55,7 +52,6 @@ const Field = React.forwardRef<HTMLInputElement, any>(
 );
 Field.displayName = "Field";
 
-/* ─── Section wrapper ────────────────────────────────── */
 const Section = ({
   title,
   children,
@@ -71,7 +67,6 @@ const Section = ({
   </div>
 );
 
-/* ─── Helper for Initials ────────────────────────────── */
 const getInitials = (name?: string) => {
   if (!name) return "U";
   const parts = name.trim().split(" ");
@@ -79,25 +74,21 @@ const getInitials = (name?: string) => {
   return name.substring(0, 2).toUpperCase();
 };
 
-/* ═══════════════════════════════════════════════════════ */
 const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState<Tab>("profile");
 
-  // Security State (Left as controlled state until you build a schema for it)
   const [passwords, setPasswords] = useState({
     current: "",
     next: "",
     confirm: "",
   });
 
-  /* ── Server State (React Query) ── */
   const { data: response, isLoading } = useGetProfileQuery();
   const { mutate: updateProfile, isPending: isUpdating } =
     useUpdateProfileMutation();
   const { mutateAsync: getUploadUrl } = useGetProfileUploadUrl();
   const { mutateAsync: uploadToS3 } = useUploadProfilePictureMutation(); 
 
-  /* ── Client State (React Hook Form) ── */
   const {
     register,
     handleSubmit,
@@ -105,7 +96,6 @@ const SettingsPage = () => {
     reset,
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
-    // 'values' will automatically update the form when React Query finishes fetching!
     values: response?.data
       ? {
           name: response.data.name || "",
@@ -120,7 +110,6 @@ const SettingsPage = () => {
     updateProfile(data, {
       onSuccess: () => {
         toast.success("Profile updated successfully!");
-        // Optional: Invalidate query here to re-fetch, or let React Query handle it
       },
       onError: (err: any) => {
         toast.error(err.response?.data?.message || "Failed to update profile");
@@ -130,7 +119,6 @@ const SettingsPage = () => {
 
   const handleAvatarUpload = async (file: File) => {
     try {
-      // 🔹 Step 1: get presigned URL
       const response = await getUploadUrl({
         fileType: file.type,
       });
@@ -142,10 +130,8 @@ const SettingsPage = () => {
 
       const { uploadUrl, fileUrl } = response.data;
 
-      // 🔹 Step 2: upload to S3 using Axios (React Query Mutation)
       await uploadToS3({ uploadUrl, file });
 
-      // 🔹 Step 3: save avatar in DB
       updateProfile(
         { avatarUrl: fileUrl },
         {
@@ -208,7 +194,6 @@ const SettingsPage = () => {
           </div>
         </nav>
 
-        {/* ── Right panels ── */}
         <div className="flex-1 flex flex-col gap-5 min-w-0">
           {/* ── Profile Tab ── */}
           {activeTab === "profile" && (

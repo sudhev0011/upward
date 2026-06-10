@@ -1,4 +1,3 @@
-// pages/client/ProviderListingPage.tsx
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useProvidersByCategory } from "@/hooks/public/providers/useProvidersByCategory";
@@ -33,7 +32,6 @@ export const ProviderListingPage = () => {
     setfilter()
 }, [categoryFromUrl]);
 
-  // Sync category from URL into filters (handles back/forward nav too)
   useEffect(() => {
     if (!searchParams.get("category") && categories.length > 0) {
     setSearchParams({ category: categories[0].name }, { replace: true });

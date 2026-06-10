@@ -23,7 +23,6 @@ const ConversationSchema = new Schema<ConversationDocument>(
   }
 );
 
-// Compound index to ensure a unique conversation between a client and provider
 ConversationSchema.index({ clientId: 1, providerId: 1 }, { unique: true });
 
 export const ConversationModel = model<ConversationDocument>('Conversation', ConversationSchema);

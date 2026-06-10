@@ -26,7 +26,6 @@ export class AdminProviderController {
     private readonly _blockProviderUseCase: IBlockProviderUseCase,
     private readonly _getProviderKycUseCase: IGetProviderKycUseCase,
   ) {}
-//get all provider for admin to handle
   getAllProviders = async (
     req: Request,
     res: Response,
@@ -44,7 +43,6 @@ export class AdminProviderController {
       handleAsyncError(error, next);
     }
   };
-// get specific provider details for admin
   getProviderById = async (
     req: Request,
     res: Response,
@@ -58,7 +56,6 @@ export class AdminProviderController {
       handleAsyncError(error, next);
     }
   };
-// approve or reject provider after document verification
   approveProvider = async (
     req: Request,
     res: Response,
@@ -77,7 +74,6 @@ export class AdminProviderController {
       handleAsyncError(error, next);
     }
   };
-// eject the provider after document verification
   rejectProvider = async (
     req: Request,
     res: Response,
@@ -97,7 +93,6 @@ export class AdminProviderController {
       handleAsyncError(error, next);
     }
   };
-// block provider so that the provider won't appear when listing 
   blockProvider = async (
     req: Request,
     res: Response,
@@ -117,7 +112,6 @@ export class AdminProviderController {
     }
   };
 
-// method to get kyc of providers
   getProviderKyc = async (
       req: Request,
       res: Response,

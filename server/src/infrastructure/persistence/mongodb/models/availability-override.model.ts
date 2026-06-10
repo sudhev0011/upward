@@ -2,10 +2,10 @@ import { Document, model, Schema, Types } from "mongoose";
 
 export interface AvailabilityOverrideDocument extends Document {
   providerId: Types.ObjectId;
-  date: string;           // "YYYY-MM-DD"
+  date: string; 
   isWorking: boolean;
-  startTime: string | null; // "HH:mm"
-  endTime: string | null;   // "HH:mm"
+  startTime: string | null; 
+  endTime: string | null;   
   createdAt: Date;
   updatedAt: Date;
 }

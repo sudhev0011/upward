@@ -119,7 +119,7 @@ export const clientApi = {
   },
 
   async getWallet(): Promise<ApiEnvelope<WalletResponse>> {
-    return (await api.get<ApiEnvelope<WalletResponse>>("/api/client/wallet"))
+    return (await api.get<ApiEnvelope<WalletResponse>>(ClientRoutes.GET_WALLET))
       .data;
   },
 };

@@ -15,10 +15,9 @@ export class AvailabilityOverrideRepository extends RepositoryBase<
     return this.findMany({ providerId: new Types.ObjectId(providerId) });
   }
 
-  // Fetch the override for a specific date — used in slot resolution
   async findByProviderAndDate(
     providerId: string,
-    date: string // "YYYY-MM-DD"
+    date: string 
   ): Promise<AvailabilityOverride | null> {
     return this.findOne({
       providerId: new Types.ObjectId(providerId),
@@ -26,11 +25,10 @@ export class AvailabilityOverrideRepository extends RepositoryBase<
     });
   }
 
-  // Fetch all overrides within a date range — useful for rendering a week/month calendar view
   async findByProviderInDateRange(
     providerId: string,
-    startDate: string, // "YYYY-MM-DD"
-    endDate: string    // "YYYY-MM-DD"
+    startDate: string, 
+    endDate: string    
   ): Promise<AvailabilityOverride[]> {
     return this.findMany({
       providerId: new Types.ObjectId(providerId),
@@ -38,7 +36,6 @@ export class AvailabilityOverrideRepository extends RepositoryBase<
     });
   }
 
-  // Upsert — provider can only have one override per date (enforced by unique index too)
   async upsertByProviderAndDate(
     providerId: string,
     date: string,
@@ -67,7 +64,6 @@ export class AvailabilityOverrideRepository extends RepositoryBase<
     return result !== null;
   }
 
-  // ─── Mappers ───────────────────────────────────────────────────────────────
 
   protected mapToEntity(
     document: AvailabilityOverrideDocument

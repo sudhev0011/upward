@@ -36,7 +36,6 @@ export function AddPortfolioDialog({ open, onOpenChange }: AddPortfolioDialogPro
 
   const isSubmitting = isUploading || isSaving;
 
-  // ── Handlers ────────────────────────────────────────────────────────────────
 
   const reset = () => {
     setTitle("");
@@ -97,7 +96,6 @@ export function AddPortfolioDialog({ open, onOpenChange }: AddPortfolioDialogPro
     });
   };
 
-  // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>

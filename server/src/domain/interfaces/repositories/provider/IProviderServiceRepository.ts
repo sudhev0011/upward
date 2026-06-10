@@ -31,6 +31,5 @@ export interface IProviderServiceRepository extends IBaseRepository<ProviderServ
   }
   ): Promise<PaginatedResult<ProviderServicesGroupedData>>;
 
-  // IProviderServiceRepository
 getActiveServicesByProvider(providerId: string): Promise<ProviderServicePublicItem[]>;
 }

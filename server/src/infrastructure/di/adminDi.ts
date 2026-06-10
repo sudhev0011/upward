@@ -7,8 +7,6 @@ import { ClientProfileRepository } from "../persistence/mongodb/repositories/cli
 import { UserRepository } from "../persistence/mongodb/repositories/user.repository";
 import { WinstonLogger } from "../services/logger.service";
 import { getClientProfileUseCase } from "./clientDi";
-
-// Provider imports
 import { ProviderProfileRepository } from "../persistence/mongodb/repositories/provider-profile.repository";
 import { GetAllProvidersUseCase } from "../../application/use-cases/admin/provider/get-all-providers.use-case";
 import { AdminGetProviderByIdUseCase as ProviderGetByIdUseCase } from "../../application/use-cases/admin/provider/get-provider-by-id.use-case";
@@ -32,7 +30,6 @@ import { GetAllServicesWithPaginationUseCase } from "../../application/use-cases
 import { ToggleServiceUseCase } from "../../application/use-cases/service/toggle-service.use-case";
 import { UpdateServiceUseCase } from "../../application/use-cases/service/update-service.use-case";
 
-// repo init
 const userRepository = new UserRepository();
 const clientProfileRepository = new ClientProfileRepository()
 const providerProfileRepository = new ProviderProfileRepository()

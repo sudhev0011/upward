@@ -6,7 +6,6 @@ import { ISetAvailabilityOverrideUseCase } from "../../../../domain/interfaces/u
 import { SetAvailabilityOverrideRequestDto } from "../../../dtos/provider/availability-override/availability-override-request.dto";
 import { AvailabilityOverrideResponseDto } from "../../../dtos/provider/availability-override/availability-override-response.dto";
 import { AvailabilityOverrideMapper } from "../../../mapers/provider/availability-override/availability-override-mapper";
-// Upserts — one override per provider per date
 export class SetAvailabilityOverrideUseCase implements ISetAvailabilityOverrideUseCase{
   constructor(
     private readonly _availabilityOverrideRepository: IAvailabilityOverrideRepository,
@@ -15,7 +14,6 @@ export class SetAvailabilityOverrideUseCase implements ISetAvailabilityOverrideU
 
   async execute(data: SetAvailabilityOverrideRequestDto & {providerId: string}): Promise<AvailabilityOverrideResponseDto> {
     
-    // Convert the date string to a day range for overlap query
     const [y, m, d] = data.date.split("-").map(Number);
     const dayStart = new Date(y, m - 1, d, 0, 0, 0);
     const dayEnd = new Date(y, m - 1, d, 23, 59, 59);

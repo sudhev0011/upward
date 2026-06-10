@@ -17,7 +17,6 @@ interface Props {
   onFailure: (message: string) => void;
 }
 
-// inner form — must be inside <Elements> to use useStripe and useElements
 interface PaymentFormProps {
   onSuccess: () => void;
   onFailure: (message: string) => void;
@@ -33,7 +32,6 @@ function PaymentForm({ onSuccess, onFailure }: PaymentFormProps) {
 
     setIsPending(true);
 
-    // confirm without redirect — result handled inline
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {},
@@ -43,7 +41,6 @@ function PaymentForm({ onSuccess, onFailure }: PaymentFormProps) {
     setIsPending(false);
 
     if (error) {
-      // card declined, insufficient funds, etc.
       onFailure(
         error.message ?? "Payment failed. Please try again."
       );
@@ -55,7 +52,6 @@ function PaymentForm({ onSuccess, onFailure }: PaymentFormProps) {
       return;
     }
 
-    // any other status — requires_action, processing, etc.
     onFailure(
       "Payment could not be completed. Please try a different payment method."
     );
@@ -95,14 +91,12 @@ function PaymentForm({ onSuccess, onFailure }: PaymentFormProps) {
   );
 }
 
-// outer wrapper — provides Stripe context via <Elements>
 export default function StripeStep({
   clientSecret,
   bookingId: _bookingId,
   onSuccess,
   onFailure,
 }: Props) {
-  // do not mount Elements at all until clientSecret is ready
   if (!clientSecret) {
     return (
       <div className="flex flex-col items-center justify-center py-10 gap-3">

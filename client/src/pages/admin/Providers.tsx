@@ -42,7 +42,6 @@ import { format } from "date-fns";
 import { ProviderProfile } from "@/interfaces/provider/provider.interface";
 
 export default function Providers() {
-  // ─── STATE ──────────────────────────────────────────────────────────────────
   const [params, setParams] = useState({
     page: 1,
     limit: 10,
@@ -59,20 +58,13 @@ export default function Providers() {
   const [isRejecting, setIsRejecting] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
 
-  // ─── DATA FETCHING ──────────────────────────────────────────────────────────
-
-  // 1. List View
   const { data: listData } = useGetProviderProfiles(params);
 
-  // 2. Profile Details
   const { data: profileDetails, isLoading: isProfileLoading } =
     useGetProviderProfileById(selectedProviderId);
 
-  // 3. KYC Documents
   const { data: kycData, isLoading: isKycLoading } =
     useGetProviderKyc(selectedProviderId);
-
-  // ─── HANDLERS ───────────────────────────────────────────────────────────────
 
   const closeDialog = () => {
     setSelectedProviderId(null);
@@ -80,14 +72,12 @@ export default function Providers() {
     setRejectionReason("");
   };
 
-  // ─── MUTATIONS ──────────────────────────────────────────────────────────────
   const blockMutation = useBlockProviderMutation();
 
   const approveMutation = useApproveProviderMutation(closeDialog);
 
   const rejectMutation = useRejectProviderMutation(closeDialog);
 
-  // ─── COLUMN DEFINITIONS ─────────────────────────────────────────────────────
   const columns = [
     {
       header: "Provider",
@@ -223,7 +213,6 @@ export default function Providers() {
         }
       />
 
-      {/* ─── DETAILS DIALOG ─── */}
       <Dialog open={!!selectedProviderId} onOpenChange={closeDialog}>
         <DialogContent className="sm:max-w-3xl h-[90vh] flex flex-col p-0 overflow-hidden">
           <DialogHeader className="p-6 pb-2 relative">
@@ -243,7 +232,6 @@ export default function Providers() {
               </div>
             ) : (
               <>
-                {/* Profile Header Card */}
                 <div className="flex items-start gap-6 bg-muted/30 p-5 rounded-2xl border border-border/50">
                   <Avatar className="h-24 w-24 border-4 border-background shadow-sm">
                     <img
@@ -286,7 +274,7 @@ export default function Providers() {
                       </div>
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <MapPin className="h-4 w-4 text-primary/70" />{" "}
-                        {profileDetails?.data?.location}
+                        {profileDetails?.data?.location?.address}
                       </div>
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Briefcase className="h-4 w-4 text-primary/70" />{" "}

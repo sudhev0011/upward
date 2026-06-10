@@ -6,16 +6,14 @@ export const UnavailabilitySource = {
 export type UnavailabilitySource =
   (typeof UnavailabilitySource)[keyof typeof UnavailabilitySource];
 
-// 🔹 Create Request
 export interface CreateUnavailabilityRequest {
-  startDate: Date; // ISO
-  endDate: Date;   // ISO
+  startDate: Date; 
+  endDate: Date;   
   reason?: string | null;
   source: UnavailabilitySource;
   bookingId?: string | null;
 }
 
-// 🔹 Response
 export interface Unavailability {
   id: string;
   providerId: string;

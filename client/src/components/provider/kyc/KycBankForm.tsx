@@ -114,10 +114,8 @@ export function KycBankForm({
       setIsEditing(false);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        // TypeScript now knows 'error' is an AxiosError
         toast.error(error.response?.data?.message || "Server error occurred");
       } else if (error instanceof Error) {
-        // Handle standard JS errors (like the "Passbook URL missing" one you throw)
         toast.error(error.message);
       } else {
         toast.error("An unexpected error occurred");
@@ -163,7 +161,6 @@ export function KycBankForm({
 
       <CardContent className="space-y-6">
         {showReadOnly ? (
-          // ── Read-only View ──────────────────────────────────────────────
           <div className="space-y-6 animate-in fade-in duration-300">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
               <InfoRow
@@ -186,7 +183,6 @@ export function KycBankForm({
             </div>
           </div>
         ) : (
-          // ── Form View ───────────────────────────────────────────────────
           <form
             onSubmit={bankForm.handleSubmit(onBankSubmit)}
             className="space-y-6"

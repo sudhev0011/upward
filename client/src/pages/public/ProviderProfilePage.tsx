@@ -1,4 +1,3 @@
-// pages/client/ProviderProfilePage.tsx
 import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {
@@ -51,7 +50,6 @@ export const ProviderProfilePage = () => {
     }
   };
 
-  // ── Loading ──────────────────────────────────────────────
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -64,7 +62,6 @@ export const ProviderProfilePage = () => {
     );
   }
 
-  // ── Error ─────────────────────────────────────────────────
   if (isError || !provider) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">

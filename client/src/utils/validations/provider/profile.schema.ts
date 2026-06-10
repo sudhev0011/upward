@@ -15,8 +15,8 @@ const geoPointSchema = z.object({
   type: z.literal("Point"),
 
   coordinates: z.tuple([
-    z.number(), // lng
-    z.number(), // lat
+    z.number(), 
+    z.number(), 
   ]),
 });
 

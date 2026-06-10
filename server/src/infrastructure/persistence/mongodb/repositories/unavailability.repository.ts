@@ -22,9 +22,6 @@ export class UnavailabilityRepository extends RepositoryBase<
     return this.findMany({ providerId: new Types.ObjectId(providerId) });
   }
 
-  // Core query — find all blocks that overlap with a given date range.
-  // Used when computing available slots for a provider.
-  // Overlap condition: existing.startDate < rangeEnd AND existing.endDate > rangeStart
   async findOverlapping(
     providerId: string,
     rangeStart: Date,
@@ -52,7 +49,6 @@ export class UnavailabilityRepository extends RepositoryBase<
     });
   }
 
-  // When a booking is cancelled, remove the corresponding unavailability block
   async deleteByBookingId(
     bookingId: string,
     transaction?: ITransactionContext,
@@ -72,7 +68,6 @@ export class UnavailabilityRepository extends RepositoryBase<
     return result.deletedCount > 0;
   }
 
-  // Delete all manual blocks for a provider in a date range
   async deleteManualInRange(
     providerId: string,
     rangeStart: Date,
@@ -88,7 +83,6 @@ export class UnavailabilityRepository extends RepositoryBase<
     return result.deletedCount ?? 0;
   }
 
-  // ─── Mappers ───────────────────────────────────────────────────────────────
 
   protected mapToEntity(document: UnavailabilityDocument): Unavailability {
     return UnavailabilityInfraMapper.mapToEntity(document);

@@ -12,12 +12,10 @@ import {
   CheckCircle,
   Crown,
   Calendar,
-  DollarSign,
   ShieldCheck,
   Zap,
 } from "lucide-react";
 
-// UI Components
 import { Card, CardContent, CardTitle, CardHeader, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +27,6 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 
-// Hooks & Types
 import {
   useProviderActivePlans,
   useProviderStatus,
@@ -158,6 +155,7 @@ export default function SubscriptionsPage() {
   const handleCheckoutInit = (planId: string) => {
     checkoutMutation.mutate(planId, {
       onSuccess: (res) => {
+        if(res.data)
         setCheckoutClientSecret(res.data.clientSecret);
       },
       onError: (err) => {

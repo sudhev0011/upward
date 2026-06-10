@@ -14,7 +14,6 @@ interface Props {
 }
 
 const formatSlotTime = (time: string) => {
-  // converts HH:mm to 12hr format for display — "09:00" → "9:00 AM"
   return format(parse(time, "HH:mm", new Date()), "h:mm a");
 };
 

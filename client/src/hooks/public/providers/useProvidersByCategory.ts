@@ -1,4 +1,3 @@
-// hooks/queries/useProvidersByCategory.ts
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { publicApi } from '@/api/public.api';
 import { GetProvidersByCategoryParams } from '@/interfaces/provider/provider.listing.interface';
@@ -14,7 +13,7 @@ export const useProvidersByCategory = (params: GetProvidersByCategoryParams) => 
     queryKey: providerListingKeys.byCategory(params),
     queryFn: () => publicApi.getProvidersByCategory(params),
     select: (res) => res.data,
-    placeholderData: keepPreviousData, // keeps previous page visible while next loads
+    placeholderData: keepPreviousData, 
     enabled: !!params.category,
   });
 };

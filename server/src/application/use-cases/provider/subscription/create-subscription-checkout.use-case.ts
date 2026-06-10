@@ -30,9 +30,8 @@ export class CreateSubscriptionCheckoutUseCase {
       throw new NotFoundError("Active subscription plan not found");
     }
 
-    // 1. Create a pending ProviderSubscription record
     const subscription = ProviderSubscription.create({
-      id: "", // auto-generated
+      id: "", 
       providerId: data.providerId,
       planId: plan.id,
       amount: plan.price,
@@ -45,7 +44,6 @@ export class CreateSubscriptionCheckoutUseCase {
     const createdSubscription =
       await this.providerSubscriptionRepository.create(subscription);
 
-    // 2. Request Stripe PaymentIntent
     const stripeResult = await this.paymentGateway.createPaymentIntent({
       amount: plan.price,
       currency: "inr",
@@ -55,7 +53,6 @@ export class CreateSubscriptionCheckoutUseCase {
       },
     });
 
-    // 3. Update the subscription with payment intent ID
     const updatedSubscription = ProviderSubscription.create({
       id: createdSubscription.id,
       providerId: createdSubscription.providerId,

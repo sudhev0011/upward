@@ -11,10 +11,10 @@ export class ChatRouter {
   }
 
   private _initializeRoutes(): void {
-    // All chat endpoints require JWT authentication
     this.router.use(authenticateToken);
 
     this.router.get('/conversations', chatController.getConversations);
+    this.router.get('/presigned-url', chatController.getPresignedUrl);
     this.router.get('/messages/:conversationId', chatController.getMessages);
     this.router.post('/conversations', chatController.findOrCreateConversation);
     this.router.patch('/conversations/:conversationId/reset', chatController.resetUnreadCount);

@@ -66,7 +66,6 @@ export class ServiceRepository
   }) {
     const filter: Record<string, unknown> = {};
 
-    // 🔍 Search
     if (search) {
       filter.$or = [
         { name: { $regex: search, $options: "i" } },
@@ -74,12 +73,10 @@ export class ServiceRepository
       ];
     }
 
-    // ✅ Active filter
     if (isActive !== undefined) {
       filter.isActive = isActive;
     }
 
-    // ✅ Mode filter (with "both" logic)
     if (mode) {
       if (mode === "onsite") {
         filter.mode = { $in: ["onsite", "both"] };
@@ -90,12 +87,10 @@ export class ServiceRepository
       }
     }
 
-    // ✅ Category filter
     if (categoryId) {
       filter.categoryId = new Types.ObjectId(categoryId);
     }
 
-    // 🔒 Safe sorting
     const allowedSortFields = ["name", "createdAt"];
     if (!allowedSortFields.includes(sortBy)) {
       sortBy = "createdAt";

@@ -35,7 +35,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-// Hooks & Types
 import { useGetAllCategories } from "@/hooks/public/useGetAllCategories";
 import { useGetAllServicesByCategory } from "@/hooks/public/useGetAllServicesByCategory";
 import { useCreateProviderServiceMutation } from "@/hooks/provider/providerService/useCreateProviderSevice";
@@ -53,7 +52,6 @@ const ICON_MAP: Record<string, React.ElementType> = {
 const getCategoryIcon = (name: string) => ICON_MAP[name] || Settings2;
 
 export default function ServicesPage() {
-  // 1. UI State
   const [open, setOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<{
     id: string;
@@ -61,16 +59,13 @@ export default function ServicesPage() {
   } | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Services | null>(null);
 
-  // 2. Filter & Sorting State
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   
-  // These strictly match your hook's params: "name" | "createdAt" and "asc" | "desc"
   const [sortBy, setSortBy] = useState<"name" | "createdAt">("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  // 3. Fetching Data (Passing the unified params object)
   const { data: providerResponse, isLoading: isLoadingProvider } =
     useGetProviderSericeByCategoryQuery({
       page,
@@ -83,7 +78,6 @@ export default function ServicesPage() {
 
   const providerData = providerResponse?.data;
 
-  // Additional Data Fetching
   const { data: categories, isLoading: isLoadingCats } = useGetAllCategories();
   const { data: categoryServices, isFetching: isFetchingSubServices } =
     useGetAllServicesByCategory(selectedCategory?.id || "");

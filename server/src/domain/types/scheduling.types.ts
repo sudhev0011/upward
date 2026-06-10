@@ -1,5 +1,5 @@
 export interface TimeRange {
-  start: number; // minutes from midnight
+  start: number; 
   end: number;
 }
 

@@ -1,12 +1,15 @@
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send, Search } from "lucide-react";
+import { Send, Search, Paperclip, Loader2 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { useAppSelector } from "@/hooks/useRedux";
 import { useSocket } from "@/hooks/useSocket";
 import { chatApi } from "@/api/chat.api";
 import { Conversation, Message } from "@/interfaces/chat.interface";
+import { useUploadChatAttachment } from "@/hooks/chat/useUploadChatAttachment";
+import { toast } from "sonner";
+import RenderAttachment from "@/components/common/chat/RenderAttachment";
 
 export default function MessagesPage() {
   const currentUser = useAppSelector((state) => state.auth.user);
@@ -19,11 +22,50 @@ export default function MessagesPage() {
   const [search, setSearch] = useState("");
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const uploadAttachmentMutation = useUploadChatAttachment();
 
-  // Hook up Socket.IO connection
   const { socket } = useSocket(activeChat);
 
-  // Fetch all conversations
+  const handleAttachmentClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !activeChat || !socket) return;
+
+    const toastId = toast.loading(`Uploading ${file.name}...`);
+    try {
+      const { fileUrl } = await uploadAttachmentMutation.mutateAsync(file);
+      
+      socket.emit(
+        "send_message",
+        {
+          conversationId: activeChat,
+          text: "",
+          attachmentUrl: fileUrl,
+        },
+        (res: { success: boolean; error?: string }) => {
+          if (!res.success) {
+            console.error("Failed to send message:", res.error);
+            toast.error("Failed to send attachment", { id: toastId });
+          } else {
+            toast.success("Attachment sent!", { id: toastId });
+          }
+        }
+      );
+    } catch (err: unknown) {
+      console.error("Upload failed:", err);
+      const errorMsg = err instanceof Error ? err.message : "Upload failed";
+      toast.error(errorMsg, { id: toastId });
+    } finally {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
   const fetchConversations = async () => {
     try {
       const response = await chatApi.getConversations();
@@ -42,7 +84,6 @@ export default function MessagesPage() {
     fetchConversations();
   }, []);
 
-  // Fetch messages for selected conversation
   const fetchMessages = async (conversationId: string) => {
     try {
       const response = await chatApi.getMessages(conversationId);
@@ -58,7 +99,6 @@ export default function MessagesPage() {
     if (activeChat) {
       fetchMessages(activeChat);
 
-      // Reset unread count for provider
       chatApi.resetUnreadCount(activeChat, "provider").then(() => {
         socket?.emit("read_messages", {
           conversationId: activeChat,
@@ -68,14 +108,12 @@ export default function MessagesPage() {
     }
   }, [activeChat, socket]);
 
-  // Handle socket events
   useEffect(() => {
     if (!socket) return;
 
     const handleMessageReceived = (message: Message) => {
       if (message.conversationId === activeChat) {
         setMessages((prev) => [...prev, message]);
-        // Reset unread counts on server since we are active in this room
         chatApi.resetUnreadCount(activeChat, "provider").then(() => {
           socket.emit("read_messages", {
             conversationId: activeChat,
@@ -98,7 +136,6 @@ export default function MessagesPage() {
     };
   }, [socket, activeChat]);
 
-  // Scroll to bottom when messages update
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -151,7 +188,6 @@ export default function MessagesPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100vh-240px)]">
-        {/* Conversations Card */}
         <Card className="border-border/50 bg-card/80 backdrop-blur-sm lg:col-span-1 flex flex-col overflow-hidden">
           <div className="p-3 border-b border-border/50">
             <div className="relative">
@@ -233,7 +269,6 @@ export default function MessagesPage() {
           </div>
         </Card>
 
-        {/* Chat Area Card */}
         <Card className="border-border/50 bg-card/80 backdrop-blur-sm lg:col-span-2 flex flex-col overflow-hidden">
           {selectedConversation ? (
             <>
@@ -282,7 +317,8 @@ export default function MessagesPage() {
                             : "bg-secondary/50 text-card-foreground"
                         }`}
                       >
-                        <p className="text-sm leading-relaxed">{msg.text}</p>
+                        {msg.text && <p className="text-sm leading-relaxed">{msg.text}</p>}
+                        {msg.attachmentUrl && RenderAttachment(msg.attachmentUrl, isMe)}
                         <p
                           className={`text-[11px] mt-1.5 ${isMe ? "text-primary-foreground/60" : "text-muted-foreground"}`}
                         >
@@ -300,6 +336,26 @@ export default function MessagesPage() {
 
               <div className="p-4 border-t border-border/50">
                 <div className="flex gap-2">
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={handleFileChange} 
+                    className="hidden" 
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    disabled={uploadAttachmentMutation.isPending}
+                    className="rounded-xl shrink-0 border-border/50 text-muted-foreground hover:text-foreground hover:bg-secondary/30 disabled:opacity-50"
+                    onClick={handleAttachmentClick}
+                  >
+                    {uploadAttachmentMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Paperclip className="h-4 w-4" />
+                    )}
+                  </Button>
                   <Input
                     placeholder="Type a message..."
                     className="bg-secondary/30 border-border/50 rounded-xl"

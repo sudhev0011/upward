@@ -1,4 +1,3 @@
-// components/provider/public-profile/AvailabilitySection.tsx
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useGetProviderAvailability } from "@/hooks/public/providers/availability/useGetProviderAvailability";

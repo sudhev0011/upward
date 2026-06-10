@@ -2,8 +2,8 @@ import { Document, model, Schema, Types } from "mongoose";
 
 export interface DaySchedule {
   isWorking: boolean;
-  startTime: string | null; // "HH:mm"
-  endTime: string | null;   // "HH:mm"
+  startTime: string | null; 
+  endTime: string | null;   
 }
 
 export interface WeeklySchedule {

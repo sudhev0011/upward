@@ -53,7 +53,6 @@ export class ProviderProfileRepository
     const skip = (page - 1) * limit;
     const pipeline: PipelineStage[] = [];
 
-    // 1. Initial Match for Provider-specific filters (Performance: filter before lookup)
     const providerMatch: Record<string, unknown> = {};
     if (isApprovedByAdmin !== undefined) {
       providerMatch.isApprovedByAdmin = isApprovedByAdmin;
@@ -62,7 +61,6 @@ export class ProviderProfileRepository
       pipeline.push({ $match: providerMatch });
     }
 
-    // 2. Lookup User Data
     pipeline.push({
       $lookup: {
         from: "users",
@@ -74,7 +72,6 @@ export class ProviderProfileRepository
 
     pipeline.push({ $unwind: "$user" });
 
-    // 3. Match for User-specific filters and Global Search
     const secondaryMatch: Record<string, unknown> = {};
 
     if (isBlocked !== undefined) {
@@ -94,15 +91,12 @@ export class ProviderProfileRepository
       pipeline.push({ $match: secondaryMatch });
     }
 
-    // 4. Sorting
-    // Mapping 'name' or 'email' to 'user.name' etc., if the user tries to sort by joined fields
     const sortField =
       sortBy === "name" || sortBy === "email" ? `user.${sortBy}` : sortBy;
     pipeline.push({
       $sort: { [sortField]: sortOrder === "asc" ? 1 : -1 },
     });
 
-    // 5. Facet for Pagination and Totals
     pipeline.push({
       $facet: {
         docs: [{ $skip: skip }, { $limit: limit }],
@@ -155,7 +149,6 @@ export class ProviderProfileRepository
     const skip = (page - 1) * limit;
     const pipeline: PipelineStage[] = [];
 
-    // 1. Match approved providers in the requested category
     const initialMatch: Record<string, unknown> = {
       isApprovedByAdmin: true,
       categories: category,
@@ -169,7 +162,6 @@ export class ProviderProfileRepository
     }
     pipeline.push({ $match: initialMatch });
 
-    // 2. Lookup user — only to verify not blocked
     pipeline.push({
       $lookup: {
         from: "users",
@@ -180,17 +172,14 @@ export class ProviderProfileRepository
     });
     pipeline.push({ $unwind: "$user" });
 
-    // 3. Exclude blocked users
     pipeline.push({
       $match: { "user.isBlocked": false },
     });
 
-    // 4. Sort
     pipeline.push({
       $sort: { [sortBy]: sortOrder === "asc" ? 1 : -1 },
     });
 
-    // 5. Project — only expose what the client listing card needs
     pipeline.push({
       $project: {
         _id: 1,
@@ -209,7 +198,6 @@ export class ProviderProfileRepository
       },
     });
 
-    // 6. Paginate + total in one shot
     pipeline.push({
       $facet: {
         docs: [{ $skip: skip }, { $limit: limit }],

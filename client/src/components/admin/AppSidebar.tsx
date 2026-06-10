@@ -48,7 +48,6 @@ const mainItems = [
   { title: "Payments", url: "/admin/payments", icon: CreditCard },
 ];
 
-// Reusable nav item — always mounted, text fades via CSS group-data attribute
 function NavItem({
   url,
   icon: Icon,

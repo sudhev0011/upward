@@ -36,7 +36,6 @@ export class CancelBookingUseCase {
       throw new NotFoundError("Booking not found");
     }
 
-    // Authorization checks
     if (role === UserRole.CLIENT && booking.clientId !== userId) {
       throw new AuthorizationError("Not authorized to cancel this booking");
     }
@@ -44,7 +43,6 @@ export class CancelBookingUseCase {
       throw new AuthorizationError("Not authorized to cancel this booking");
     }
 
-    // Can only cancel pending or confirmed bookings
     if (
       booking.status !== BookingStatus.PENDING &&
       booking.status !== BookingStatus.CONFIRMED
@@ -52,7 +50,6 @@ export class CancelBookingUseCase {
       throw new UnprocessableEntityError("Only pending or confirmed bookings can be cancelled");
     }
 
-    // Enforce client-side rule: confirmed bookings can only be cancelled before one week
     if (role === UserRole.CLIENT && booking.status === BookingStatus.CONFIRMED) {
       const now = new Date();
       const timeDifference = new Date(booking?.bookingDate)?.getTime() - now.getTime();
@@ -67,7 +64,6 @@ export class CancelBookingUseCase {
     const refundAmount = booking.paidAmount;
 
     await this.transactionManager.runInTransaction(async (transaction) => {
-      // 1. Update booking entity state
       const cancelledBooking = booking.cancel({
         cancelledBy: userId,
         reason,
@@ -76,10 +72,8 @@ export class CancelBookingUseCase {
 
       await this.bookingRepository.update(bookingId, cancelledBooking, transaction);
 
-      // 2. Remove provider slot occupancy (unavailability)
       await this.unavailabilityRepository.deleteByBookingId(bookingId, transaction);
 
-      // 3. Credit Client's Wallet if there is a paid amount
       if (refundAmount > 0) {
         let wallet = await this.walletRepository.findByUserId(booking.clientId, transaction);
         if (!wallet) {
@@ -92,7 +86,6 @@ export class CancelBookingUseCase {
         const updatedWallet = wallet.credit(refundAmount);
         await this.walletRepository.update(wallet.id!, updatedWallet, transaction);
 
-        // Record wallet transaction
         const walletTransaction = WalletTransaction.create({
           walletId: wallet.id!,
           amount: refundAmount,

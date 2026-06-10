@@ -30,8 +30,6 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     if (savedMessage.id) {
       await this._chatRepository.updateLastMessage(conversationId, savedMessage.id);
 
-      // Determine recipient role to increment unread counts
-      // If sender is client, recipient is provider (and vice versa)
       const recipientRole = senderId === conversation.clientId ? 'provider' : 'client';
       await this._chatRepository.incrementUnreadCount(conversationId, recipientRole);
     }

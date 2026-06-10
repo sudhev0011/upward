@@ -37,7 +37,6 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { ProviderServicesGroupedByCategory } from "@/interfaces/admin/provider-service.interface";
-// Hooks
 import { useGetProviderSericeByCategoryQuery } from "@/hooks/provider/providerService/useGetProviderServiceByCategory";
 import { useConfigureProviderServiceMutation } from "@/hooks/provider/providerService/useConfigureProviderServiceMutation";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -108,7 +107,6 @@ export default function PricingPage() {
       });
     },
   );
-  // 3. Sync local prices only for new data arriving
   useEffect(() => {
     if (categories.length > 0) {
       onCategoriesUpdate(categories);

@@ -41,7 +41,6 @@ export function OrderDetailsDialog({ order, onClose, mapStatusStyle }: OrderDeta
 
   const isCancelable = ["PENDING", "CONFIRMED"].includes(order.status.toUpperCase());
 
-  // Safe formatting for nullable times
   const formattedTime = order.startDateTime
     ? new Date(order.startDateTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     : "Flexible / Not set";

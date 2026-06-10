@@ -24,7 +24,6 @@ export class ClientProfileController {
     private readonly _getClientProfileUseCase: IGetClientProfileUseCase,
     private readonly _updateClientProfileUseCase: IUpdateClientProfileUseCase
   ) {}
-  // This method creates a presigned url to upload the image from frontend itself
   uploadAvatar = async (
     req: AuthenticatedRequest,
     res: Response,
@@ -56,7 +55,6 @@ export class ClientProfileController {
       handleAsyncError(error, next);
     }
   };
-  // This method is used to create the profile of the client
   createClientProfile = async (
     req: AuthenticatedRequest,
     res: Response,
@@ -84,7 +82,6 @@ export class ClientProfileController {
       handleAsyncError(error, next);
     }
   };
-  // This method fetches the profile of the client
   getClientProfile = async (
     req: AuthenticatedRequest,
     res: Response,
@@ -102,7 +99,6 @@ export class ClientProfileController {
       handleAsyncError(error, next);
     }
   };
-  // This method is used to update the contents of the client profile
   updateClientProfile = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
       try {
         const userId = validateUserId(req);

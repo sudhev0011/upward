@@ -54,7 +54,6 @@ const SummaryRow = ({ icon, label, value }: SummaryRowProps) => (
   </div>
 );
 
-// requirements rendered as chips, not a single string
 const RequirementsSummary = ({ requirements }: { requirements: string[] }) => (
   <div className="flex items-start gap-3">
     <div className="mt-0.5 text-primary shrink-0">
@@ -84,7 +83,6 @@ export default function ConfirmStep({
 }: Props) {
   const isOnsite = formState.mode === "onsite";
 
-  // shared success handler — same for both flows
   const handleSuccess = async (data: Awaited<ReturnType<typeof clientApi.createOnsiteBooking>>) => {
     const booking = data?.data;
 
@@ -111,7 +109,6 @@ export default function ConfirmStep({
     }
   };
 
-  // shared error handler
   const handleError = (error: Error) => {
     onError(
       error?.message ?? "Something went wrong while creating your booking. Please try again."

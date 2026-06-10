@@ -14,7 +14,6 @@ export class AvailabilityRepository extends RepositoryBase<
     super(AvailabilityModel);
   }
 
-  // Each provider has exactly one availability document
   async findByProviderId(providerId: string): Promise<Availability | null> {
     return this.findOne({ providerId: new Types.ObjectId(providerId) });
   }
@@ -34,7 +33,6 @@ export class AvailabilityRepository extends RepositoryBase<
     return this.mapToEntity(document!);
   }
 
-  // ─── Mappers ───────────────────────────────────────────────────────────────
 
   protected mapToEntity(document: AvailabilityDocument): Availability {
     return AvailabilityInfraMapper.mapToEntity(document)

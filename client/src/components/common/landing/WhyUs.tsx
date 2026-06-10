@@ -16,9 +16,8 @@ const FEATURES: Feature[] = [
   { icon: Star,        title: "Top 5% Network",          desc: "We accept only the most skilled professionals in every category." },
 ];
 
-// 1. Create a child component for the individual card
 const FeatureCard = ({ feature, index }: { feature: Feature; index: number }) => {
-  const ref = useReveal(index * 60); // Hook is now called at the top level of its own component
+  const ref = useReveal(index * 60);
 
   return (
     <div

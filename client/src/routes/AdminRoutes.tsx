@@ -8,9 +8,6 @@ import Categories from "@/pages/admin/Categories";
 import Services from "@/pages/admin/Services";
 import Subscriptions from "@/pages/admin/Subscriptions";
 
-// These pages don't exist yet — create them as stubs when ready
-// import Payments from "@/pages/admin/Payments";
-
 const AdminRoutes = () => {
   return (
     <Routes>

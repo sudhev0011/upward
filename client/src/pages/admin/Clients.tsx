@@ -4,9 +4,6 @@ import {
   ArrowUpDown, User, ShieldCheck, ShieldAlert,
   Clock, Info
 } from "lucide-react";
-
-
-// UI Components
 import { DataTable } from "@/components/admin/DataTable";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -21,8 +18,6 @@ import { useBlockClientMutation } from "@/hooks/admin/useBlockClient";
 import { ClientProfile } from "@/interfaces/client/client.interface";
 
 export default function Clients() {
-
-  // ─── STATE ──────────────────────────────────────────────────────────────────
   const [params, setParams] = useState({
     page: 1,
     limit: 10,
@@ -34,21 +29,14 @@ export default function Clients() {
 
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
 
-  // ─── DATA FETCHING ──────────────────────────────────────────────────────────
-  
-  // 1. List View
   const { data: listData } = useGetClientsProfile(params);
 
-  // 2. Client Details (Using the schema you provided)
   const { data: clientResponse, isLoading: isDetailsLoading } = useGetClientProfileById(selectedClientId);
 
   const client = clientResponse?.data;
 
-  // ─── MUTATIONS ──────────────────────────────────────────────────────────────
-  
   const blockMutation = useBlockClientMutation()
 
-  // ─── COLUMN DEFINITIONS ─────────────────────────────────────────────────────
   const columns = [
     {
       header: "Client",

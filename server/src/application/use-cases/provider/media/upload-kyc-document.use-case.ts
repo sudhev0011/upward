@@ -17,7 +17,6 @@ export class UploadKycDocumentUseCase implements IUploadKycDocumentUseCase {
     const ext = fileType === "application/pdf" ? "pdf" : fileType.split("/")[1];
     const key = `documents/${userId}-kyc-${Date.now()}.${ext}`;
     
-    // Using IS3Service to generate upload URL
     const uploadUrlResponse = await this._s3Service.generateUploadUrl(key, fileType);
     
     return {

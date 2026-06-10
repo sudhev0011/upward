@@ -1,4 +1,3 @@
-// hooks/public/providers/useGetProviderProfile.ts
 import { useQuery } from '@tanstack/react-query';
 import { publicApi } from '@/api/public.api';
 

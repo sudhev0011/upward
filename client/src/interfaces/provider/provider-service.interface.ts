@@ -1,7 +1,9 @@
+import { BookingMode } from "@/enums/booking-mode";
+
 export interface ProviderServicePublicItem {
   providerServiceId: string;
   serviceName: string;
-  mode: string;
+  mode: BookingMode;
   maxHour: number | null;
   price: number;
   categoryName: string;

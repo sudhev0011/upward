@@ -35,7 +35,6 @@ export class GetClientWalletUseCase {
       wallet.id!
     );
 
-    // Map to response DTO/interface
     const mappedTransactions: WalletTransactionResponse[] = transactions.map(
       (t) => ({
         id: t.id!,
@@ -47,7 +46,6 @@ export class GetClientWalletUseCase {
       })
     );
 
-    // Sort transactions by date descending so newest are first
     mappedTransactions.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
     return {

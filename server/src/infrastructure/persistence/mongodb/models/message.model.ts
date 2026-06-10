@@ -14,7 +14,7 @@ const MessageSchema = new Schema<MessageDocument>(
   {
     conversationId: { type: Schema.Types.ObjectId, ref: 'Conversation', required: true, index: true },
     senderId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    text: { type: String, required: true },
+    text: { type: String, default: "" },
     attachmentUrl: { type: String, default: null },
     isRead: { type: Boolean, default: false },
   },
@@ -23,7 +23,6 @@ const MessageSchema = new Schema<MessageDocument>(
   }
 );
 
-// Index to optimize listing messages by conversation sorted by creation time
 MessageSchema.index({ conversationId: 1, createdAt: 1 });
 
 export const MessageModel = model<MessageDocument>('Message', MessageSchema);

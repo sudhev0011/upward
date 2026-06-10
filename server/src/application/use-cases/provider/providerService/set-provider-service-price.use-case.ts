@@ -67,7 +67,6 @@ export class ConfigureProviderServiceUseCase implements IConfigureProviderServic
     }
 
     if (!service) {
-      // Non-blocking — service is already saved, just log and move on
       this._logger.error(
         `SetProviderServicePriceUseCase: master service not found for serviceId=${providerService.serviceId}. Category not synced to provider profile.`,
       );
@@ -88,7 +87,6 @@ export class ConfigureProviderServiceUseCase implements IConfigureProviderServic
     await this._providerProfileRepository
       .addCategoryIfAbsent(providerService.providerId, category.name)
       .catch((err) => {
-        // Non-blocking — price is already set, profile sync failure shouldn't fail the request
         this._logger.error(
           `SetProviderServicePriceUseCase: failed to sync category to provider profile. providerId=${providerService.providerId}`,
           err,

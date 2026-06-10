@@ -110,7 +110,6 @@ export default function BookingModal({
     mode,
   });
 
-  // bookingId and clientSecret are set after POST /bookings and POST /payments/create-intent
   const [bookingId, setBookingId] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [failureMessage, setFailureMessage] = useState<string>("");

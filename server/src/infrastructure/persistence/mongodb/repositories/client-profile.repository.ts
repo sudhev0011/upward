@@ -47,7 +47,6 @@ export class ClientProfileRepository
   const skip = (page - 1) * limit;
   const pipeline: PipelineStage[] = [];
 
-  // 1. Join with User Collection
   pipeline.push({
     $lookup: {
       from: "users",
@@ -59,15 +58,12 @@ export class ClientProfileRepository
 
   pipeline.push({ $unwind: "$user" });
 
-  // 2. Build Match Object
   const match: Record<string, unknown> = {};
 
-  // Filter by Blocked status
   if (isBlocked !== undefined) {
     match["user.isBlocked"] = isBlocked;
   }
 
-  // Unified Search (Name, Email, Location, or Phone)
   if (search) {
     match.$or = [
       { "user.name": { $regex: search, $options: "i" } },
@@ -80,14 +76,11 @@ export class ClientProfileRepository
   if (Object.keys(match).length > 0) {
     pipeline.push({ $match: match });
   }
-
-  // 3. Dynamic Sorting
   const sortField = (sortBy === 'name' || sortBy === 'email') ? `user.${sortBy}` : sortBy;
   pipeline.push({
     $sort: { [sortField]: sortOrder === 'asc' ? 1 : -1 }
   });
 
-  // 4. Execution with Facet
   pipeline.push({
     $facet: {
       docs: [{ $skip: skip }, { $limit: limit }],
@@ -100,7 +93,6 @@ export class ClientProfileRepository
   const docs = result[0].docs || [];
   const total = result[0].totalCount[0]?.count || 0;
 
-  // 5. Map to Entity
   const clients = docs.map((doc: any) => {
     const entity = this.mapToEntity(doc);
     return {

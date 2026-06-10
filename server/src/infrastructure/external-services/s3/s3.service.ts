@@ -29,7 +29,7 @@ export class S3Service implements IS3Service {
   }
 
   isPublicFile(key: string): boolean {
-    return key.startsWith("profiles/") || key.startsWith("portfolios/")
+    return key.startsWith("profiles/") || key.startsWith("portfolios/") || key.startsWith("chat/")
   }
 
   async generateUploadUrl(key: string, contentType: string) {

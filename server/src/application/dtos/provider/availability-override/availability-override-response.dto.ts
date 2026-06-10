@@ -1,10 +1,10 @@
 export interface AvailabilityOverrideResponseDto {
   id: string;
   providerId: string;
-  date: string;             // "YYYY-MM-DD"
+  date: string;
   isWorking: boolean;
-  startTime: string | null; // "HH:mm"
-  endTime: string | null;   // "HH:mm"
+  startTime: string | null; 
+  endTime: string | null;   
   createdAt: Date;
   updatedAt: Date;
 }

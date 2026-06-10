@@ -1,4 +1,3 @@
-// application/usecases/provider/profile/GetProvidersByCategoryUseCase.ts
 import { PaginatedResult } from '../../../../domain/common.types';
 import { IProviderProfileRepository } from '../../../../domain/interfaces/repositories/provider/IProviderProfileRepository';
 import { IGetProvidersByCategoryUseCase } from '../../../../domain/interfaces/usecases/provider/profile/IGetProvidersByCategoryUseCase';

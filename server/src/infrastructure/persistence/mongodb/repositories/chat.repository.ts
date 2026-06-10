@@ -11,14 +11,12 @@ export class MongoChatRepository implements IChatRepository {
     const clientOid = new Types.ObjectId(clientId);
     const providerOid = new Types.ObjectId(providerId);
 
-    // Try finding existing conversation
     let doc = await ConversationModel.findOne({
       clientId: clientOid,
       providerId: providerOid,
     });
 
     if (!doc) {
-      // Create new one if not found
       doc = await ConversationModel.create({
         clientId: clientOid,
         providerId: providerOid,

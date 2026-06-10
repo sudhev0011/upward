@@ -31,7 +31,6 @@ export const useSocket = (conversationId?: string) => {
     globalSocket.on('connect', onConnect);
     globalSocket.on('disconnect', onDisconnect);
 
-    // If conversationId is provided, join the room
     if (conversationId && globalSocket.connected) {
       globalSocket.emit('join_conversation', { conversationId });
     } else if (conversationId) {

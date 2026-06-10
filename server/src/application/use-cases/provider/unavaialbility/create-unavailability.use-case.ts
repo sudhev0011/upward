@@ -33,7 +33,6 @@ export class CreateUnavailabilityUseCase {
       );
     }
 
-    // Check for overlapping manual blocks to avoid duplicates
     const overlapping = await this._unavailabilityRepository.findOverlapping(
       data.providerId,
       data.startDate,

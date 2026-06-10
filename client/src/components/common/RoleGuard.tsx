@@ -7,7 +7,6 @@ import { UserRole } from "@/constants/user-role";
 export const RoleGuard = ({ children }: { children: ReactNode }) => {
   const { activeRole, user } = useSelector((state: RootState) => state.auth);
 
-  // If user logged in but role not selected → force select-role
   if (user && !activeRole) {
     return <Navigate to="/select-role" replace />;
   }

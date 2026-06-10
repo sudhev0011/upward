@@ -9,7 +9,6 @@ import type {
 } from "@/interfaces/client/booking.interface";
 import type { ApiEnvelope } from "@/interfaces/auth";
 
-// --- Query Keys ---
 
 export const bookingKeys = {
   all: ["bookings"] as const,
@@ -17,7 +16,6 @@ export const bookingKeys = {
     ["bookings", "slots", params.providerId, params.providerServiceId, params.date] as const,
 };
 
-// --- Available Slots Query ---
 
 export const useAvailableSlots = (
   params: GetAvailableSlotsRequest,
@@ -33,7 +31,6 @@ export const useAvailableSlots = (
   });
 };
 
-// --- Create Booking Mutation ---
 
 export const useCreateOnsiteBooking = (
   onSuccess?: (data: ApiEnvelope<Booking>) => void,
@@ -47,7 +44,6 @@ export const useCreateOnsiteBooking = (
   });
 };
 
-// --- Offsite Booking Mutation ---
 
 export const useCreateOffsiteBooking = (
   onSuccess?: (data: ApiEnvelope<Booking>) => void,

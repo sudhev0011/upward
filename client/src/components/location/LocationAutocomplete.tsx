@@ -79,7 +79,6 @@ export function LocationAutocomplete({
     setIsEditing(false);
   };
 
-  // SELECTED STATE
   if (value && !isEditing) {
     return (
       <div className="flex items-center justify-between rounded-xl border border-border/50 bg-secondary/30 px-4 py-3">
@@ -121,7 +120,6 @@ export function LocationAutocomplete({
     );
   }
 
-  // SEARCH STATE
   return (
     <Popover
       open={open}

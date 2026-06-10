@@ -35,7 +35,6 @@ export const useUpdateServiceMutation = () => {
         }
       );
       
-      // Background refetch to ensure UI is 100% in sync
       queryClient.invalidateQueries({ queryKey: ["servicesAdmin", "list"] });
     },
     onError: (error) => {

@@ -2,10 +2,10 @@ export class AvailabilityOverride {
   constructor(
     public readonly id: string | undefined,
     public readonly providerId: string,
-    public readonly date: string,         // "YYYY-MM-DD"
+    public readonly date: string,
     public readonly isWorking: boolean,
-    public readonly startTime: string | null, // "HH:mm"
-    public readonly endTime: string | null,   // "HH:mm"
+    public readonly startTime: string | null,
+    public readonly endTime: string | null,  
     public readonly createdAt: Date,
     public readonly updatedAt: Date
   ) {}

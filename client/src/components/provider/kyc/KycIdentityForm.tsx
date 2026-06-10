@@ -3,13 +3,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { ShieldCheck, Pencil, Loader2, AlertCircle } from "lucide-react"; // Added AlertCircle
-
+import { ShieldCheck, Pencil, Loader2, AlertCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-
 import { useSubmitKycIdentity } from "@/hooks/provider/useSubmitKycIdentity";
 import { useUploadKycDocument } from "@/hooks/provider/useUploadKycDocument";
 import { useUploadKycToS3Mutation } from "@/hooks/provider/useUploadKycToS3Mutation";
@@ -109,10 +107,8 @@ export function KycIdentityForm({
       setIsEditing(false);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        // TypeScript now knows 'error' is an AxiosError
         toast.error(error.response?.data?.message || "Server error occurred");
       } else if (error instanceof Error) {
-        // Handle standard JS errors (like the "Passbook URL missing" one you throw)
         toast.error(error.message);
       } else {
         toast.error("An unexpected error occurred");

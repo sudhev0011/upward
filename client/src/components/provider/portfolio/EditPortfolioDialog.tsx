@@ -73,7 +73,6 @@ export function EditPortfolioDialog({
   //   });
   // }, [item]);
 
-  // ── Handlers ────────────────────────────────────────────────────────────────
 
   const handleClose = () => {
     newFiles.forEach((f) => URL.revokeObjectURL(f.previewUrl));

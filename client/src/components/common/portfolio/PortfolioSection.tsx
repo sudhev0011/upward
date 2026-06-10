@@ -37,7 +37,6 @@ export const PortfolioSection = ({ providerId }: Props) => {
         : null
     );
 
-  // Loading
   if (isLoading) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -48,7 +47,6 @@ export const PortfolioSection = ({ providerId }: Props) => {
     );
   }
 
-  // Error
   if (isError) {
     return (
       <div className="text-center py-10 text-gray-400 text-sm">
@@ -57,7 +55,6 @@ export const PortfolioSection = ({ providerId }: Props) => {
     );
   }
 
-  // Empty
   if (allItems.length === 0) {
     return (
       <div className="flex flex-col items-center gap-2 py-12 text-gray-400">

@@ -2,8 +2,6 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-// ReactBits Components
 import ShinyText from "@/components/reactbits/ShinyText";
 import BlurText from "@/components/reactbits/BlurText";
 import Magnet from "@/components/reactbits/Magnet";

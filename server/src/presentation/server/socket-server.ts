@@ -38,7 +38,6 @@ export function initSocketServer(httpServer: HttpServer): SocketIOServer {
 
   const tokenService = new JwtTokenService();
 
-  // Authentication middleware for Socket.IO
   io.use((socket: AuthenticatedSocket, next) => {
     try {
       const cookies = parseCookies(socket.handshake.headers.cookie);
@@ -93,13 +92,13 @@ export function initSocketServer(httpServer: HttpServer): SocketIOServer {
     socket.on(
       'send_message',
       async (
-        data: { conversationId: string; text: string; attachmentUrl?: string | null },
+        data: { conversationId: string; text?: string; attachmentUrl?: string | null },
         callback?: (response: { success: boolean; data?: unknown; error?: string }) => void
       ) => {
         try {
           const { conversationId, text, attachmentUrl } = data;
-          if (!conversationId || !text) {
-            callback?.({ success: false, error: 'conversationId and text are required' });
+          if (!conversationId || (!text && !attachmentUrl)) {
+            callback?.({ success: false, error: 'conversationId and either text or attachmentUrl are required' });
             return;
           }
 
@@ -111,7 +110,7 @@ export function initSocketServer(httpServer: HttpServer): SocketIOServer {
           const message = await sendMessageUseCase.execute(
             userId,
             conversationId,
-            text,
+            text ?? "",
             attachmentUrl
           );
 

@@ -22,7 +22,6 @@ export class UpdatePortfolioItemUseCase implements IUpdatePortfolioItemUseCase {
  
     if (!existing) throw new NotFoundError("Portfolio item not found");
  
-    // Merge new images into existing arrays
     const mergedImages = data.newImages?.length
       ? [...existing.images, ...data.newImages]
       : existing.images;
@@ -31,7 +30,6 @@ export class UpdatePortfolioItemUseCase implements IUpdatePortfolioItemUseCase {
       ? [...existing.storageKeys, ...data.newStorageKeys]
       : existing.storageKeys;
  
-    // thumbnailUrl stays as first image always
     const thumbnailUrl = mergedImages[0] ?? existing.thumbnailUrl;
  
     const updated = await this._portfolioRepository.updateByIdAndProviderId(

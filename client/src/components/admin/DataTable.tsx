@@ -32,8 +32,6 @@ interface DataTableProps<TRow> {
   onPageChange?: (page: number) => void;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
 export function DataTable<TRow>({
   columns,
   data,

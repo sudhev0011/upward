@@ -28,7 +28,6 @@ export class AdminServiceController {
     private readonly _toggleServiceUseCase: IToggleServiceUseCase,
     private readonly _updateServiceUseCase: IUpdateServiceUseCase
   ) {}
-// methos to create admin service as a catelog for providers
   createService = async (req: Request, res: Response, next: NextFunction) => {
     const parsed = CreateServiceRequestDtoSchema.safeParse(req.body);
 
@@ -43,7 +42,6 @@ export class AdminServiceController {
       handleAsyncError(error, next);
     }
   };
-//delet services created by admin 
   deleteService = async (
     req: AuthenticatedRequest,
     res: Response,
@@ -63,7 +61,6 @@ export class AdminServiceController {
       handleAsyncError(error, next);
     }
   };
-// to fetch all the service created by admin 
   getAllService = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const services = await this._getAllServicesUseCase.execute(true);
@@ -72,7 +69,6 @@ export class AdminServiceController {
       handleAsyncError(error, next);
     }
   };
-// get all service with pagination data for listing
   getAllServicesWithPagination = async(req: Request, res: Response, next: NextFunction)=>{
 
     const parsed = GetPaginatedServicesRequestDto.safeParse(req.query);
@@ -88,7 +84,6 @@ export class AdminServiceController {
       handleAsyncError(error, next);
     }
   }
-// toggle the service's isActive property
   toggleService = async(req: Request, res: Response, next: NextFunction)=>{
     const parsed = ToggleServiceRequestDtoSchema.safeParse(req.body);
 

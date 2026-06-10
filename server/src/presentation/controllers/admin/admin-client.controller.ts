@@ -18,7 +18,6 @@ export class AdminClientController {
     private readonly _getClientByIdUseCase: IAdminGetClientByIdUseCase,
     private readonly _blockUserUseCase: IBlockClientUseCase,
   ) {}
-//get all client for admin
   getAllClients = async (
     req: Request,
     res: Response,
@@ -36,7 +35,6 @@ export class AdminClientController {
       handleAsyncError(error, next);
     }
   };
-//get specific client with clientId
   getClientById = async (
     req: Request,
     res: Response,
@@ -50,7 +48,6 @@ export class AdminClientController {
       handleAsyncError(error, next);
     }
   };
-// block a specific client
   blockClient = async (
     req: Request,
     res: Response,

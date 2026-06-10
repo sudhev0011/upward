@@ -79,7 +79,6 @@ export class PortfolioRepository
     return result.deletedCount > 0;
   }
 
-  // ─── Mappers ───────────────────────────────────────────────────────────────
 
   protected mapToEntity(document: PortfolioItemDocument): PortfolioItem {
     return PortfolioMapper.mapToEntity(document)

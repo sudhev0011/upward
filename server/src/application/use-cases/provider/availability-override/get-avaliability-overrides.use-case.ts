@@ -7,11 +7,10 @@ export class GetAvailabilityOverridesUseCase {
     private readonly _availabilityOverrideRepository: IAvailabilityOverrideRepository
   ) {}
 
-  // Fetch all overrides for a provider — used in calendar/schedule views
   async execute(
     providerId: string,
-    startDate?: string, // "YYYY-MM-DD" — optional range filter
-    endDate?: string    // "YYYY-MM-DD"
+    startDate?: string, 
+    endDate?: string    
   ): Promise<AvailabilityOverrideResponseDto[]> {
     const results =
       startDate && endDate

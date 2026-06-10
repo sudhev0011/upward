@@ -5,8 +5,8 @@ const GeoPointSchema = z.object({
 
   coordinates: z
     .tuple([
-      z.number(), // lng
-      z.number(), // lat
+      z.number(),
+      z.number(),
     ])
     .refine(
       ([lng, lat]) => {

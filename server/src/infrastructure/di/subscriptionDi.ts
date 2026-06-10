@@ -14,7 +14,6 @@ import { GetActivePlansUseCase } from "../../application/use-cases/provider/subs
 import { CreateSubscriptionCheckoutUseCase } from "../../application/use-cases/provider/subscription/create-subscription-checkout.use-case";
 import { ConfirmSubscriptionPaymentUseCase } from "../../application/use-cases/provider/subscription/confirm-subscription-payment.use-case";
 
-// Controller
 import { SubscriptionController } from "../../presentation/controllers/subscription/subscription.controller";
 
 // Repositories

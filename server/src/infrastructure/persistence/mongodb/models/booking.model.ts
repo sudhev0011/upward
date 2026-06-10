@@ -9,7 +9,7 @@ import { BookingMode } from "../../../../domain/enums/bookingMode.enum";
 
 interface GeoPoint {
   type: "Point";
-  coordinates: [number, number]; // [lng, lat]
+  coordinates: [number, number]; 
 }
 
 interface ClientLocation {
@@ -105,7 +105,7 @@ const ClientLocationSchema = new Schema<ClientLocation>(
       },
 
       coordinates: {
-        type: [Number], // [lng, lat]
+        type: [Number], 
         required: true,
       },
     },

@@ -10,8 +10,6 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { toast } from "sonner";
 
-// UI Components
-
 import { Button } from "@/components/ui/button";
 
 import {
@@ -24,7 +22,6 @@ import {
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-// Auth & Store
 
 import type { RootState } from "@/store/store";
 
@@ -65,7 +62,6 @@ const Navbar = () => {
     });
   };
 
-  // --- GSAP Card Animation ---
 
   useLayoutEffect(() => {
     const navEl = navRef.current;
@@ -105,7 +101,7 @@ const Navbar = () => {
   }, []);
 
   const toggleMenu = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent hover conflicts
+    e.stopPropagation(); 
 
     if (!isExpanded) {
       setIsExpanded(true);
@@ -146,9 +142,6 @@ const Navbar = () => {
     },
   ];
 
-  // Logic: Should the navbar be visible?
-
-  // It's visible if the mouse is hovering over it OR if the menu is clicked open.
 
   const isVisible = isHovered || isExpanded;
 

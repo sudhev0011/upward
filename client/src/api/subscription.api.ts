@@ -55,7 +55,6 @@ export interface CheckoutResponseDto {
 }
 
 export const subscriptionApi = {
-  // --- Admin Methods ---
   async adminGetPlans(): Promise<ApiEnvelope<SubscriptionPlanDto[]>> {
     const res = await api.get<ApiEnvelope<SubscriptionPlanDto[]>>(
       SubscriptionRoutes.ADMIN_PLANS,
@@ -91,7 +90,6 @@ export const subscriptionApi = {
     return res.data;
   },
 
-  // --- Provider Methods ---
   async providerGetActivePlans(): Promise<ApiEnvelope<SubscriptionPlanDto[]>> {
     const res = await api.get<ApiEnvelope<SubscriptionPlanDto[]>>(
       SubscriptionRoutes.PROVIDER_ACTIVE_PLANS,

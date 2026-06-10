@@ -41,7 +41,6 @@ const PaymentsPage = () => {
       t.type.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Calculate totals
   const totalCredits = transactions
     .filter((t) => t.type === "credit")
     .reduce((s, t) => s + t.amount, 0);

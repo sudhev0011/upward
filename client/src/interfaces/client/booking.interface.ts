@@ -2,14 +2,14 @@ import { PaymentType } from "@/enums/payment-type.enum";
 import { Location } from "../location.interface";
 import { BookingMode } from "@/enums/booking-mode";
 export interface AvailableSlot {
-  startTime: string; // HH:mm
-  endTime: string; // HH:mm
+  startTime: string; 
+  endTime: string; 
 }
 
 export interface GetAvailableSlotsRequest {
   providerId: string;
   providerServiceId: string;
-  date: string; // YYYY-MM-DD
+  date: string; 
 }
 
 export interface CreateOnsiteBookingRequest {

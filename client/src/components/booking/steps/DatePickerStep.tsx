@@ -18,12 +18,10 @@ export default function DatePickerStep({ formState, onNext }: Props) {
 
   const handleNext = () => {
     if (!selected) return;
-    // format to YYYY-MM-DD as backend expects
     onNext(format(selected, "yyyy-MM-dd"));
   };
 
   const isDateDisabled = (date: Date) => {
-    // disable all past dates including today
     return isBefore(date, startOfDay(new Date()));
   };
 

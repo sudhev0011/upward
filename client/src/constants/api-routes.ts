@@ -24,6 +24,7 @@ export const ClientRoutes = {
   BOOKINGS_ONSITE: "/api/client/bookings/onsite",
   BOOKINGS_OFFSITE: "/api/client/bookings/offsite",
   PAYMENT_CREATE_INTENT: "/api/client/payments/create-intent",
+  GET_WALLET: "/api/client/wallet"
 } as const;
 
 export const ProviderRoutes = {
@@ -110,4 +111,13 @@ export const SubscriptionRoutes = {
   PROVIDER_ACTIVE_PLANS: "/api/subscriptions/provider/active-plans",
   PROVIDER_CHECKOUT: "/api/subscriptions/provider/checkout",
   PROVIDER_STATUS: "/api/subscriptions/provider/my-status",
+} as const;
+
+export const ChatRoutes = {
+  GET_CONVERSATION: "/api/chat/conversations",
+  GET_MESSAGES: "/api/chat/messages/:conversationId",
+  FIND_OR_CREATE_CONVERSATION: "/api/chat/conversations",
+  RESET_UNREAD_COUNT: "/api/chat/conversations/:conversationId/reset",
+  GET_UPLOAD_URL: "/api/chat/presigned-url"
+
 } as const;

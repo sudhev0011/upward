@@ -83,5 +83,12 @@ export const successResponse = {
   CREATE_PAYMENT_INTENT_SUCCESS:"Payment intend created succcessfully",
   GET_BOOKINGS_SUCCESS: "Booking listed successfully",
   CANCEL_BOOKING_SUCCESS: "Booking cancelled successfully",
-  GET_WALLET_SUCCESS: "Wallet retrieved successfully"
+  GET_WALLET_SUCCESS: "Wallet retrieved successfully",
+
+  CONVERSATION_RETRIVE_SUCCESS: 'Conversations retrieved successfully',
+  MESSAGES_RETRIVE_SUCCESS: 'Messages retrieved successfully',
+  FOUND_OR_CREATE_CONVERSATION: 'Conversation found or created successfully',
+  RESET_UNREAD_COUNT_SUCCESS: 'Unread count reset successfully',
+  GENERATE_PRESIGNED_URL_SUCCESS: 'Presigned URL generated successfully',
+  
 } as const;

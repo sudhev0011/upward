@@ -21,7 +21,6 @@ export function PortfolioGrid({ onView, onEdit, onDelete }: PortfolioGridProps) 
 
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  // Intersection observer — triggers fetchNextPage when sentinel enters viewport
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el) return;
@@ -39,10 +38,8 @@ export function PortfolioGrid({ onView, onEdit, onDelete }: PortfolioGridProps) 
     return () => observer.disconnect();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // Flatten pages into a single items array
   const items = data?.pages.flatMap((page) => page.data?.items ?? []) ?? [];
 
-  // ── Loading skeleton ─────────────────────────────────────────────────────
 
   if (isLoading) {
     return (
@@ -61,7 +58,6 @@ export function PortfolioGrid({ onView, onEdit, onDelete }: PortfolioGridProps) 
     );
   }
 
-  // ── Empty state ──────────────────────────────────────────────────────────
 
   if (items.length === 0) {
     return (
@@ -77,7 +73,6 @@ export function PortfolioGrid({ onView, onEdit, onDelete }: PortfolioGridProps) 
     );
   }
 
-  // ── Grid ─────────────────────────────────────────────────────────────────
 
   return (
     <div className="space-y-6">

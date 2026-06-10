@@ -27,7 +27,6 @@ function groupByCategory(items: ProviderServicePublicItem[]) {
 export const ServicesSection = ({ providerId, providerName }: Props) => {
   const { data: services, isLoading, isError } = useGetProviderActiveServices(providerId);
 
-  // track which service the modal is open for
   const [selectedService, setSelectedService] = useState<ProviderServicePublicItem | null>(null);
 
   if (isLoading) {

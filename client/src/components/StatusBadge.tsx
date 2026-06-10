@@ -1,6 +1,5 @@
 import { Badge } from "@/components/ui/badge";
 
-// Extended to cover all statuses used across admin pages
 type Status =
   | "active"
   | "inactive"

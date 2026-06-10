@@ -1,9 +1,13 @@
 import { useEffect, useState, useRef } from "react";
-import { Search, Send, Paperclip } from "lucide-react";
+import { Search, Send, Paperclip, Loader2 } from "lucide-react";
 import { useAppSelector } from "@/hooks/useRedux";
 import { useSocket } from "@/hooks/useSocket";
 import { chatApi } from "@/api/chat.api";
 import { Conversation, Message } from "@/interfaces/chat.interface";
+import { useUploadChatAttachment } from "@/hooks/chat/useUploadChatAttachment";
+import { toast } from "sonner";
+import RenderAttachment from "@/components/common/chat/RenderAttachment";
+
 
 const MessagesPage = () => {
   const currentUser = useAppSelector((state) => state.auth.user);
@@ -16,17 +20,55 @@ const MessagesPage = () => {
   const [search, setSearch] = useState("");
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const uploadAttachmentMutation = useUploadChatAttachment();
 
-  // Hook up Socket.IO connection
   const { socket } = useSocket(activeThread);
 
-  // Fetch all conversations on mount
+  const handleAttachmentClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !activeThread || !socket) return;
+
+    const toastId = toast.loading(`Uploading ${file.name}...`);
+    try {
+      const { fileUrl } = await uploadAttachmentMutation.mutateAsync(file);
+      
+      socket.emit(
+        "send_message",
+        {
+          conversationId: activeThread,
+          text: "",
+          attachmentUrl: fileUrl,
+        },
+        (res: { success: boolean; error?: string }) => {
+          if (!res.success) {
+            console.error("Failed to send message:", res.error);
+            toast.error("Failed to send attachment", { id: toastId });
+          } else {
+            toast.success("Attachment sent!", { id: toastId });
+          }
+        }
+      );
+    } catch (err: unknown) {
+      console.error("Upload failed:", err);
+      const errorMsg = err instanceof Error ? err.message : "Upload failed";
+      toast.error(errorMsg, { id: toastId });
+    } finally {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
   const fetchConversations = async () => {
     try {
       const response = await chatApi.getConversations();
       if (response.success && response.data) {
         setConversations(response.data);
-        // Automatically select the first conversation if none is active
         if (response.data.length > 0 && !activeThread) {
           setActiveThread(response.data[0].id);
         }
@@ -40,7 +82,6 @@ const MessagesPage = () => {
     fetchConversations();
   }, []);
 
-  // Fetch messages for the active conversation
   const fetchMessages = async (conversationId: string) => {
     try {
       const response = await chatApi.getMessages(conversationId);
@@ -56,9 +97,7 @@ const MessagesPage = () => {
     if (activeThread) {
       fetchMessages(activeThread);
 
-      // Reset unread count for client
       chatApi.resetUnreadCount(activeThread, "client").then(() => {
-        // Emit read event to socket
         socket?.emit("read_messages", {
           conversationId: activeThread,
           role: "client",
@@ -67,14 +106,12 @@ const MessagesPage = () => {
     }
   }, [activeThread, socket]);
 
-  // Set up socket listeners
   useEffect(() => {
     if (!socket) return;
 
     const handleMessageReceived = (message: Message) => {
       if (message.conversationId === activeThread) {
         setMessages((prev) => [...prev, message]);
-        // Reset unread counts on server since we are active in this room
         chatApi.resetUnreadCount(activeThread, "client").then(() => {
           socket.emit("read_messages", {
             conversationId: activeThread,
@@ -97,7 +134,6 @@ const MessagesPage = () => {
     };
   }, [socket, activeThread]);
 
-  // Scroll to bottom when messages update
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -270,7 +306,8 @@ const MessagesPage = () => {
                           : "bg-gray-100 text-gray-800 rounded-bl-sm"
                       }`}
                     >
-                      {m.text}
+                      {m.text && <p>{m.text}</p>}
+                      {m.attachmentUrl && RenderAttachment(m.attachmentUrl, isMe)}
                       <p
                         className={`text-[10px] mt-1 ${isMe ? "text-white/60 text-right" : "text-gray-400"}`}
                       >
@@ -288,8 +325,22 @@ const MessagesPage = () => {
 
             {/* Input */}
             <div className="px-4 py-3 border-t border-gray-100 flex items-center gap-2">
-              <button className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
-                <Paperclip className="h-4 w-4" />
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleFileChange} 
+                className="hidden" 
+              />
+              <button 
+                onClick={handleAttachmentClick}
+                disabled={uploadAttachmentMutation.isPending}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors disabled:opacity-50"
+              >
+                {uploadAttachmentMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                ) : (
+                  <Paperclip className="h-4 w-4" />
+                )}
               </button>
               <input
                 value={input}

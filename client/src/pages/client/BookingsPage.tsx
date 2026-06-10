@@ -40,11 +40,9 @@ const BookingsPage = () => {
 
   const { data, isLoading, isFetching } = useListBookings(filters);
 
-  // Fallback pagination data safely handled
   const currentPage = data?.page || filters.page || 1;
   const totalPages = data?.totalPages || 1;
 
-  // Fast Summary Stats Calculator
   const stats = useMemo(() => {
     if (!data?.data) return { pending: 0, confirmed: 0, completed: 0 };
     return data.data.reduce(

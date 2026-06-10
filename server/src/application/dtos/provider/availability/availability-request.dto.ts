@@ -43,7 +43,6 @@ const WeeklyScheduleSchema = z.object({
   saturday: DayScheduleSchema,
 });
 
-// Set or replace the full weekly schedule
 export const SetAvailabilityRequestDtoSchema = z.object({
   providerId: z.string(),
   timezone: z.string().default("Asia/Kolkata"),
@@ -55,7 +54,6 @@ export type SetAvailabilityRequestDto = z.infer<
   typeof SetAvailabilityRequestDtoSchema
 >;
 
-// Update only specific days without replacing the full schedule
 export const UpdateAvailabilityRequestDtoSchema = z.object({
   providerId: z.string(),
   timezone: z.string().optional(),
