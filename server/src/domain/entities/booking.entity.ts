@@ -397,4 +397,41 @@ export class Booking {
       new Date(),
     );
   }
+
+  complete(): Booking {
+    if (this.status !== BookingStatus.CONFIRMED) {
+      throw new UnprocessableEntityError(
+        "Only confirmed bookings can be marked as completed",
+      );
+    }
+
+    return new Booking(
+      this.id,
+      this.bookingId,
+      this.clientId,
+      this.providerId,
+      this.serviceId,
+      this.providerServiceId,
+      BookingStatus.COMPLETED,
+      this.paymentType,
+      this.paymentStatus,
+      this.totalAmount,
+      this.paidAmount,
+      this.remainingAmount,
+      this.refundAmount,
+      this.bookingDate,
+      this.bookingMode,
+      this.startDateTime,
+      this.endDateTime,
+      this.location,
+      this.notes,
+      this.requirements,
+      this.cancelledBy,
+      this.cancellationReason,
+      this.cancelledAt,
+      this.expiresAt,
+      this.createdAt,
+      new Date(),
+    );
+  }
 }

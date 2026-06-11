@@ -18,8 +18,9 @@ import { AvailabilitySection } from "@/components/common/availability/Availabili
 import { ServicesSection } from "@/components/common/provider-service/ServiceSection";
 import { useAppSelector } from "@/hooks/useRedux";
 import { chatApi } from "@/api/chat.api";
+import { ReviewsSection } from "@/components/common/reviews/ReviewsSection";
 
-type Tab = "services" | "portfolio" | "availability";
+type Tab = "services" | "portfolio" | "availability" | "reviews";
 
 export const ProviderProfilePage = () => {
   const { providerId } = useParams<{ providerId: string }>();
@@ -225,7 +226,7 @@ export const ProviderProfilePage = () => {
         <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
           {/* Tab bar */}
           <div className="flex border-b border-gray-100">
-            {(["services", "portfolio", "availability"] as Tab[]).map((tab) => (
+            {(["services", "portfolio", "availability", "reviews"] as Tab[]).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -250,6 +251,9 @@ export const ProviderProfilePage = () => {
             )}
             {activeTab === "availability" && (
               <AvailabilitySection providerId={providerId!} />
+            )}
+            {activeTab === "reviews" && (
+              <ReviewsSection providerId={providerId!} />
             )}
           </div>
         </div>

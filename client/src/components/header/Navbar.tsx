@@ -34,6 +34,8 @@ const Navbar = () => {
 
   const [isHovered, setIsHovered] = useState(false);
 
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -143,7 +145,7 @@ const Navbar = () => {
   ];
 
 
-  const isVisible = isHovered || isExpanded;
+  const isVisible = isHovered || isExpanded || isDropdownOpen;
 
   return (
     <div
@@ -212,7 +214,7 @@ const Navbar = () => {
           {/* Auth Section */}
           <div className="flex items-center gap-3">
             {user ? (
-              <DropdownMenu>
+              <DropdownMenu onOpenChange={(open) => setIsDropdownOpen(open)}>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 rounded-full border border-gray-200 bg-white p-1 pr-3 text-sm font-bold text-gray-700 hover:shadow-md transition-all">
                     <Avatar className="h-8 w-8">

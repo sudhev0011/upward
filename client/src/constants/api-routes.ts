@@ -131,3 +131,11 @@ export const NotificationRoutes = {
   MARK_ALL_READ: "/api/notifications/read-all",
   DELETE_NOTIFICATION: "/api/notifications/:id",
 } as const;
+
+export const ReviewRoutes = {
+  CREATE: "/api/reviews",
+  GET_PROVIDER_REVIEWS: "/api/reviews/provider/:providerId",
+  GET_CLIENT_REVIEWS: "/api/reviews/client",
+  GET_PENDING: "/api/reviews/pending",
+  COMPLETE_BOOKING: "/api/provider/bookings/:id/complete",
+} as const;

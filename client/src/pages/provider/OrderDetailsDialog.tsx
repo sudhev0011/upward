@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useCancelBooking } from "@/hooks/booking/use-cancel-booking";
+import { useCompleteBookingMutation } from "@/hooks/reviews/useReviews";
 import { BookingListItem } from "@/interfaces/bookings/bookings.interface";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
@@ -19,6 +20,7 @@ export function OrderDetailsDialog({ order, onClose, mapStatusStyle }: OrderDeta
   const [cancelReason, setCancelReason] = useState("");
   
   const { mutateAsync: cancelBooking, isPending: isCancelling } = useCancelBooking();
+  const { mutateAsync: completeBooking, isPending: isCompleting } = useCompleteBookingMutation();
 
   if (!order) return null;
 
@@ -39,7 +41,19 @@ export function OrderDetailsDialog({ order, onClose, mapStatusStyle }: OrderDeta
     }
   };
 
+  const handleCompleteBooking = async () => {
+    try {
+      await completeBooking(order.id);
+      toast.success("Booking marked as completed successfully!");
+      onClose();
+    } catch (error: unknown) {
+      const errMsg = error instanceof Error ? error.message : "Failed to complete booking";
+      toast.error(errMsg);
+    }
+  };
+
   const isCancelable = ["PENDING", "CONFIRMED"].includes(order.status.toUpperCase());
+  const isCompletable = order.status.toUpperCase() === "CONFIRMED";
 
   const formattedTime = order.startDateTime
     ? new Date(order.startDateTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
@@ -159,18 +173,29 @@ export function OrderDetailsDialog({ order, onClose, mapStatusStyle }: OrderDeta
 
         <Separator className="bg-border/50" />
 
-        {/* Cancellation Section */}
+        {/* Actions Section */}
         <div className="pt-2">
           {!showConfirmCancel ? (
-            isCancelable && (
-              <Button
-                variant="destructive"
-                onClick={() => setShowConfirmCancel(true)}
-                className="w-full gap-2 h-11 font-medium rounded-xl shadow-sm"
-              >
-                <AlertTriangle className="h-4 w-4" /> Cancel Booking
-              </Button>
-            )
+            <div className="flex gap-3">
+              {isCancelable && (
+                <Button
+                  variant="destructive"
+                  onClick={() => setShowConfirmCancel(true)}
+                  className="flex-1 gap-2 h-11 font-medium rounded-xl shadow-sm"
+                >
+                  <AlertTriangle className="h-4 w-4" /> Cancel Booking
+                </Button>
+              )}
+              {isCompletable && (
+                <Button
+                  onClick={handleCompleteBooking}
+                  disabled={isCompleting}
+                  className="flex-1 gap-2 h-11 font-medium rounded-xl bg-[#10B981] hover:bg-[#059669] text-white shadow-sm"
+                >
+                  {isCompleting ? "Completing..." : "Complete Booking"}
+                </Button>
+              )}
+            </div>
           ) : (
             <div className="space-y-3 p-4 border border-rose-100 dark:border-rose-950/20 bg-rose-50/10 dark:bg-rose-950/5 rounded-2xl">
               <div>

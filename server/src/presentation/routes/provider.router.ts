@@ -16,6 +16,7 @@ import { UserBlockedMiddleware } from "../middleware/user-blocked.middleware";
 import { getUserByIdUseCase } from "../../infrastructure/di/authDi";
 import { UserRole } from "../../domain/enums/user-role.enum";
 import { bookingController } from "../../infrastructure/di/clientDi";
+import { reviewController } from "../../infrastructure/di/reviewDi";
 export class ProviderRouter {
   public router: Router;
 
@@ -110,5 +111,6 @@ export class ProviderRouter {
 
     this.router.get("/bookings", bookingController.listBookings(UserRole.PROVIDER));
     this.router.patch("/bookings/:id/cancel", bookingController.cancelBooking(UserRole.PROVIDER));
+    this.router.patch("/bookings/:id/complete", reviewController.completeBooking);
   }
 }

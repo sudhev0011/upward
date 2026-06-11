@@ -110,19 +110,21 @@ export const BookingCard = ({
                   {booking.bookingDate}
                 </div>
 
-                <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
+                {booking.startDateTime && (
+                  <div className="flex items-center gap-1">
+                    <Clock className="h-4 w-4" />
 
-                  {new Date(
-                    booking.startDateTime,
-                  ).toLocaleTimeString(
-                    [],
-                    {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    },
-                  )}
-                </div>
+                    {new Date(
+                      booking.startDateTime,
+                    ).toLocaleTimeString(
+                      [],
+                      {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      },
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

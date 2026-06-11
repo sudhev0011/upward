@@ -3,7 +3,6 @@ import { Badge } from "@/components/ui/badge"
 import {
   LayoutDashboard,
   CalendarCheck,
-  Search,
   MessageSquare,
   Heart,
   CreditCard,

@@ -1,4 +1,12 @@
-import { Bell, LogOut, Settings, User, ShieldCheck, ShieldX, Loader2 } from "lucide-react";
+import {
+  Bell,
+  LogOut,
+  Settings,
+  User,
+  ShieldCheck,
+  ShieldX,
+  Loader2,
+} from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
@@ -31,7 +39,8 @@ import {
 export function ProviderHeader() {
   const navigate = useNavigate();
   const { data: response, isLoading } = useGetProfileQuery();
-  const { mutate: logoutMutation, isPending: isLoggingOut } = useLogoutMutation();
+  const { mutate: logoutMutation, isPending: isLoggingOut } =
+    useLogoutMutation();
   const dispatch = useAppDispatch();
 
   // Connect websocket listener for notifications
@@ -78,16 +87,16 @@ export function ProviderHeader() {
   };
 
   const handleLogout = async () => {
-      logoutMutation(undefined, {
-        onSuccess: () => {
-          dispatch(logout());
-          navigate("/login");
-        },
-        onError: (error) => {
-          toast.error(error.message);
-        },
-      });
-    };
+    logoutMutation(undefined, {
+      onSuccess: () => {
+        dispatch(logout());
+        navigate("/login");
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
+  };
 
   const profile = response?.data;
 
@@ -104,7 +113,6 @@ export function ProviderHeader() {
 
   return (
     <header className="h-16 flex items-center gap-3 px-5 sticky top-0 z-20 bg-background border-b border-border">
-
       <SidebarTrigger className="text-muted-foreground hover:text-foreground transition-colors rounded-lg" />
 
       <div className="flex-1" />
@@ -118,8 +126,8 @@ export function ProviderHeader() {
                 isLoading
                   ? "border-border bg-secondary/40"
                   : isApproved
-                  ? "border-success/25 bg-success/8 text-success"
-                  : "border-warning/25 bg-warning/8 text-warning"
+                    ? "border-success/25 bg-success/8 text-success"
+                    : "border-warning/25 bg-warning/8 text-warning"
               }`}
             >
               {isLoading ? (
@@ -131,7 +139,11 @@ export function ProviderHeader() {
               )}
 
               <span className="text-xs font-bold hidden sm:inline tracking-wide">
-                {isLoading ? "Loading…" : isApproved ? "Approved" : "Pending Approval"}
+                {isLoading
+                  ? "Loading…"
+                  : isApproved
+                    ? "Approved"
+                    : "Pending Approval"}
               </span>
 
               {/* Pulse dot — only when approved */}
@@ -150,8 +162,8 @@ export function ProviderHeader() {
             {isLoading
               ? "Fetching profile…"
               : isApproved
-              ? "Your account has been approved by admin"
-              : "Your account is awaiting admin approval"}
+                ? "Your account has been approved by admin"
+                : "Your account is awaiting admin approval"}
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -172,7 +184,9 @@ export function ProviderHeader() {
           className="w-80 rounded-2xl border border-border bg-popover shadow-xl shadow-black/[0.08] p-2 z-50"
         >
           <DropdownMenuLabel className="px-3 py-2 bg-secondary/50 rounded-xl mb-1 flex items-center justify-between">
-            <span className="text-xs font-bold text-foreground">Notifications</span>
+            <span className="text-xs font-bold text-foreground">
+              Notifications
+            </span>
             <div className="flex items-center gap-2">
               {unreadCount > 0 && (
                 <button
@@ -193,17 +207,19 @@ export function ProviderHeader() {
                 key={n.id}
                 onClick={() => handleNotificationClick(n)}
                 className={`rounded-xl px-3 py-2.5 text-xs cursor-pointer hover:bg-accent focus:bg-accent flex gap-3 transition-colors ${
-                  !n.isRead ? "bg-[#EAF2F9]/40 text-foreground font-semibold" : "text-muted-foreground"
+                  !n.isRead
+                    ? "bg-[#EAF2F9]/40 text-foreground font-semibold"
+                    : "text-muted-foreground"
                 }`}
               >
                 {!n.isRead && (
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#719FC4]" />
                 )}
-                {n.isRead && (
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0" />
-                )}
+                {n.isRead && <span className="mt-1.5 h-1.5 w-1.5 shrink-0" />}
                 <div className="flex-1 min-w-0">
-                  <p className={`font-bold leading-normal truncate ${!n.isRead ? "text-foreground" : "text-muted-foreground"}`}>
+                  <p
+                    className={`font-bold leading-normal truncate ${!n.isRead ? "text-foreground" : "text-muted-foreground"}`}
+                  >
                     {n.title}
                   </p>
                   <p className="text-[11px] text-muted-foreground line-clamp-2 mt-0.5 leading-normal">
@@ -228,16 +244,26 @@ export function ProviderHeader() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button className="flex items-center gap-2.5 h-9 pl-1 pr-3 rounded-xl border border-border bg-secondary/40 hover:border-primary/30 hover:bg-primary/5 transition-all duration-200">
-            <div className="h-7 w-7 rounded-lg bg-primary flex items-center justify-center shadow-sm shadow-primary/30">
-              <span className="text-[10px] font-extrabold text-primary-foreground tracking-wide">
-                {initials}
-              </span>
+            <div className="h-7 w-7 rounded-lg bg-primary flex items-center justify-center shadow-sm shadow-primary/30 overflow-hidden">
+              {profile?.avatarUrl ? (
+                <img
+                  src={profile.avatarUrl}
+                  alt={profile?.name ?? "User avatar"}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <span className="text-[10px] font-extrabold text-primary-foreground tracking-wide">
+                  {initials}
+                </span>
+              )}
             </div>
             <div className="hidden sm:flex flex-col items-start gap-px">
               <span className="text-[13px] font-bold text-foreground leading-none">
                 {profile?.name ?? "Alex Rivera"}
               </span>
-              <span className="text-[10px] font-semibold text-primary leading-none">Provider</span>
+              <span className="text-[10px] font-semibold text-primary leading-none">
+                Provider
+              </span>
             </div>
           </button>
         </DropdownMenuTrigger>
@@ -248,14 +274,20 @@ export function ProviderHeader() {
           className="w-56 rounded-2xl border border-border bg-popover shadow-xl shadow-black/[0.08] p-2"
         >
           <DropdownMenuLabel className="px-3 py-2.5 rounded-xl bg-secondary/50 mb-1">
-            <p className="text-sm font-bold text-foreground">{profile?.name ?? "Alex Rivera"}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">{profile?.email ?? "alex@example.com"}</p>
+            <p className="text-sm font-bold text-foreground">
+              {profile?.name ?? "Alex Rivera"}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {profile?.email ?? "alex@example.com"}
+            </p>
             {/* Approval badge inside dropdown */}
-            <div className={`inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide ${
-              isApproved
-                ? "bg-success/10 text-success"
-                : "bg-warning/10 text-warning"
-            }`}>
+            <div
+              className={`inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide ${
+                isApproved
+                  ? "bg-success/10 text-success"
+                  : "bg-warning/10 text-warning"
+              }`}
+            >
               {isApproved ? (
                 <ShieldCheck className="h-3 w-3" />
               ) : (
@@ -287,10 +319,11 @@ export function ProviderHeader() {
             onClick={handleLogout}
             disabled={isLoggingOut}
           >
-            {isLoggingOut
-              ? <Loader2 className="h-4 w-4 animate-spin" />
-              : <LogOut className="h-4 w-4" />
-            }
+            {isLoggingOut ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <LogOut className="h-4 w-4" />
+            )}
             {isLoggingOut ? "Logging out…" : "Log out"}
           </DropdownMenuItem>
         </DropdownMenuContent>
