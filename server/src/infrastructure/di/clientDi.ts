@@ -40,6 +40,7 @@ import { GetClientWalletUseCase } from "../../application/use-cases/wallet/get-c
 import { WalletController } from "../../presentation/controllers/client/wallet/wallet.controller";
 import { NanoIdBookingIdtor } from "../services/NanoIdBookingNumberGenerator";
 import { createOffsiteBookingUseCase } from "./bookingDi";
+import { CreateRemainingPaymentIntentUseCase } from "../../application/use-cases/payment/create-remaining-payment-intent.use-case";
 
 
 
@@ -85,11 +86,18 @@ const createPaymentIntentUseCase = new CreatePaymentIntentUseCase(bookingReposit
 
 const getClientWalletUseCase = new GetClientWalletUseCase(walletRepository, walletTransactionRepository)
 
+const createRemainingPaymentIntentUseCase = new CreateRemainingPaymentIntentUseCase(
+  bookingRepository,
+  paymentRepository,
+  stripeService,
+  transactionManager,
+);
+
 // controller inint
 export const clientProfileController = new ClientProfileController(uploadAvatarUseCase,createClientProfileUseCase,getClientProfileUseCase,updateClientProfileUseCase)
 
 export const bookingController = new BookingController(createBookingUseCase,listBookingUseCase,cancelBookingUseCase,createOffsiteBookingUseCase)
 
-export const paymentController = new PaymentController(createPaymentIntentUseCase)
+export const paymentController = new PaymentController(createPaymentIntentUseCase, createRemainingPaymentIntentUseCase)
 
 export const walletController = new WalletController(getClientWalletUseCase)

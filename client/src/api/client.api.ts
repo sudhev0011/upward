@@ -122,4 +122,15 @@ export const clientApi = {
     return (await api.get<ApiEnvelope<WalletResponse>>(ClientRoutes.GET_WALLET))
       .data;
   },
+
+  async createRemainingPaymentIntent(
+  data: CreatePaymentIntentRequest,
+): Promise<ApiEnvelope<PaymentIntentResponse>> {
+  return (
+    await api.post<ApiEnvelope<PaymentIntentResponse>>(
+      ClientRoutes.PAYMENT_REMAINING_INTENT,
+      data,
+    )
+  ).data;
+},
 };

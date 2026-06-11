@@ -345,4 +345,56 @@ export class Booking {
 
     return new Date() > this.expiresAt;
   }
+
+  /**
+   * MARK FULLY PAID
+   * Called when remaining payment is confirmed via webhook
+   */
+  markFullyPaid(): Booking {
+    if (this.paymentStatus !== PaymentStatus.PARTIALLY_PAID) {
+      throw new UnprocessableEntityError(
+        "Only partially paid bookings can be marked as fully paid",
+      );
+    }
+
+    return new Booking(
+      this.id,
+      this.bookingId,
+      this.clientId,
+      this.providerId,
+      this.serviceId,
+      this.providerServiceId,
+
+      this.status,
+
+      PaymentType.FULL,
+
+      PaymentStatus.PAID,
+
+      this.totalAmount,
+      this.totalAmount, // paidAmount becomes totalAmount
+      0, // remainingAmount becomes 0
+
+      this.refundAmount,
+
+      this.bookingDate,
+      this.bookingMode,
+
+      this.startDateTime,
+      this.endDateTime,
+      this.location,
+
+      this.notes,
+      this.requirements,
+
+      this.cancelledBy,
+      this.cancellationReason,
+      this.cancelledAt,
+
+      this.expiresAt,
+
+      this.createdAt,
+      new Date(),
+    );
+  }
 }

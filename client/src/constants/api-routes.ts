@@ -24,7 +24,9 @@ export const ClientRoutes = {
   BOOKINGS_ONSITE: "/api/client/bookings/onsite",
   BOOKINGS_OFFSITE: "/api/client/bookings/offsite",
   PAYMENT_CREATE_INTENT: "/api/client/payments/create-intent",
-  GET_WALLET: "/api/client/wallet"
+  GET_WALLET: "/api/client/wallet",
+
+  PAYMENT_REMAINING_INTENT: "/api/client/payments/remaining-intent",
 } as const;
 
 export const ProviderRoutes = {

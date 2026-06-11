@@ -68,7 +68,6 @@ export interface IBookingRepository extends IBaseRepository<Booking> {
     transaction?: ITransactionContext,
   ): Promise<Booking | null>;
 
-
   countActiveOffsiteBookingsForDate(
     providerServiceId: string,
 
@@ -76,4 +75,10 @@ export interface IBookingRepository extends IBaseRepository<Booking> {
 
     transaction?: ITransactionContext,
   ): Promise<number>;
+
+  findConfirmedPartialBookingByIdAndClientId(
+    bookingId: string,
+    clientId: string,
+    transaction?: ITransactionContext,
+  ): Promise<Booking | null>;
 }

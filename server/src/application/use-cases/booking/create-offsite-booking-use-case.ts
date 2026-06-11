@@ -3,13 +3,10 @@ import { BookingStatus } from "../../../domain/enums/booking-status.enum";
 import { BookingMode } from "../../../domain/enums/bookingMode.enum";
 import { PaymentType } from "../../../domain/enums/payment-type.enum";
 
-import { NotFoundError } from "../../../domain/errors/errors";
 
 import { ITransactionManager } from "../../../domain/interfaces/database/transaction-manager.interface";
 
 import { IBookingRepository } from "../../../domain/interfaces/repositories/booking/IBookingRepository";
-
-import { IProviderServiceRepository } from "../../../domain/interfaces/repositories/provider/IProviderServiceRepository";
 
 import { IBookingIdGenerator } from "../../../domain/interfaces/services/IBookingNumberGenerator";
 import { IOffsiteCapacityValidationService } from "../../../domain/interfaces/services/validation/IOffsiteCapacityValidationService";

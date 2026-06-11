@@ -6,12 +6,15 @@ import { IPaymentGateway } from "../../../domain/interfaces/services/payment/IPa
 
 import { IConfirmPaymentUseCase } from "../../../domain/interfaces/usecases/payment/IConfirmPaymentUseCase";
 import { confirmSubscriptionPaymentUseCase } from "../../../infrastructure/di/subscriptionDi";
+import { IConfirmRemainingPaymentUseCase } from "../../../domain/interfaces/usecases/payment/IConfirmRemainingPaymentUseCase";
 
 export class StripeWebhookController {
   constructor(
     private paymentGateway: IPaymentGateway,
 
     private confirmPaymentUseCase: IConfirmPaymentUseCase,
+
+    private confirmRemainingPaymentUseCase: IConfirmRemainingPaymentUseCase,
   ) {}
 
   handleWebhook = async (
@@ -32,7 +35,13 @@ export class StripeWebhookController {
 
       if (event.type === "payment_intent.succeeded") {
         if (event.metadata?.type === "subscription") {
-          await confirmSubscriptionPaymentUseCase.execute(event.paymentIntentId);
+          await confirmSubscriptionPaymentUseCase.execute(
+            event.paymentIntentId,
+          );
+        } else if (event.metadata?.type === "remaining") {
+          await this.confirmRemainingPaymentUseCase.execute(
+            event.paymentIntentId,
+          );
         } else {
           await this.confirmPaymentUseCase.execute(event.paymentIntentId);
         }

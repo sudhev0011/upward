@@ -7,6 +7,8 @@ import { MongoNotificationRepository } from "../persistence/mongodb/repositories
 import { PaymentRepository } from "../persistence/mongodb/repositories/payment.repository";
 import { NotificationService } from "../services/notification.service";
 import { socketService } from "../services/socket.service";
+import { ConfirmRemainingPaymentUseCase } from "../../application/use-cases/payment/confirm-remaining-payment.use-case";
+import { IConfirmRemainingPaymentUseCase } from "../../domain/interfaces/usecases/payment/IConfirmRemainingPaymentUseCase";
 
 const stripeService = new StripeService();
 
@@ -31,8 +33,18 @@ const confirmPaymentUseCase = new ConfirmPaymentUseCase(
   notificationService,
 );
 
+const confirmRemainingPaymentUseCase: IConfirmRemainingPaymentUseCase =
+  new ConfirmRemainingPaymentUseCase(
+    paymentRepository,
+    bookingRepository,
+    transactionManager,
+    notificationService,
+  );
+
 export const stripeWebhookController = new StripeWebhookController(
   stripeService,
 
   confirmPaymentUseCase,
+
+  confirmRemainingPaymentUseCase
 );

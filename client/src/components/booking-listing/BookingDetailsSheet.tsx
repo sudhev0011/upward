@@ -23,6 +23,7 @@ import { chatApi } from "@/api/chat.api";
 import { cn } from "@/lib/utils";
 import { useCancelBooking } from "@/hooks/booking/use-cancel-booking";
 import { toast } from "sonner";
+import PayRemainingModal from "@/components/booking/PayRemainingModal";
 
 interface BookingDetailsSheetProps {
   booking: BookingListItem | null;
@@ -64,6 +65,7 @@ export const BookingDetailsSheet = ({
   const [isMessaging, setIsMessaging] = useState(false);
   const [showConfirmCancel, setShowConfirmCancel] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
+  const [showPayRemaining, setShowPayRemaining] = useState(false);
 
   const { mutateAsync: cancelBooking, isPending: isCancelling } =
     useCancelBooking();
@@ -353,11 +355,29 @@ export const BookingDetailsSheet = ({
                 {isMessaging ? "Initializing..." : "Message Provider"}
               </Button>
 
+              {/* Pay remaining — only for partial bookings with outstanding balance */}
+              {booking.paymentType === "partial" &&
+                booking.remainingAmount > 0 &&
+                booking.status.toLowerCase() !== "cancelled" &&
+                booking.status.toLowerCase() !== "completed" && (
+                  <Button
+                    variant="outline"
+                    className="w-full gap-2 h-10 text-amber-600 border-amber-200 hover:bg-amber-50 hover:text-amber-700 dark:border-amber-950/60 dark:hover:bg-amber-950/30"
+                    onClick={() => setShowPayRemaining(true)}
+                  >
+                    <CreditCard className="h-4 w-4" />
+                    Pay remaining ₹
+                    {booking.remainingAmount.toLocaleString("en-IN")}
+                  </Button>
+                )}
+
               {(booking.status.toLowerCase() === "pending" ||
                 booking.status.toLowerCase() === "confirmed") &&
                 (() => {
                   const now = new Date();
-                  const executionDate = new Date(booking?.startDateTime ?? booking.bookingDate);
+                  const executionDate = new Date(
+                    booking?.startDateTime ?? booking.bookingDate,
+                  );
                   const diffTime = executionDate.getTime() - now.getTime();
                   const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
                   const isLocked =
@@ -436,6 +456,13 @@ export const BookingDetailsSheet = ({
           )}
         </div>
       </SheetContent>
+
+      <PayRemainingModal
+        open={showPayRemaining}
+        onClose={() => setShowPayRemaining(false)}
+        bookingId={booking.id}
+        remainingAmount={booking.remainingAmount}
+      />
     </Sheet>
   );
 };

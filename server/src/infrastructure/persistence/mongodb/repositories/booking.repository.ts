@@ -13,6 +13,7 @@ import {
 } from "../../../../domain/queries/booking/list-bookings-response";
 import { PaymentStatus } from "../../../../domain/enums/payment-status.enum";
 import { BookingMode } from "../../../../domain/enums/bookingMode.enum";
+import { PaymentType } from "../../../../domain/enums/payment-type.enum";
 export class BookingRepository
   extends RepositoryBase<Booking, BookingDocument>
   implements IBookingRepository
@@ -476,4 +477,21 @@ export class BookingRepository
       })
       .session(session ?? null);
   }
+
+  async findConfirmedPartialBookingByIdAndClientId(
+  bookingId: string,
+  clientId: string,
+  transaction?: ITransactionContext,
+): Promise<Booking | null> {
+  return this.findOne(
+    {
+      _id: bookingId,
+      clientId,
+      status: BookingStatus.CONFIRMED,
+      paymentType: PaymentType.PARTIAL,
+      paymentStatus: PaymentStatus.PARTIALLY_PAID,
+    },
+    transaction,
+  );
+}
 }

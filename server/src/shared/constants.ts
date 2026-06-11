@@ -96,6 +96,8 @@ export const successResponse = {
   MARK_AS_READ: 'Notification marked as read successfully',
   MARK_ALL_AS_READ: 'All notifications marked as read successfully',
   DELETE_NOTIFICATION: 'Notification deleted successfully',
+
+  CREATE_REMAINING_PAYMENT_INTENT_SUCCESS: "Remaining payment intent created successfully",
   
   
 } as const;

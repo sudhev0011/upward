@@ -17,70 +17,74 @@ import { formatZodErrors } from "../../../../shared/utils/presentation/zod-error
 import { successResponse } from "../../../../shared/constants";
 
 import { CreatePaymentIntentRequestDtoSchema } from "../../../../application/dtos/client/payment/create-payment-intent-request.dto";
+import { CreateRemainingPaymentIntentRequestDtoSchema } from "../../../../application/dtos/client/payment/create-remaining-payment-intent-request.dto";
 
 import { ICreatePaymentIntentUseCase } from "../../../../domain/interfaces/usecases/payment/ICreatePaymentIntentUseCase";
+import { ICreateRemainingPaymentIntentUseCase } from "../../../../domain/interfaces/usecases/payment/ICreateRemainingPaymentIntentUseCase";
 
 export class PaymentController {
-
   constructor(
-    private readonly _createPaymentIntentUseCase: ICreatePaymentIntentUseCase
+    private readonly _createPaymentIntentUseCase: ICreatePaymentIntentUseCase,
+    private readonly _createRemainingPaymentIntentUseCase: ICreateRemainingPaymentIntentUseCase,
   ) {}
-  /**
-   * this created stripe payment intent
-   * @param req its the basic info for booking like, providerServiceId, date, startTime, location,clientId,paymentType etc
-   * @param res res is clientSecret, paymentIntentId, and paymentId
-   * @param next 
-   * @returns 
-   */
+
   createPaymentIntent = async (
     req: AuthenticatedRequest,
-
     res: Response,
-
-    next: NextFunction
+    next: NextFunction,
   ) => {
+    const clientId = validateUserId(req);
 
-    const clientId =
-      validateUserId(req);
-
-    const parsed =
-      CreatePaymentIntentRequestDtoSchema.safeParse(
-        req.body
-      );
+    const parsed = CreatePaymentIntentRequestDtoSchema.safeParse(req.body);
 
     if (!parsed.success) {
-
-      return handleValidationError(
-        formatZodErrors(parsed.error),
-
-        next
-      );
+      return handleValidationError(formatZodErrors(parsed.error), next);
     }
 
     try {
-
-      const result =
-        await this._createPaymentIntentUseCase.execute(
-          clientId,
-
-          parsed.data
-        );
+      const result = await this._createPaymentIntentUseCase.execute(
+        clientId,
+        parsed.data,
+      );
 
       sendSuccessResponse(
         res,
-
         successResponse.CREATE_PAYMENT_INTENT_SUCCESS,
-
-        result
+        result,
       );
-
     } catch (error) {
+      handleAsyncError(error, next);
+    }
+  };
 
-      handleAsyncError(
-        error,
+  createRemainingPaymentIntent = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const clientId = validateUserId(req);
 
-        next
+    const parsed = CreateRemainingPaymentIntentRequestDtoSchema.safeParse(
+      req.body,
+    );
+
+    if (!parsed.success) {
+      return handleValidationError(formatZodErrors(parsed.error), next);
+    }
+
+    try {
+      const result = await this._createRemainingPaymentIntentUseCase.execute(
+        clientId,
+        parsed.data,
       );
+
+      sendSuccessResponse(
+        res,
+        successResponse.CREATE_REMAINING_PAYMENT_INTENT_SUCCESS,
+        result,
+      );
+    } catch (error) {
+      handleAsyncError(error, next);
     }
   };
 }

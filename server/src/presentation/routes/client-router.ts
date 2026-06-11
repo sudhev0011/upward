@@ -33,15 +33,29 @@ export class ClientRouter {
     );
 
     this.router.post("/bookings/onsite", bookingController.createBooking);
-    this.router.post("/bookings/offsite", bookingController.createOffsiteBooking);
-    this.router.patch("/bookings/:id/cancel", bookingController.cancelBooking(UserRole.CLIENT));
+    this.router.post(
+      "/bookings/offsite",
+      bookingController.createOffsiteBooking,
+    );
+    this.router.patch(
+      "/bookings/:id/cancel",
+      bookingController.cancelBooking(UserRole.CLIENT),
+    );
     this.router.post(
       "/payments/create-intent",
-      
+
       paymentController.createPaymentIntent,
     );
 
-    this.router.get("/bookings", bookingController.listBookings(UserRole.CLIENT));
+    this.router.post(
+      "/payments/remaining-intent",
+      paymentController.createRemainingPaymentIntent,
+    );
+
+    this.router.get(
+      "/bookings",
+      bookingController.listBookings(UserRole.CLIENT),
+    );
     this.router.get("/wallet", walletController.getWallet);
   }
 }
