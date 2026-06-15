@@ -35,6 +35,7 @@ import {
   useMarkAllNotificationsReadMutation,
   useNotificationSocketListener,
 } from "@/hooks/notification/useNotifications";
+import { Notification } from "@/interfaces/notification.interface";
 
 export function ProviderHeader() {
   const navigate = useNavigate();
@@ -42,8 +43,7 @@ export function ProviderHeader() {
   const { mutate: logoutMutation, isPending: isLoggingOut } =
     useLogoutMutation();
   const dispatch = useAppDispatch();
-
-  // Connect websocket listener for notifications
+  
   useNotificationSocketListener();
 
   const { data: notificationsRes } = useNotificationsQuery(1, 10);
@@ -55,7 +55,7 @@ export function ProviderHeader() {
   const notifications = notificationsRes?.data?.data || [];
   const unreadCount = unreadCountRes?.data?.count || 0;
 
-  const handleNotificationClick = async (notif: any) => {
+  const handleNotificationClick = async (notif: Notification) => {
     if (!notif.isRead) {
       markReadMutation.mutate(notif.id);
     }
@@ -68,23 +68,7 @@ export function ProviderHeader() {
 
   const handleMarkAllRead = () => {
     markAllReadMutation.mutate();
-  };
-
-  const formatTime = (dateStr: string) => {
-    try {
-      const date = new Date(dateStr);
-      const diffMs = Date.now() - date.getTime();
-      const diffMins = Math.floor(diffMs / 60000);
-      const diffHours = Math.floor(diffMins / 60);
-
-      if (diffMins < 1) return "Just now";
-      if (diffMins < 60) return `${diffMins}m ago`;
-      if (diffHours < 24) return `${diffHours}h ago`;
-      return date.toLocaleDateString([], { month: "short", day: "numeric" });
-    } catch {
-      return "";
-    }
-  };
+  };;
 
   const handleLogout = async () => {
     logoutMutation(undefined, {
@@ -226,9 +210,9 @@ export function ProviderHeader() {
                     {n.message}
                   </p>
                   <p className="text-[10px] text-muted-foreground/60 mt-1">
-                    {formatTime(n.createdAt)}
+                    {new Date(n.createdAt).toLocaleDateString()}
                   </p>
-                </div>
+                </div> 
               </DropdownMenuItem>
             ))}
             {notifications.length === 0 && (

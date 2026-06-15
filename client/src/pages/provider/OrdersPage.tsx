@@ -17,6 +17,7 @@ import {
 import { usePagination } from "@/hooks/usePagination";
 import { OrdersTable } from "./OrdersTable";
 import { OrderDetailsDialog } from "./OrderDetailsDialog";
+import { useDebounce } from "@/hooks/useDebounce";
 
 type StatusFilter = "all" | "active" | "pending" | "completed" | "cancelled";
 
@@ -25,6 +26,8 @@ export default function OrdersPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState<BookingListItem | null>(null);
+
+  const debouncedSearch = useDebounce(search, 500);
 
   const backendStatuses = {
     all: undefined,
@@ -37,7 +40,7 @@ export default function OrdersPage() {
   const { data, isLoading, isFetching } = useProviderBookings({
     page,
     limit: 10,
-    search: search.trim() || undefined,
+    search: debouncedSearch.trim() || undefined,
     status: backendStatuses,
   });
 

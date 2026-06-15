@@ -4,6 +4,7 @@ import {
   Loader2Icon,
   OctagonXIcon,
   TriangleAlertIcon,
+  BellRing 
 } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
@@ -17,6 +18,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group"
       icons={{
         success: <CircleCheckIcon className="size-4" />,
+        notification: <BellRing className="size-4" />,
         info: <InfoIcon className="size-4" />,
         warning: <TriangleAlertIcon className="size-4" />,
         error: <OctagonXIcon className="size-4" />,

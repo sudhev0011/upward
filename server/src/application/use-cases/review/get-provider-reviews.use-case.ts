@@ -1,6 +1,5 @@
 import { IReviewRepository } from '../../../domain/interfaces/repositories/review/IReviewRepository';
 import { IUserRepository } from '../../../domain/interfaces/repositories/user/IUserRepository';
-import { Review } from '../../../domain/entities/review.entity';
 
 export interface ReviewResponseDto {
   id: string;

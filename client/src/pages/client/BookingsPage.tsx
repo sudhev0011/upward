@@ -54,7 +54,7 @@ const BookingsPage = () => {
       },
       { pending: 0, confirmed: 0, completed: 0 },
     );
-  }, [data?.data]);
+  }, [data]);
 
   const { pageNumbers } = usePagination({ currentPage, totalPages });
 
@@ -216,7 +216,6 @@ const BookingsPage = () => {
               </div>
             )}
 
-            {/* Shadcn Permanent Numbered Pagination Controller */}
             <div className="flex flex-col gap-4 sm:flex-row items-center justify-between border-t pt-6 mt-6">
               <div className="text-xs font-medium text-muted-foreground order-2 sm:order-1">
                 Page{" "}
@@ -232,7 +231,6 @@ const BookingsPage = () => {
               <div className="order-1 sm:order-2 w-full sm:w-auto">
                 <Pagination>
                   <PaginationContent className="flex-wrap justify-end gap-1">
-                    {/* Previous Page Link */}
                     <PaginationItem>
                       <PaginationPrevious
                         href="#"

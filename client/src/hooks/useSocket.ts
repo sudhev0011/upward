@@ -5,20 +5,26 @@ const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 let globalSocket: Socket | null = null;
 
+// Helper to ensure socket is instantiated lazily when needed
+const getOrCreateSocket = (): Socket => {
+  if (!globalSocket) {
+    globalSocket = io(SOCKET_URL, {
+      withCredentials: true,
+      transports: ['websocket'],
+    });
+  }
+  return globalSocket;
+};
+
 export const useSocket = (conversationId?: string) => {
-  const [isConnected, setIsConnected] = useState(false);
-  const [socket, setSocket] = useState<Socket | null>(globalSocket);
+  // 1. Initialize state directly using the singleton value or initializer function
+  // This avoids running setSocket/setIsConnected synchronously inside useEffect
+  const [socket] = useState<Socket>(getOrCreateSocket);
+  const [isConnected, setIsConnected] = useState(() => globalSocket?.connected ?? false);
 
   useEffect(() => {
-    if (!globalSocket) {
-      globalSocket = io(SOCKET_URL, {
-        withCredentials: true,
-        transports: ['websocket'],
-      });
-    }
-
-    setSocket(globalSocket);
-    setIsConnected(globalSocket.connected);
+    // globalSocket is guaranteed to exist now because of the initializer
+    const currentSocket = globalSocket!; 
 
     const onConnect = () => {
       setIsConnected(true);
@@ -28,26 +34,26 @@ export const useSocket = (conversationId?: string) => {
       setIsConnected(false);
     };
 
-    globalSocket.on('connect', onConnect);
-    globalSocket.on('disconnect', onDisconnect);
+    currentSocket.on('connect', onConnect);
+    currentSocket.on('disconnect', onDisconnect);
 
-    if (conversationId && globalSocket.connected) {
-      globalSocket.emit('join_conversation', { conversationId });
-    } else if (conversationId) {
-      const joinOnConnect = () => {
-        globalSocket?.emit('join_conversation', { conversationId });
-      };
-      globalSocket.once('connect', joinOnConnect);
+    // Join conversation logic
+    if (conversationId) {
+      if (currentSocket.connected) {
+        currentSocket.emit('join_conversation', { conversationId });
+      } else {
+        currentSocket.once('connect', () => {
+          currentSocket.emit('join_conversation', { conversationId });
+        });
+      }
     }
 
     return () => {
-      if (globalSocket) {
-        globalSocket.off('connect', onConnect);
-        globalSocket.off('disconnect', onDisconnect);
+      currentSocket.off('connect', onConnect);
+      currentSocket.off('disconnect', onDisconnect);
 
-        if (conversationId) {
-          globalSocket.emit('leave_conversation', { conversationId });
-        }
+      if (conversationId) {
+        currentSocket.emit('leave_conversation', { conversationId });
       }
     };
   }, [conversationId]);

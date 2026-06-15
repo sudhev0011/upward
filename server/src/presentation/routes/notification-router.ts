@@ -15,6 +15,7 @@ export class NotificationRouter {
 
     this.router.get('/', notificationController.getNotifications);
     this.router.get('/unread-count', notificationController.getUnreadCount);
+    this.router.post('/fcm-token', notificationController.registerFcmToken);
     this.router.patch('/read-all', notificationController.markAllAsRead);
     this.router.patch('/:id/read', notificationController.markAsRead);
     this.router.delete('/:id', notificationController.deleteNotification);

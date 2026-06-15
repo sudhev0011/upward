@@ -9,6 +9,7 @@ import { NotificationService } from "../services/notification.service";
 import { socketService } from "../services/socket.service";
 import { ConfirmRemainingPaymentUseCase } from "../../application/use-cases/payment/confirm-remaining-payment.use-case";
 import { IConfirmRemainingPaymentUseCase } from "../../domain/interfaces/usecases/payment/IConfirmRemainingPaymentUseCase";
+import { firebasePushNotificationService } from "./notificationDi";
 
 const stripeService = new StripeService();
 
@@ -22,6 +23,7 @@ const notificationRepository = new MongoNotificationRepository();
 export const notificationService = new NotificationService(
   notificationRepository,
   socketService,
+  firebasePushNotificationService
 );
 
 const confirmPaymentUseCase = new ConfirmPaymentUseCase(

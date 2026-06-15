@@ -34,9 +34,7 @@ export default function PayRemainingModal({
     (data) => {
       const secret = data?.data?.clientSecret;
       if (!secret) {
-        setFailureMessage(
-          "Could not initialize payment. Please try again.",
-        );
+        setFailureMessage("Could not initialize payment. Please try again.");
         setScreen("failure");
         return;
       }
@@ -54,12 +52,9 @@ export default function PayRemainingModal({
   // fetch intent as soon as modal opens
   useEffect(() => {
     if (open) {
-      setScreen("loading");
-      setClientSecret(null);
-      setFailureMessage("");
       createRemainingIntent({ bookingId });
     }
-  }, [open, bookingId]);
+  }, [open, bookingId, createRemainingIntent]);
 
   const handleClose = () => {
     setScreen("loading");
@@ -120,7 +115,10 @@ export default function PayRemainingModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md md:max-w-xl lg:max-w-2xl p-0 gap-0 max-h-[90vh] flex flex-col overflow-hidden">
+      <DialogContent
+        onInteractOutside={(e) => e.preventDefault()}
+        className="sm:max-w-md md:max-w-xl lg:max-w-2xl p-0 gap-0 max-h-[90vh] flex flex-col overflow-hidden"
+      >
         {/* Fixed header */}
         <div className="px-6 pt-6 pb-4 shrink-0">
           <DialogHeader>

@@ -8,7 +8,15 @@ import SelectRole from "./components/common/SelectRole";
 import { RoleGuard } from "./components/common/RoleGuard";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import { UserRole } from "./constants/user-role";
+import { useAppSelector } from "./hooks/useRedux";
+import { RootState } from "./store/store";
+import { useFcmToken } from "./hooks/useFcmToken";
 const App = () => {
+
+  const {isAuthenticated} = useAppSelector((state: RootState)=> state.auth)
+
+  useFcmToken(isAuthenticated);
+
   return (
     <>
       <AutoScroller />

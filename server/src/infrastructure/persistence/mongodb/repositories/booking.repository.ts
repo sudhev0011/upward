@@ -280,6 +280,8 @@ export class BookingRepository
             { paymentStatus: regex },
 
             { bookingDate: regex },
+
+            { bookingId: regex },
           ],
         },
       });
