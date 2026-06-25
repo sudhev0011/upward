@@ -105,12 +105,34 @@ export class ProviderRouter {
     this.router.get("/portfolio/upload-url", portfolioController.getUploadUrl);
     this.router.post("/portfolio", portfolioController.createPortfolioItem);
     this.router.get("/portfolio", portfolioController.getPortfolio);
-    this.router.delete("/portfolio/:id", portfolioController.deletePortfolioItem);
-    this.router.delete("/portfolio/:id/images", portfolioController.removePortfolioImage);
-    this.router.patch("/portfolio/:id", portfolioController.updatePortfolioItem);
+    this.router.delete(
+      "/portfolio/:id",
+      portfolioController.deletePortfolioItem,
+    );
+    this.router.delete(
+      "/portfolio/:id/images",
+      portfolioController.removePortfolioImage,
+    );
+    this.router.patch(
+      "/portfolio/:id",
+      portfolioController.updatePortfolioItem,
+    );
 
-    this.router.get("/bookings", bookingController.listBookings(UserRole.PROVIDER));
-    this.router.patch("/bookings/:id/cancel", bookingController.cancelBooking(UserRole.PROVIDER));
-    this.router.patch("/bookings/:id/complete", reviewController.completeBooking);
+    this.router.get(
+      "/bookings",
+      bookingController.listBookings(UserRole.PROVIDER),
+    );
+    this.router.patch(
+      "/bookings/:id/cancel",
+      bookingController.cancelBooking(UserRole.PROVIDER),
+    );
+    this.router.patch(
+      "/bookings/:id/complete",
+      bookingController.completeBooking,
+    );
+    this.router.patch(
+      "/bookings/:id/provider-complete",
+      bookingController.providerCompleteBooking,
+    );
   }
 }

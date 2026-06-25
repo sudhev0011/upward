@@ -81,4 +81,6 @@ export interface IBookingRepository extends IBaseRepository<Booking> {
     clientId: string,
     transaction?: ITransactionContext,
   ): Promise<Booking | null>;
+
+  findBookingsReadyForPayout(before: Date): Promise<Booking[]>;
 }

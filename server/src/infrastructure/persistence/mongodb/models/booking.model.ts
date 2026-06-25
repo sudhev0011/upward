@@ -9,7 +9,7 @@ import { BookingMode } from "../../../../domain/enums/bookingMode.enum";
 
 interface GeoPoint {
   type: "Point";
-  coordinates: [number, number]; 
+  coordinates: [number, number];
 }
 
 interface ClientLocation {
@@ -65,6 +65,12 @@ export interface BookingDocument extends Document {
 
   cancelledAt: Date | null;
 
+  providerCompletedAt: Date | null;
+
+  clientCompletedAt: Date | null;
+
+  completedAt: Date | null;
+
   expiresAt: Date | null;
 
   createdAt: Date;
@@ -105,7 +111,7 @@ const ClientLocationSchema = new Schema<ClientLocation>(
       },
 
       coordinates: {
-        type: [Number], 
+        type: [Number],
         required: true,
       },
     },
@@ -241,6 +247,21 @@ const BookingSchema = new Schema<BookingDocument>(
     },
 
     cancelledAt: {
+      type: Date,
+      default: null,
+    },
+
+    providerCompletedAt: {
+      type: Date,
+      default: null,
+    },
+
+    clientCompletedAt: {
+      type: Date,
+      default: null,
+    },
+
+    completedAt: {
       type: Date,
       default: null,
     },

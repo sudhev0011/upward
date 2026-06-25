@@ -4,4 +4,6 @@ export enum BookingStatus {
   CANCELLED = "cancelled",
   COMPLETED = "completed",
   EXPIRED = "expired",
+  PROVIDER_COMPLETED = "provider_completed",
+  CLIENT_COMPLETED = "client_completed",
 }

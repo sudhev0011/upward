@@ -24,6 +24,9 @@ import { CancelBookingUseCase } from "../../../../application/use-cases/booking/
 import { CancelBookingRequestDtoSchema } from "../../../../application/dtos/booking/cancel-booking-request.dto";
 import { ICreateOffsiteBookingUseCase } from "../../../../domain/interfaces/usecases/booking/ICreateOffsiteBookingUseCase";
 import { CreateOffsiteBookingRequestDtoSchema } from "../../../../application/dtos/client/booking/request/Create-offsite-booking-request.dto";
+import { CompleteBookingUseCase } from "../../../../application/use-cases/booking/complete-booking.use-case";
+import { IProviderCompleteBookingUseCase } from "../../../../domain/interfaces/usecases/booking/IProviderCompleteBookingUseCase";
+import { IClientCompleteBookingUseCase } from "../../../../domain/interfaces/usecases/booking/IClientCompleteBookingUseCase";
 
 export class BookingController {
   constructor(
@@ -34,6 +37,12 @@ export class BookingController {
     private readonly _cancelBookingUseCase: CancelBookingUseCase,
 
     private readonly _createOffsiteBookingUseCase: ICreateOffsiteBookingUseCase,
+
+    private readonly _completeBookingUseCase: CompleteBookingUseCase,
+
+    private readonly _providerCompleteBookingUseCase: IProviderCompleteBookingUseCase,
+
+    private readonly _clientCompleteBookingUseCase: IClientCompleteBookingUseCase,
   ) {}
 
   /**
@@ -73,7 +82,6 @@ export class BookingController {
     res: Response,
     next: NextFunction,
   ) => {
-
     const clientId = validateUserId(req);
 
     const parsed = CreateOffsiteBookingRequestDtoSchema.safeParse(req.body);
@@ -143,4 +151,70 @@ export class BookingController {
         handleAsyncError(error, next);
       }
     };
+
+  completeBooking = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const providerId = validateUserId(req);
+      const bookingId = req.params.id as string;
+
+      await this._completeBookingUseCase.execute(bookingId, providerId);
+      sendSuccessResponse(res, "Booking completed successfully", null);
+    } catch (error) {
+      handleAsyncError(error, next);
+    }
+  };
+
+  providerCompleteBooking = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const providerId = validateUserId(req);
+
+      const bookingId = req.params.id as string;
+
+      if (!bookingId) {
+        return handleValidationError(
+          "invalid booking id, please provider the correct one",
+          next,
+        );
+      }
+
+      await this._providerCompleteBookingUseCase.execute(providerId, bookingId);
+
+      sendSuccessResponse(res, "Booking marked as completed by provider", null);
+    } catch (error) {
+      handleAsyncError(error, next);
+    }
+  };
+
+  clientCompleteBooking = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const clientId = validateUserId(req);
+
+      const bookingId = req.params.id as string;
+
+      if (!bookingId) {
+        return handleValidationError(
+          "invalid booking id, please provider the correct one",
+          next,
+        );
+      }
+
+      await this._clientCompleteBookingUseCase.execute(clientId, bookingId);
+
+      sendSuccessResponse(res, "Booking marked as completed by client", null);
+    } catch (error) {
+      handleAsyncError(error, next);
+    }
+  };
 }

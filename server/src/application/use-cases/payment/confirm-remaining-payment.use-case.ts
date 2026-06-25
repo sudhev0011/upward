@@ -1,19 +1,23 @@
 import { PaymentTransactionStatus } from "../../../domain/enums/payment-transaction-status.enum";
-import { NotFoundError, UnprocessableEntityError } from "../../../domain/errors/errors";
+import { WalletTransactionCategory } from "../../../domain/enums/wallet-transaction-category.enum";
+import {
+  NotFoundError,
+  UnprocessableEntityError,
+} from "../../../domain/errors/errors";
 import { ITransactionManager } from "../../../domain/interfaces/database/transaction-manager.interface";
 import { IBookingRepository } from "../../../domain/interfaces/repositories/booking/IBookingRepository";
 import { IPaymentRepository } from "../../../domain/interfaces/repositories/payment/IPaymentRepository";
 import { INotificationService } from "../../../domain/interfaces/services/INotificationService";
+import { IPlatformWalletService } from "../../../domain/interfaces/services/payment/IPlatformWalletService";
 import { IConfirmRemainingPaymentUseCase } from "../../../domain/interfaces/usecases/payment/IConfirmRemainingPaymentUseCase";
 
-export class ConfirmRemainingPaymentUseCase
-  implements IConfirmRemainingPaymentUseCase
-{
+export class ConfirmRemainingPaymentUseCase implements IConfirmRemainingPaymentUseCase {
   constructor(
     private readonly paymentRepository: IPaymentRepository,
     private readonly bookingRepository: IBookingRepository,
     private readonly transactionManager: ITransactionManager,
     private readonly notificationService: INotificationService,
+    private readonly platformWalletService: IPlatformWalletService,
   ) {}
 
   async execute(stripePaymentIntentId: string): Promise<void> {
@@ -56,9 +60,7 @@ export class ConfirmRemainingPaymentUseCase
      */
 
     if (booking.remainingAmount <= 0) {
-      throw new UnprocessableEntityError(
-        "Booking already fully paid",
-      );
+      throw new UnprocessableEntityError("Booking already fully paid");
     }
 
     /**
@@ -76,6 +78,22 @@ export class ConfirmRemainingPaymentUseCase
       await this.paymentRepository.update(
         payment.id!,
         succeededPayment,
+        transaction,
+      );
+
+      /**
+       * Credit platform wallet
+       */
+
+      await this.platformWalletService.credit(
+        payment.amount,
+
+        booking.id!,
+
+        `Remaining payment received for booking ${booking.bookingId}`,
+
+        WalletTransactionCategory.BOOKING_PAYMENT,
+
         transaction,
       );
 
@@ -100,7 +118,8 @@ export class ConfirmRemainingPaymentUseCase
     await this.notificationService.sendNotification({
       recipientId: booking.clientId,
       title: "Payment confirmed",
-      message: "Your remaining payment has been received. Your booking is now fully paid.",
+      message:
+        "Your remaining payment has been received. Your booking is now fully paid.",
       type: "booking",
       data: { bookingId: booking.bookingId },
     });

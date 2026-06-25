@@ -49,6 +49,12 @@ export class BookingMapper {
 
       cancelledAt: document.cancelledAt,
 
+      providerCompletedAt: document.providerCompletedAt,
+
+      clientCompletedAt: document.clientCompletedAt,
+
+      completedAt: document.completedAt,
+
       expiresAt: document.expiresAt,
 
       createdAt: document.createdAt,
@@ -109,6 +115,12 @@ export class BookingMapper {
       doc.cancellationReason = entity.cancellationReason;
 
     if (entity.cancelledAt !== undefined) doc.cancelledAt = entity.cancelledAt;
+
+    if (entity.providerCompletedAt !== undefined) doc.providerCompletedAt = entity.providerCompletedAt;
+
+    if (entity.clientCompletedAt !== undefined) doc.clientCompletedAt = entity.clientCompletedAt;
+
+    if (entity.completedAt !== undefined) doc.completedAt = entity.completedAt;
 
     if (entity.expiresAt !== undefined) doc.expiresAt = entity.expiresAt;
 

@@ -1,26 +1,46 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useCancelBooking } from "@/hooks/booking/use-cancel-booking";
-import { useCompleteBookingMutation } from "@/hooks/reviews/useReviews";
 import { BookingListItem } from "@/interfaces/bookings/bookings.interface";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/StatusBadge";
-import { User, MapPin, Briefcase, Calendar, CreditCard, FileText, AlertTriangle } from "lucide-react";
-
+import {
+  User,
+  MapPin,
+  Briefcase,
+  Calendar,
+  CreditCard,
+  FileText,
+  AlertTriangle,
+} from "lucide-react";
+import { useCompleteBooking } from "@/hooks/booking/use-complete-booking";
 interface OrderDetailsDialogProps {
   order: BookingListItem | null;
   onClose: () => void;
-  mapStatusStyle: (status: string) => "active" | "pending" | "completed" | "cancelled" | "failed";
+  mapStatusStyle: (
+    status: string,
+  ) => "active" | "pending" | "completed" | "cancelled" | "failed" | "provider completed" | "client completed";
 }
 
-export function OrderDetailsDialog({ order, onClose, mapStatusStyle }: OrderDetailsDialogProps) {
+export function OrderDetailsDialog({
+  order,
+  onClose,
+  mapStatusStyle,
+}: OrderDetailsDialogProps) {
   const [showConfirmCancel, setShowConfirmCancel] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
-  
-  const { mutateAsync: cancelBooking, isPending: isCancelling } = useCancelBooking();
-  const { mutateAsync: completeBooking, isPending: isCompleting } = useCompleteBookingMutation();
+
+  const { mutateAsync: cancelBooking, isPending: isCancelling } =
+    useCancelBooking();
+  const { mutateAsync: completeBooking, isPending: isCompleting } =
+    useCompleteBooking();
 
   if (!order) return null;
 
@@ -31,32 +51,52 @@ export function OrderDetailsDialog({ order, onClose, mapStatusStyle }: OrderDeta
         role: "provider",
         reason: cancelReason.trim() || null,
       });
-      toast.success("Order cancelled successfully, payment refunded to client's wallet.");
+      toast.success(
+        "Order cancelled successfully, payment refunded to client's wallet.",
+      );
       setShowConfirmCancel(false);
       setCancelReason("");
       onClose();
     } catch (error: unknown) {
-      const errMsg = error instanceof Error ? error.message : "Failed to cancel booking";
+      const errMsg =
+        error instanceof Error ? error.message : "Failed to cancel booking";
       toast.error(errMsg);
     }
   };
 
   const handleCompleteBooking = async () => {
     try {
-      await completeBooking(order.id);
+      await completeBooking({
+        bookingId: order.id,
+        role: "provider",
+      });
+
       toast.success("Booking marked as completed successfully!");
+
       onClose();
     } catch (error: unknown) {
-      const errMsg = error instanceof Error ? error.message : "Failed to complete booking";
+      const errMsg =
+        error instanceof Error ? error.message : "Failed to complete booking";
+
       toast.error(errMsg);
     }
   };
 
-  const isCancelable = ["PENDING", "CONFIRMED"].includes(order.status.toUpperCase());
-  const isCompletable = order.status.toUpperCase() === "CONFIRMED";
+  const normalizedStatus = order.status.toUpperCase();
+
+  const isCancelable = ["PENDING", "CONFIRMED"].includes(normalizedStatus);
+
+  const isCompletable = normalizedStatus === "CONFIRMED";
+
+  const isWaitingForClient = normalizedStatus === "PROVIDER_COMPLETED";
+
+  const isCompleted = normalizedStatus === "COMPLETED";
 
   const formattedTime = order.startDateTime
-    ? new Date(order.startDateTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    ? new Date(order.startDateTime).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
     : "Flexible / Not set";
 
   return (
@@ -65,8 +105,12 @@ export function OrderDetailsDialog({ order, onClose, mapStatusStyle }: OrderDeta
         <DialogHeader>
           <div className="flex items-center justify-between pr-6">
             <div>
-              <DialogTitle className="text-xl font-bold text-foreground">Order Overview</DialogTitle>
-              <p className="text-xs text-muted-foreground mt-1">ID: {order.bookingId}</p>
+              <DialogTitle className="text-xl font-bold text-foreground">
+                Order Overview
+              </DialogTitle>
+              <p className="text-xs text-muted-foreground mt-1">
+                ID: {order.bookingId}
+              </p>
             </div>
             <StatusBadge status={mapStatusStyle(order.status)} />
           </div>
@@ -76,17 +120,23 @@ export function OrderDetailsDialog({ order, onClose, mapStatusStyle }: OrderDeta
 
         {/* Client Info */}
         <div className="space-y-4">
-          <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Client Information</h3>
+          <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+            Client Information
+          </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex items-start gap-3">
               <User className="h-4 w-4 text-primary mt-0.5" />
               <div>
                 <p className="text-[11px] text-muted-foreground">Name</p>
-                <p className="text-sm font-medium text-card-foreground">{order.client.name || "Client"}</p>
-                <p className="text-xs text-muted-foreground">{order.client.email}</p>
+                <p className="text-sm font-medium text-card-foreground">
+                  {order.client.name || "Client"}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {order.client.email}
+                </p>
               </div>
             </div>
-            
+
             {/* Safe Guarded Location Mapping */}
             <div className="flex items-start gap-3">
               <MapPin className="h-4 w-4 text-primary mt-0.5" />
@@ -110,25 +160,35 @@ export function OrderDetailsDialog({ order, onClose, mapStatusStyle }: OrderDeta
 
         {/* Service Details */}
         <div className="space-y-4">
-          <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Service Details</h3>
+          <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+            Service Details
+          </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex items-start gap-3">
               <Briefcase className="h-4 w-4 text-primary mt-0.5" />
               <div>
-                <p className="text-[11px] text-muted-foreground">Service Mode</p>
-                <p className="text-sm font-medium text-card-foreground">{order.service.name}</p>
-                <p className="text-xs text-muted-foreground capitalize">Mode: {order.service.mode}</p>
+                <p className="text-[11px] text-muted-foreground">
+                  Service Mode
+                </p>
+                <p className="text-sm font-medium text-card-foreground">
+                  {order.service.name}
+                </p>
+                <p className="text-xs text-muted-foreground capitalize">
+                  Mode: {order.service.mode}
+                </p>
               </div>
             </div>
-            
+
             <div className="flex items-start gap-3">
               <Calendar className="h-4 w-4 text-primary mt-0.5" />
               <div>
-                <p className="text-[11px] text-muted-foreground">Date & Scheduled Time</p>
-                <p className="text-sm font-medium text-card-foreground">{order.bookingDate}</p>
-                <p className="text-xs text-muted-foreground">
-                  {formattedTime}
+                <p className="text-[11px] text-muted-foreground">
+                  Date & Scheduled Time
                 </p>
+                <p className="text-sm font-medium text-card-foreground">
+                  {order.bookingDate}
+                </p>
+                <p className="text-xs text-muted-foreground">{formattedTime}</p>
               </div>
             </div>
           </div>
@@ -139,10 +199,13 @@ export function OrderDetailsDialog({ order, onClose, mapStatusStyle }: OrderDeta
             <Separator className="bg-border/50" />
             <div className="space-y-3">
               <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                <FileText className="h-4 w-4 text-primary" /> Special Instructions
+                <FileText className="h-4 w-4 text-primary" /> Special
+                Instructions
               </h3>
               <div className="bg-secondary/30 rounded-xl p-4 border border-border/30">
-                <p className="text-sm text-card-foreground leading-relaxed">{order.notes}</p>
+                <p className="text-sm text-card-foreground leading-relaxed">
+                  {order.notes}
+                </p>
               </div>
             </div>
           </>
@@ -157,16 +220,26 @@ export function OrderDetailsDialog({ order, onClose, mapStatusStyle }: OrderDeta
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-secondary/30 rounded-xl p-4 border border-border/30 text-center">
-              <p className="text-[11px] text-muted-foreground">Total Valuation</p>
-              <p className="text-lg font-bold text-card-foreground mt-1">₹{order.totalAmount.toLocaleString("en-IN")}</p>
+              <p className="text-[11px] text-muted-foreground">
+                Total Valuation
+              </p>
+              <p className="text-lg font-bold text-card-foreground mt-1">
+                ₹{order.totalAmount.toLocaleString("en-IN")}
+              </p>
             </div>
             <div className="bg-secondary/30 rounded-xl p-4 border border-border/30 text-center">
               <p className="text-[11px] text-muted-foreground">Liquid Paid</p>
-              <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 mt-1">₹{order.paidAmount.toLocaleString("en-IN")}</p>
+              <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
+                ₹{order.paidAmount.toLocaleString("en-IN")}
+              </p>
             </div>
             <div className="bg-secondary/30 rounded-xl p-4 border border-border/30 text-center">
-              <p className="text-[11px] text-muted-foreground">Remaining Balance</p>
-              <p className="text-sm font-semibold text-card-foreground mt-1">₹{order.remainingAmount.toLocaleString("en-IN")}</p>
+              <p className="text-[11px] text-muted-foreground">
+                Remaining Balance
+              </p>
+              <p className="text-sm font-semibold text-card-foreground mt-1">
+                ₹{order.remainingAmount.toLocaleString("en-IN")}
+              </p>
             </div>
           </div>
         </div>
@@ -195,6 +268,22 @@ export function OrderDetailsDialog({ order, onClose, mapStatusStyle }: OrderDeta
                   {isCompleting ? "Completing..." : "Complete Booking"}
                 </Button>
               )}
+
+              {isWaitingForClient && (
+                <div className="flex-1 rounded-xl border border-border bg-secondary/30 p-3 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    Waiting for client confirmation
+                  </p>
+                </div>
+              )}
+
+              {isCompleted && (
+                <div className="flex-1 rounded-xl border border-border bg-secondary/30 p-3 text-center">
+                  <p className="text-sm text-emerald-600 dark:text-emerald-400">
+                    Payout released successfully
+                  </p>
+                </div>
+              )}
             </div>
           ) : (
             <div className="space-y-3 p-4 border border-rose-100 dark:border-rose-950/20 bg-rose-50/10 dark:bg-rose-950/5 rounded-2xl">
@@ -211,10 +300,23 @@ export function OrderDetailsDialog({ order, onClose, mapStatusStyle }: OrderDeta
                 />
               </div>
               <div className="flex gap-2">
-                <Button variant="ghost" onClick={() => { setShowConfirmCancel(false); setCancelReason(""); }} className="flex-1 h-11 font-medium rounded-xl" disabled={isCancelling}>
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setShowConfirmCancel(false);
+                    setCancelReason("");
+                  }}
+                  className="flex-1 h-11 font-medium rounded-xl"
+                  disabled={isCancelling}
+                >
                   Keep Booking
                 </Button>
-                <Button variant="destructive" onClick={handleConfirmCancel} className="flex-1 h-11 font-medium rounded-xl gap-2 shadow-sm" disabled={isCancelling}>
+                <Button
+                  variant="destructive"
+                  onClick={handleConfirmCancel}
+                  className="flex-1 h-11 font-medium rounded-xl gap-2 shadow-sm"
+                  disabled={isCancelling}
+                >
                   {isCancelling ? "Cancelling..." : "Yes, Cancel Order"}
                 </Button>
               </div>

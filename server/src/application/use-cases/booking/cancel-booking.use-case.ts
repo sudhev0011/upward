@@ -12,7 +12,9 @@ import { IUnavailabilityRepository } from "../../../domain/interfaces/repositori
 import { IWalletRepository } from "../../../domain/interfaces/repositories/wallet/IWalletRepository";
 import { IWalletTransactionRepository } from "../../../domain/interfaces/repositories/wallet/IWalletTransactionRepository";
 import { Wallet } from "../../../domain/entities/wallet.entity";
-import { WalletTransaction, WalletTransactionType } from "../../../domain/entities/wallet-transaction.entity";
+import { WalletTransaction } from "../../../domain/entities/wallet-transaction.entity";
+import { WalletTransactionType } from "../../../domain/enums/wallet-transaction.type.enum";
+import { WalletTransactionCategory } from "../../../domain/enums/wallet-transaction-category.enum";
 
 export class CancelBookingUseCase {
   constructor(
@@ -90,6 +92,7 @@ export class CancelBookingUseCase {
           walletId: wallet.id!,
           amount: refundAmount,
           type: WalletTransactionType.CREDIT,
+          category: WalletTransactionCategory.REFUND,
           description: `Refund for cancelled booking #${bookingId}${
             reason ? `: ${reason}` : ""
           }`,

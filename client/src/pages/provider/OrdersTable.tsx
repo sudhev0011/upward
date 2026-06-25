@@ -7,7 +7,7 @@ interface OrdersTableProps {
   data: BookingListItem[] | undefined;
   isLoading: boolean;
   onSelectOrder: (order: BookingListItem) => void;
-  mapStatusStyle: (status: string) => "active" | "pending" | "completed" | "cancelled" | "failed";
+  mapStatusStyle: (status: string) => "active" | "pending" | "completed" | "cancelled" | "failed" | "provider completed" | "client completed";
 }
 
 export function OrdersTable({ data, isLoading, onSelectOrder, mapStatusStyle }: OrdersTableProps) {

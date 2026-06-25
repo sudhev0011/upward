@@ -124,13 +124,21 @@ export const clientApi = {
   },
 
   async createRemainingPaymentIntent(
-  data: CreatePaymentIntentRequest,
-): Promise<ApiEnvelope<PaymentIntentResponse>> {
-  return (
-    await api.post<ApiEnvelope<PaymentIntentResponse>>(
-      ClientRoutes.PAYMENT_REMAINING_INTENT,
-      data,
-    )
-  ).data;
-},
+    data: CreatePaymentIntentRequest,
+  ): Promise<ApiEnvelope<PaymentIntentResponse>> {
+    return (
+      await api.post<ApiEnvelope<PaymentIntentResponse>>(
+        ClientRoutes.PAYMENT_REMAINING_INTENT,
+        data,
+      )
+    ).data;
+  },
+
+  async completeBooking(bookingId: string): Promise<ApiEnvelope<void>> {
+    return (
+      await api.patch<ApiEnvelope<void>>(
+        ClientRoutes.CLIENT_COMPLETE_BOOKING(bookingId),
+      )
+    ).data;
+  },
 };

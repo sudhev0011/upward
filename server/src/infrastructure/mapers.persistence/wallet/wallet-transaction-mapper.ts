@@ -9,6 +9,7 @@ export class WalletTransactionMapper {
       walletId: document.walletId.toString(),
       amount: document.amount,
       type: document.type,
+      category: document.category,
       description: document.description,
       bookingId: document.bookingId?.toString() || null,
       createdAt: document.createdAt,
@@ -16,7 +17,7 @@ export class WalletTransactionMapper {
   }
 
   static mapToDocument(
-    entity: Partial<WalletTransaction>
+    entity: Partial<WalletTransaction>,
   ): Partial<WalletTransactionDocument> {
     const doc: Partial<WalletTransactionDocument> = {};
     if (entity.walletId !== undefined) {
@@ -28,11 +29,16 @@ export class WalletTransactionMapper {
     if (entity.type !== undefined) {
       doc.type = entity.type;
     }
+    if (entity.type !== undefined) {
+      doc.category = entity.category;
+    }
     if (entity.description !== undefined) {
       doc.description = entity.description;
     }
     if (entity.bookingId !== undefined) {
-      doc.bookingId = entity.bookingId ? new Types.ObjectId(entity.bookingId) : null;
+      doc.bookingId = entity.bookingId
+        ? new Types.ObjectId(entity.bookingId)
+        : null;
     }
     return doc;
   }

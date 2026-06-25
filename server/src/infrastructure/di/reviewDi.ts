@@ -8,7 +8,6 @@ import { CreateReviewUseCase } from '../../application/use-cases/review/create-r
 import { GetProviderReviewsUseCase } from '../../application/use-cases/review/get-provider-reviews.use-case';
 import { GetClientReviewsUseCase } from '../../application/use-cases/review/get-client-reviews.use-case';
 import { GetPendingReviewsUseCase } from '../../application/use-cases/review/get-pending-reviews.use-case';
-import { CompleteBookingUseCase } from '../../application/use-cases/booking/complete-booking.use-case';
 import { ReviewController } from '../../presentation/controllers/review.controller';
 
 // Repositories
@@ -41,9 +40,6 @@ export const getPendingReviewsUseCase = new GetPendingReviewsUseCase(
   bookingRepository
 );
 
-export const completeBookingUseCase = new CompleteBookingUseCase(
-  bookingRepository
-);
 
 // Controller
 export const reviewController = new ReviewController(
@@ -51,5 +47,4 @@ export const reviewController = new ReviewController(
   getProviderReviewsUseCase,
   getClientReviewsUseCase,
   getPendingReviewsUseCase,
-  completeBookingUseCase
 );

@@ -41,6 +41,9 @@ import { WalletController } from "../../presentation/controllers/client/wallet/w
 import { NanoIdBookingIdtor } from "../services/NanoIdBookingNumberGenerator";
 import { createOffsiteBookingUseCase } from "./bookingDi";
 import { CreateRemainingPaymentIntentUseCase } from "../../application/use-cases/payment/create-remaining-payment-intent.use-case";
+import { CompleteBookingUseCase } from "../../application/use-cases/booking/complete-booking.use-case";
+import { ProviderCompleteBookingUseCase } from "../../application/use-cases/booking/provider-complete-booking.use-case";
+import { ClientCompleteBookingUseCase } from "../../application/use-cases/booking/client-complete-booking.use-case";
 
 
 
@@ -59,8 +62,8 @@ const categoryRepository = new CategoryRepository()
 const unavailabilityResolver = new UnavailabilityResolverService(unavailabilityRepository)
 const mongoTransactionManager = new MongoTransactionManager()
 const paymentRepository = new PaymentRepository()
-const walletRepository = new WalletRepository()
-const walletTransactionRepository = new WalletTransactionRepository()
+export const walletRepository = new WalletRepository()
+export const walletTransactionRepository = new WalletTransactionRepository()
 
 // service init
 
@@ -93,10 +96,17 @@ const createRemainingPaymentIntentUseCase = new CreateRemainingPaymentIntentUseC
   transactionManager,
 );
 
+export const completeBookingUseCase = new CompleteBookingUseCase(
+  bookingRepository
+);
+
+const providerCompleteBookingUseCase = new ProviderCompleteBookingUseCase(bookingRepository);
+const clientCompleteBookingUseCase = new ClientCompleteBookingUseCase(bookingRepository);
+
 // controller inint
 export const clientProfileController = new ClientProfileController(uploadAvatarUseCase,createClientProfileUseCase,getClientProfileUseCase,updateClientProfileUseCase)
 
-export const bookingController = new BookingController(createBookingUseCase,listBookingUseCase,cancelBookingUseCase,createOffsiteBookingUseCase)
+export const bookingController = new BookingController(createBookingUseCase,listBookingUseCase,cancelBookingUseCase,createOffsiteBookingUseCase, completeBookingUseCase, providerCompleteBookingUseCase, clientCompleteBookingUseCase)
 
 export const paymentController = new PaymentController(createPaymentIntentUseCase, createRemainingPaymentIntentUseCase)
 

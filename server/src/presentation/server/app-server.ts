@@ -14,7 +14,7 @@ import { errorHandler } from "../middleware/error-handler";
 import { requestLogger } from "../middleware/logger.middleware";
 import { winstonLogger } from "../../infrastructure/config/logger";
 import { PublicRouter } from "../routes/public-router";
-import { bookingExpirationJob } from "../../infrastructure/di/jobsDi";
+import { bookingExpirationJob, providerPayoutJob } from "../../infrastructure/di/jobsDi";
 import { WebhookRouter } from "../routes/webhook-router";
 import router from "../routes/location.router";
 import { ChatRouter } from "../routes/chat-router";
@@ -22,6 +22,7 @@ import { initSocketServer } from "./socket-server";
 import { SubscriptionRouter } from "../routes/subscription.router";
 import { NotificationRouter } from "../routes/notification-router";
 import { ReviewRouter } from "../routes/review-router";
+import { systemUserInitializer } from "../../infrastructure/di/startupDi";
 
 export class AppServer {
   private _app: express.Application;
@@ -91,6 +92,7 @@ export class AppServer {
 
   private initializeJobs(): void {
     bookingExpirationJob.start();
+    providerPayoutJob.start();
 
     winstonLogger.info("Background jobs initialized");
   }
@@ -98,6 +100,7 @@ export class AppServer {
   public async start(): Promise<void> {
     try {
       await this.connectDatabase();
+      await systemUserInitializer.initialize()
       this.init();
       this.initializeJobs();
       initSocketServer(this._httpServer);

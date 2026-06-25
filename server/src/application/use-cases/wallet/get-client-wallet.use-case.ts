@@ -1,7 +1,7 @@
 import { IWalletRepository } from "../../../domain/interfaces/repositories/wallet/IWalletRepository";
 import { IWalletTransactionRepository } from "../../../domain/interfaces/repositories/wallet/IWalletTransactionRepository";
 import { Wallet } from "../../../domain/entities/wallet.entity";
-import { WalletTransactionType } from "../../../domain/entities/wallet-transaction.entity";
+import { WalletTransactionType } from "../../../domain/enums/wallet-transaction.type.enum";
 
 export interface WalletTransactionResponse {
   id: string;

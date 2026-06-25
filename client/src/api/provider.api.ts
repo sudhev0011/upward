@@ -43,7 +43,10 @@ import {
   UpdatePortfolioItemRequest,
 } from "@/interfaces/provider/portfolio.interface";
 import axios from "axios";
-import { ListBookingsRequest, ListBookingsResponse } from "@/interfaces/bookings/bookings.interface";
+import {
+  ListBookingsRequest,
+  ListBookingsResponse,
+} from "@/interfaces/bookings/bookings.interface";
 
 export const providerApi = {
   async getProviderProfile(): Promise<ApiEnvelope<ProviderProfile>> {
@@ -264,12 +267,12 @@ export const providerApi = {
 
   async getPortfolio(
     page: number = 1,
-    limit: number = 9
+    limit: number = 9,
   ): Promise<ApiEnvelope<PortfolioPageResponse>> {
     return (
       await api.get<ApiEnvelope<PortfolioPageResponse>>(
         ProviderRoutes.GET_PORTFOLIO,
-        { params: { page, limit } }
+        { params: { page, limit } },
       )
     ).data;
   },
@@ -304,24 +307,32 @@ export const providerApi = {
   },
 
   async listBookings(
-    params: ListBookingsRequest
+    params: ListBookingsRequest,
   ): Promise<ApiEnvelope<ListBookingsResponse>> {
     return (
       await api.get<ApiEnvelope<ListBookingsResponse>>(
         "/api/provider/bookings",
-        { params }
+        { params },
       )
     ).data;
   },
 
   async cancelBooking(
     bookingId: string,
-    reason?: string | null
+    reason?: string | null,
   ): Promise<ApiEnvelope<void>> {
     return (
       await api.patch<ApiEnvelope<void>>(
         `/api/provider/bookings/${bookingId}/cancel`,
-        { reason }
+        { reason },
+      )
+    ).data;
+  },
+
+  async completeBooking(bookingId: string): Promise<ApiEnvelope<void>> {
+    return (
+      await api.patch<ApiEnvelope<void>>(
+        ProviderRoutes.PROVIDER_COMPLETE_BOOKING(bookingId),
       )
     ).data;
   },

@@ -9,7 +9,6 @@ import { CreateReviewUseCase } from '../../application/use-cases/review/create-r
 import { GetProviderReviewsUseCase } from '../../application/use-cases/review/get-provider-reviews.use-case';
 import { GetClientReviewsUseCase } from '../../application/use-cases/review/get-client-reviews.use-case';
 import { GetPendingReviewsUseCase } from '../../application/use-cases/review/get-pending-reviews.use-case';
-import { CompleteBookingUseCase } from '../../application/use-cases/booking/complete-booking.use-case';
 
 export class ReviewController {
   constructor(
@@ -17,7 +16,6 @@ export class ReviewController {
     private readonly _getProviderReviewsUseCase: GetProviderReviewsUseCase,
     private readonly _getClientReviewsUseCase: GetClientReviewsUseCase,
     private readonly _getPendingReviewsUseCase: GetPendingReviewsUseCase,
-    private readonly _completeBookingUseCase: CompleteBookingUseCase
   ) {}
 
   createReview = async (
@@ -98,19 +96,5 @@ export class ReviewController {
     }
   };
 
-  completeBooking = async (
-    req: AuthenticatedRequest,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const providerId = validateUserId(req);
-      const bookingId = req.params.id as string;
-
-      await this._completeBookingUseCase.execute(bookingId, providerId);
-      sendSuccessResponse(res, 'Booking completed successfully', null);
-    } catch (error) {
-      handleAsyncError(error, next);
-    }
-  };
+  
 }

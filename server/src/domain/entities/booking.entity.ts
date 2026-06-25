@@ -42,6 +42,12 @@ export class Booking {
     public readonly cancellationReason: string | null,
     public readonly cancelledAt: Date | null,
 
+    public readonly providerCompletedAt: Date | null,
+
+    public readonly clientCompletedAt: Date | null,
+
+    public readonly completedAt: Date | null,
+
     public readonly expiresAt: Date | null,
 
     public readonly createdAt: Date,
@@ -81,6 +87,12 @@ export class Booking {
     cancelledBy?: string | null;
     cancellationReason?: string | null;
     cancelledAt?: Date | null;
+
+    providerCompletedAt?: Date | null;
+
+    clientCompletedAt?: Date | null;
+
+    completedAt?: Date | null;
 
     createdAt?: Date;
     updatedAt?: Date;
@@ -146,6 +158,10 @@ export class Booking {
       data.cancellationReason ?? null,
       data.cancelledAt ?? null,
 
+      data.providerCompletedAt ?? null,
+      data.clientCompletedAt ?? null,
+      data.completedAt ?? null,
+
       data.expiresAt ?? null,
 
       data.createdAt ?? now,
@@ -202,6 +218,10 @@ export class Booking {
       this.cancellationReason,
       this.cancelledAt,
 
+      this.providerCompletedAt,
+      this.clientCompletedAt,
+      this.completedAt,
+
       this.expiresAt,
 
       this.createdAt,
@@ -253,6 +273,10 @@ export class Booking {
       this.cancelledBy,
       this.cancellationReason,
       this.cancelledAt,
+
+      this.providerCompletedAt,
+      this.clientCompletedAt,
+      this.completedAt,
 
       this.expiresAt,
 
@@ -314,6 +338,10 @@ export class Booking {
       data.cancelledBy,
       data.reason ?? null,
       new Date(),
+
+      this.providerCompletedAt,
+      this.clientCompletedAt,
+      this.completedAt,
 
       this.expiresAt,
 
@@ -391,6 +419,10 @@ export class Booking {
       this.cancellationReason,
       this.cancelledAt,
 
+      this.providerCompletedAt,
+      this.clientCompletedAt,
+      this.completedAt,
+
       this.expiresAt,
 
       this.createdAt,
@@ -399,9 +431,14 @@ export class Booking {
   }
 
   complete(): Booking {
-    if (this.status !== BookingStatus.CONFIRMED) {
+    const allowedStatuses = [
+      BookingStatus.CONFIRMED,
+      BookingStatus.CLIENT_COMPLETED,
+    ];
+
+    if (!allowedStatuses.includes(this.status)) {
       throw new UnprocessableEntityError(
-        "Only confirmed bookings can be marked as completed",
+        "Only confirmed or client-completed bookings can be marked as completed",
       );
     }
 
@@ -429,6 +466,93 @@ export class Booking {
       this.cancelledBy,
       this.cancellationReason,
       this.cancelledAt,
+      this.providerCompletedAt,
+      this.clientCompletedAt,
+      new Date(),
+      this.expiresAt,
+      this.createdAt,
+      new Date(),
+    );
+  }
+  markProviderComplete(): Booking {
+    if (this.status !== BookingStatus.CONFIRMED) {
+      throw new ValidationError(
+        "Only confirmed bookings can be marked completed by provider",
+      );
+    }
+
+    return new Booking(
+      this.id,
+      this.bookingId,
+      this.clientId,
+      this.providerId,
+      this.serviceId,
+      this.providerServiceId,
+      BookingStatus.PROVIDER_COMPLETED,
+      this.paymentType,
+      this.paymentStatus,
+      this.totalAmount,
+      this.paidAmount,
+      this.remainingAmount,
+      this.refundAmount,
+      this.bookingDate,
+      this.bookingMode,
+      this.startDateTime,
+      this.endDateTime,
+      this.location,
+      this.notes,
+      this.requirements,
+      this.cancelledBy,
+      this.cancellationReason,
+      this.cancelledAt,
+      new Date(),
+      this.clientCompletedAt,
+      this.completedAt,
+      this.expiresAt,
+      this.createdAt,
+      new Date(),
+    );
+  }
+  markClientComplete(): Booking {
+    if (this.status !== BookingStatus.PROVIDER_COMPLETED) {
+      throw new ValidationError("Provider must complete booking first");
+    }
+
+    if (this.remainingAmount > 0) {
+      throw new ValidationError("Remaining payment must be completed");
+    }
+
+    if (this.paymentStatus !== PaymentStatus.PAID) {
+      throw new ValidationError("Booking payment is not completed");
+    }
+
+    return new Booking(
+      this.id,
+      this.bookingId,
+      this.clientId,
+      this.providerId,
+      this.serviceId,
+      this.providerServiceId,
+      BookingStatus.CLIENT_COMPLETED,
+      this.paymentType,
+      this.paymentStatus,
+      this.totalAmount,
+      this.paidAmount,
+      this.remainingAmount,
+      this.refundAmount,
+      this.bookingDate,
+      this.bookingMode,
+      this.startDateTime,
+      this.endDateTime,
+      this.location,
+      this.notes,
+      this.requirements,
+      this.cancelledBy,
+      this.cancellationReason,
+      this.cancelledAt,
+      this.providerCompletedAt,
+      new Date(),
+      this.completedAt,
       this.expiresAt,
       this.createdAt,
       new Date(),

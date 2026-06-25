@@ -38,6 +38,10 @@ export class ClientRouter {
       bookingController.createOffsiteBooking,
     );
     this.router.patch(
+      "/bookings/:id/client-complete",
+      bookingController.clientCompleteBooking,
+    );
+    this.router.patch(
       "/bookings/:id/cancel",
       bookingController.cancelBooking(UserRole.CLIENT),
     );

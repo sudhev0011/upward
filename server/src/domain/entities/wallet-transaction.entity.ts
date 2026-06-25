@@ -1,7 +1,5 @@
-export enum WalletTransactionType {
-  CREDIT = "credit",
-  DEBIT = "debit",
-}
+import { WalletTransactionCategory } from "../enums/wallet-transaction-category.enum";
+import { WalletTransactionType } from "../enums/wallet-transaction.type.enum";
 
 export class WalletTransaction {
   constructor(
@@ -9,9 +7,10 @@ export class WalletTransaction {
     public readonly walletId: string,
     public readonly amount: number,
     public readonly type: WalletTransactionType,
+    public readonly category: WalletTransactionCategory,
     public readonly description: string,
     public readonly bookingId: string | null,
-    public readonly createdAt: Date
+    public readonly createdAt: Date,
   ) {}
 
   static create(data: {
@@ -19,6 +18,7 @@ export class WalletTransaction {
     walletId: string;
     amount: number;
     type: WalletTransactionType;
+    category: WalletTransactionCategory;
     description: string;
     bookingId?: string | null;
     createdAt?: Date;
@@ -28,9 +28,10 @@ export class WalletTransaction {
       data.walletId,
       data.amount,
       data.type,
+      data.category,
       data.description,
       data.bookingId ?? null,
-      data.createdAt ?? new Date()
+      data.createdAt ?? new Date(),
     );
   }
 }

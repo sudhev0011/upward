@@ -10,7 +10,13 @@ import { socketService } from "../services/socket.service";
 import { ConfirmRemainingPaymentUseCase } from "../../application/use-cases/payment/confirm-remaining-payment.use-case";
 import { IConfirmRemainingPaymentUseCase } from "../../domain/interfaces/usecases/payment/IConfirmRemainingPaymentUseCase";
 import { firebasePushNotificationService } from "./notificationDi";
-
+import { walletRepository } from "./clientDi";
+import { walletTransactionRepository } from "./clientDi";
+import { userRepository } from "./authDi";
+import { PlatformWalletService } from "../../application/services/platform-wallet.service";
+import { ReleaseProviderPayoutUseCase } from "../../application/use-cases/payment/release-provider-payout.use-case";
+import { CommissionCalculationService } from "../../application/services/commission-calculation.service";
+import { ProcessProviderPayoutsUseCase } from "../../application/use-cases/payment/process-provider-payouts.use-case";
 const stripeService = new StripeService();
 
 const paymentRepository = new PaymentRepository();
@@ -23,8 +29,16 @@ const notificationRepository = new MongoNotificationRepository();
 export const notificationService = new NotificationService(
   notificationRepository,
   socketService,
-  firebasePushNotificationService
+  firebasePushNotificationService,
 );
+
+const platformWalletService = new PlatformWalletService(
+  userRepository,
+  walletRepository,
+  walletTransactionRepository,
+);
+
+const commissionCalculationService = new CommissionCalculationService();
 
 const confirmPaymentUseCase = new ConfirmPaymentUseCase(
   paymentRepository,
@@ -32,8 +46,28 @@ const confirmPaymentUseCase = new ConfirmPaymentUseCase(
   bookingRepository,
 
   transactionManager,
+
   notificationService,
+
+  walletRepository,
+
+  walletTransactionRepository,
+
+  userRepository,
+
+  platformWalletService,
 );
+
+export const releaseProviderPayoutUseCase = new ReleaseProviderPayoutUseCase(
+  bookingRepository,
+  walletRepository,
+  walletTransactionRepository,
+  platformWalletService,
+  commissionCalculationService,
+  transactionManager,
+);
+
+export const processProviderPayoutsUseCase = new ProcessProviderPayoutsUseCase(bookingRepository,releaseProviderPayoutUseCase)
 
 const confirmRemainingPaymentUseCase: IConfirmRemainingPaymentUseCase =
   new ConfirmRemainingPaymentUseCase(
@@ -41,6 +75,7 @@ const confirmRemainingPaymentUseCase: IConfirmRemainingPaymentUseCase =
     bookingRepository,
     transactionManager,
     notificationService,
+    platformWalletService,
   );
 
 export const stripeWebhookController = new StripeWebhookController(
@@ -48,5 +83,5 @@ export const stripeWebhookController = new StripeWebhookController(
 
   confirmPaymentUseCase,
 
-  confirmRemainingPaymentUseCase
+  confirmRemainingPaymentUseCase,
 );

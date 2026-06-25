@@ -48,12 +48,14 @@ export default function OrdersPage() {
   const totalPages = data?.totalPages || 1;
   const { pageNumbers } = usePagination({ currentPage, totalPages });
 
-  const mapBackendStatusToBadgeStyle = (status: string): "active" | "pending" | "completed" | "cancelled" | "failed" => {
+  const mapBackendStatusToBadgeStyle = (status: string): "active" | "pending" | "completed" | "cancelled" | "failed" | "provider completed" | "client completed" => {
     const s = status.toUpperCase();
     if (s === "CONFIRMED") return "active";
     if (s === "PENDING") return "pending";
     if (s === "COMPLETED") return "completed";
     if (s === "CANCELLED") return "cancelled";
+    if (s=== "PROVIDER_COMPLETED") return "provider completed";
+    if (s=== "CLIENT_COMPLETED") return "client completed";
     return "failed";
   };
 

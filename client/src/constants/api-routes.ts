@@ -27,6 +27,9 @@ export const ClientRoutes = {
   GET_WALLET: "/api/client/wallet",
 
   PAYMENT_REMAINING_INTENT: "/api/client/payments/remaining-intent",
+
+  CLIENT_COMPLETE_BOOKING: (bookingId: string) =>
+    `/api/client/bookings/${bookingId}/client-complete`,
 } as const;
 
 export const ProviderRoutes = {
@@ -63,6 +66,9 @@ export const ProviderRoutes = {
   DELETE_PORTFOLIO_ITEM: "/api/provider/portfolio/:id",
   REMOVE_PORTFOLIO_IMAGE: "/api/provider/portfolio/:id/images",
   UPDATE_PORTFOLIO_ITEM: "/api/provider/portfolio/:id",
+
+  PROVIDER_COMPLETE_BOOKING: (bookingId: string) =>
+    `/api/provider/bookings/${bookingId}/provider-complete`,
 } as const;
 
 export const AdminRoutes = {

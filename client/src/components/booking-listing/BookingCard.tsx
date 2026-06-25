@@ -28,6 +28,7 @@ const STATUS_VARIANTS: Record<string, string> = {
   CONFIRMED: "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400",
   COMPLETED: "bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400",
   CANCELLED: "bg-rose-100 text-rose-800 border-rose-200 dark:bg-rose-900/30 dark:text-rose-400",
+  PROVIDER_COMPLETED: "bg-yellow-500 border-rose-200 dark:bg-rose-900/30 dark:text-rose-400",
 };
 
 const PAYMENT_STATUS_VARIANTS: Record<string, string> = {

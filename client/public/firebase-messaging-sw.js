@@ -24,3 +24,27 @@ messaging.onBackgroundMessage((payload) => {
 
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
+
+
+self.addEventListener('notificationclick', function(event) {
+  console.log('[firebase-messaging-sw.js] Notification clicked: ', event.notification);
+  
+  event.notification.close();
+
+  const targetUrl = self.location.origin; 
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then(function(windowClients) {
+        for (let i = 0; i < windowClients.length; i++) {
+          const client = windowClients[i];
+          if (client.url.startsWith(targetUrl) && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        if (clients.openWindow) {
+          return clients.openWindow(`${targetUrl}/client/dashboard`);
+        }
+      })
+  );
+});

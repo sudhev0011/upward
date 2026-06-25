@@ -481,19 +481,36 @@ export class BookingRepository
   }
 
   async findConfirmedPartialBookingByIdAndClientId(
-  bookingId: string,
-  clientId: string,
-  transaction?: ITransactionContext,
-): Promise<Booking | null> {
-  return this.findOne(
-    {
-      _id: bookingId,
-      clientId,
-      status: BookingStatus.CONFIRMED,
-      paymentType: PaymentType.PARTIAL,
-      paymentStatus: PaymentStatus.PARTIALLY_PAID,
-    },
-    transaction,
-  );
-}
+    bookingId: string,
+    clientId: string,
+    transaction?: ITransactionContext,
+  ): Promise<Booking | null> {
+    return this.findOne(
+      {
+        _id: bookingId,
+        clientId,
+        status: {
+        $in: [
+          BookingStatus.CONFIRMED,
+          BookingStatus.PROVIDER_COMPLETED,
+        ],
+      },
+        paymentType: PaymentType.PARTIAL,
+        paymentStatus: PaymentStatus.PARTIALLY_PAID,
+      },
+      transaction,
+    );
+  }
+
+  async findBookingsReadyForPayout(before: Date): Promise<Booking[]> {
+    const docs = await BookingModel.find({
+      status: BookingStatus.CLIENT_COMPLETED,
+
+      clientCompletedAt: {
+        $lte: before,
+      },
+    });
+
+    return docs.map((doc) => BookingMapper.mapToEntity(doc));
+  }
 }
