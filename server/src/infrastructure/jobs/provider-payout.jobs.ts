@@ -15,7 +15,7 @@ export class ProviderPayoutJob {
      * Every hour
      */
 
-    cron.schedule("*/3 * * * *", async () => {
+    cron.schedule("0 * * * *", async () => {
       this.logger.info("[ProviderPayoutJob] Running...");
 
       try {

@@ -84,6 +84,7 @@ export const successResponse = {
   GET_BOOKINGS_SUCCESS: "Booking listed successfully",
   CANCEL_BOOKING_SUCCESS: "Booking cancelled successfully",
   GET_WALLET_SUCCESS: "Wallet retrieved successfully",
+  GET_PAYOUTS_SUCCESS: "Payouts retrieved successfully",
 
   CONVERSATION_RETRIVE_SUCCESS: 'Conversations retrieved successfully',
   MESSAGES_RETRIVE_SUCCESS: 'Messages retrieved successfully',

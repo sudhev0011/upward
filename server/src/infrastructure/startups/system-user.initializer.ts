@@ -11,7 +11,8 @@ export class SystemUserInitializer {
 
   async initialize(): Promise<void> {
     let systemUser = await this.userRepository.findOne({
-      email: "system@upward.local",
+      email: "system.upward@gmail.com",
+      roles: [UserRole.SYSTEM]
     });
 
     if (!systemUser) {
@@ -26,8 +27,8 @@ export class SystemUserInitializer {
         refreshToken: null,
       });
     }
-
-    const wallet = await this.walletRepository.findById(systemUser.id!);
+    
+    const wallet = await this.walletRepository.findByUserId(systemUser.id);
 
     if (!wallet) {
       await this.walletRepository.create(Wallet.create({ userId: systemUser.id!}));

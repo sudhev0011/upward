@@ -1,49 +1,31 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/StatCard";
 import { StatusBadge } from "@/components/StatusBadge";
-import { DollarSign, TrendingUp, Wallet, ArrowUpRight } from "lucide-react";
-import { toast } from "sonner";
-
-const payoutHistory = [
-  {
-    id: "PAY-001",
-    date: "Mar 1, 2026",
-    amount: "$3,200",
-    method: "Bank Transfer",
-    status: "completed" as const,
-  },
-  {
-    id: "PAY-002",
-    date: "Feb 15, 2026",
-    amount: "$2,800",
-    method: "Bank Transfer",
-    status: "completed" as const,
-  },
-  {
-    id: "PAY-003",
-    date: "Feb 1, 2026",
-    amount: "$1,950",
-    method: "Bank Transfer",
-    status: "completed" as const,
-  },
-  {
-    id: "PAY-004",
-    date: "Jan 15, 2026",
-    amount: "$4,100",
-    method: "Bank Transfer",
-    status: "completed" as const,
-  },
-  {
-    id: "PAY-005",
-    date: "Jan 1, 2026",
-    amount: "$2,400",
-    method: "Bank Transfer",
-    status: "completed" as const,
-  },
-];
+import { DollarSign, TrendingUp, Wallet } from "lucide-react";
+import { useGetPayoutsQuery } from "@/hooks/provider/useGetPayoutsQuery";
+import { Loading } from "@/components/ui/Loading";
 
 export default function PayoutsPage() {
+  const { data: response, isLoading, error } = useGetPayoutsQuery();
+
+  if (isLoading) {
+    return <Loading message="Loading payouts information..." />;
+  }
+
+  if (error) {
+    return (
+      <div className="p-8 text-center text-red-500 font-semibold bg-red-50 dark:bg-red-950/20 rounded-xl">
+        Failed to load payouts data. Please try again.
+      </div>
+    );
+  }
+
+  const payouts = response?.data;
+  const balance = payouts?.balance ?? 0;
+  const totalEarned = payouts?.totalEarned ?? 0;
+  const pendingAmount = payouts?.pendingAmount ?? 0;
+  const transactions = payouts?.transactions ?? [];
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -52,36 +34,30 @@ export default function PayoutsPage() {
             Payouts
           </h1>
           <p className="text-muted-foreground mt-1.5">
-            Track your earnings and withdrawal history.
+            Track your earnings and payout history.
           </p>
         </div>
-        <Button
-          className="rounded-xl shadow-lg shadow-primary/20"
-          onClick={() => toast.success("Withdrawal request submitted!")}
-        >
-          <ArrowUpRight className="h-4 w-4 mr-2" /> Request Withdrawal
-        </Button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard
           title="Available Balance"
-          value="$4,580"
-          change="Ready to withdraw"
+          value={`₹${balance.toLocaleString()}`}
+          change="Cleared balance"
           changeType="neutral"
           icon={Wallet}
         />
         <StatCard
           title="Total Earned"
-          value="$24,580"
-          change="+12% this month"
+          value={`₹${totalEarned.toLocaleString()}`}
+          change="Accumulated earnings"
           changeType="positive"
           icon={DollarSign}
         />
         <StatCard
           title="Pending"
-          value="$1,200"
-          change="2 orders in progress"
+          value={`₹${pendingAmount.toLocaleString()}`}
+          change="Pending final service completion"
           changeType="neutral"
           icon={TrendingUp}
         />
@@ -94,53 +70,73 @@ export default function PayoutsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border/50">
-                <th className="text-left p-4 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                  Payout ID
-                </th>
-                <th className="text-left p-4 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="text-left p-4 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                  Amount
-                </th>
-                <th className="text-left p-4 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                  Method
-                </th>
-                <th className="text-left p-4 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                  Status
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {payoutHistory.map((payout) => (
-                <tr
-                  key={payout.id}
-                  className="border-b border-border/30 last:border-0 hover:bg-secondary/20 transition-colors duration-200"
-                >
-                  <td className="p-4 text-sm font-mono text-muted-foreground">
-                    {payout.id}
-                  </td>
-                  <td className="p-4 text-sm text-muted-foreground">
-                    {payout.date}
-                  </td>
-                  <td className="p-4 text-sm font-bold text-card-foreground">
-                    {payout.amount}
-                  </td>
-                  <td className="p-4 text-sm text-muted-foreground">
-                    {payout.method}
-                  </td>
-                  <td className="p-4">
-                    <StatusBadge status={payout.status} />
-                  </td>
+          {transactions.length === 0 ? (
+            <div className="p-8 text-center text-muted-foreground">
+              No transactions found.
+            </div>
+          ) : (
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border/50">
+                  <th className="text-left p-4 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    Transaction ID
+                  </th>
+                  <th className="text-left p-4 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="text-left p-4 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    Amount
+                  </th>
+                  <th className="text-left p-4 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    Method
+                  </th>
+                  <th className="text-left p-4 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    Status
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {transactions.map((tx) => {
+                  const dateFormatted = new Date(tx.createdAt).toLocaleDateString(
+                    "en-US",
+                    { year: "numeric", month: "short", day: "numeric" }
+                  );
+                  const isCredit = tx.type === "credit";
+                  const amountText = `${isCredit ? "+" : "-"}$${tx.amount.toLocaleString()}`;
+
+                  return (
+                    <tr
+                      key={tx.id}
+                      className="border-b border-border/30 last:border-0 hover:bg-secondary/20 transition-colors duration-200"
+                    >
+                      <td className="p-4 text-sm font-mono text-muted-foreground">
+                        {tx.id}
+                      </td>
+                      <td className="p-4 text-sm text-muted-foreground">
+                        {dateFormatted}
+                      </td>
+                      <td
+                        className={`p-4 text-sm font-bold ${
+                          isCredit ? "text-emerald-500" : "text-card-foreground"
+                        }`}
+                      >
+                        {amountText}
+                      </td>
+                      <td className="p-4 text-sm text-muted-foreground">
+                        {tx.type === "debit" ? "Bank Transfer" : "Booking Earnings"}
+                      </td>
+                      <td className="p-4">
+                        <StatusBadge status="completed" />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </CardContent>
       </Card>
     </div>
   );
 }
+

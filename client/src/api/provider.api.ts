@@ -47,6 +47,7 @@ import {
   ListBookingsRequest,
   ListBookingsResponse,
 } from "@/interfaces/bookings/bookings.interface";
+import { ProviderPayoutsResponse } from "@/interfaces/provider/payouts.interface";
 
 export const providerApi = {
   async getProviderProfile(): Promise<ApiEnvelope<ProviderProfile>> {
@@ -333,6 +334,14 @@ export const providerApi = {
     return (
       await api.patch<ApiEnvelope<void>>(
         ProviderRoutes.PROVIDER_COMPLETE_BOOKING(bookingId),
+      )
+    ).data;
+  },
+
+  async getPayouts(): Promise<ApiEnvelope<ProviderPayoutsResponse>> {
+    return (
+      await api.get<ApiEnvelope<ProviderPayoutsResponse>>(
+        ProviderRoutes.GET_PAYOUTS,
       )
     ).data;
   },

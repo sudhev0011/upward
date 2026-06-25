@@ -513,4 +513,19 @@ export class BookingRepository
 
     return docs.map((doc) => BookingMapper.mapToEntity(doc));
   }
+
+  async findPendingPayoutBookings(providerId: string): Promise<Booking[]> {
+    const docs = await BookingModel.find({
+      providerId: new Types.ObjectId(providerId),
+      status: {
+        $in: [
+          BookingStatus.CONFIRMED,
+          BookingStatus.PROVIDER_COMPLETED,
+          BookingStatus.CLIENT_COMPLETED,
+        ],
+      },
+    });
+
+    return docs.map((doc) => BookingMapper.mapToEntity(doc));
+  }
 }

@@ -11,6 +11,7 @@ import {
   unavaliabilityController,
   availabilityOverrideController,
   portfolioController,
+  payoutController,
 } from "../../infrastructure/di/provider.Di";
 import { UserBlockedMiddleware } from "../middleware/user-blocked.middleware";
 import { getUserByIdUseCase } from "../../infrastructure/di/authDi";
@@ -133,6 +134,10 @@ export class ProviderRouter {
     this.router.patch(
       "/bookings/:id/provider-complete",
       bookingController.providerCompleteBooking,
+    );
+    this.router.get(
+      "/payouts",
+      payoutController.getPayouts,
     );
   }
 }

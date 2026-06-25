@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Bell, Search, Menu, X, CheckCheck } from "lucide-react";
+import { Bell, Menu, X, CheckCheck } from "lucide-react";
 import { useAppSelector } from "@/hooks/useRedux";
 import type { RootState } from "@/store/store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

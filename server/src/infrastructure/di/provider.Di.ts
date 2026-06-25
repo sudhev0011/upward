@@ -50,6 +50,12 @@ import { GetAvailableSlotsUseCase } from "../../application/use-cases/slot/get-a
 import { WorkingHoursResolverService } from "../../application/services/working-hours-resolver.service";
 import { UnavailabilityResolverService } from "../../application/services/unavailability-resolver.service";
 import { ConfigureProviderServiceUseCase } from "../../application/use-cases/provider/providerService/set-provider-service-price.use-case";
+import { GetProviderPayoutsUseCase } from "../../application/use-cases/provider/payout/get-provider-payouts.use-case";
+import { PayoutController } from "../../presentation/controllers/provider/payout/payout.controller";
+import { BookingRepository } from "../persistence/mongodb/repositories/booking.repository";
+import { CommissionCalculationService } from "../../application/services/commission-calculation.service";
+import { walletRepository, walletTransactionRepository } from "./clientDi";
+
 
 //repo init
 const userRepository = new UserRepository(); 
@@ -119,3 +125,14 @@ export const portfolioController = new PortfolioController(getUploadUrlUseCase, 
 
 
 export const slotController = new SlotController(getAvailableSlotsUseCase)
+
+// Payouts wiring
+const bookingRepository = new BookingRepository();
+const commissionCalculationService = new CommissionCalculationService();
+const getProviderPayoutsUseCase = new GetProviderPayoutsUseCase(
+  walletRepository,
+  walletTransactionRepository,
+  bookingRepository,
+  commissionCalculationService
+);
+export const payoutController = new PayoutController(getProviderPayoutsUseCase);

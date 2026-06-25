@@ -69,6 +69,7 @@ export const ProviderRoutes = {
 
   PROVIDER_COMPLETE_BOOKING: (bookingId: string) =>
     `/api/provider/bookings/${bookingId}/provider-complete`,
+  GET_PAYOUTS: "/api/provider/payouts",
 } as const;
 
 export const AdminRoutes = {
