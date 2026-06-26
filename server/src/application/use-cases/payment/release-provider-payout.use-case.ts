@@ -52,7 +52,6 @@ export class ReleaseProviderPayoutUseCase implements IReleaseProviderPayoutUseCa
     );
 
     if (!providerWallet) {
-      console.log('no provider wallet found attempting to create one')
       providerWallet = await this.walletRepository.create(
         Wallet.create({ userId: booking.providerId, balance: 0 }),
       );

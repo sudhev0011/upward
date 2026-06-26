@@ -32,7 +32,7 @@ export const notificationService = new NotificationService(
   firebasePushNotificationService,
 );
 
-const platformWalletService = new PlatformWalletService(
+export const platformWalletService = new PlatformWalletService(
   userRepository,
   walletRepository,
   walletTransactionRepository,

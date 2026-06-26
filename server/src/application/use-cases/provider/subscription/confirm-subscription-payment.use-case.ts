@@ -6,12 +6,15 @@ import { IProviderSubscriptionRepository } from "../../../../domain/interfaces/r
 import { IProviderProfileRepository } from "../../../../domain/interfaces/repositories/provider/IProviderProfileRepository";
 import { ProviderProfile } from "../../../../domain/entities/provider-profile.entity";
 import { SubscriptionPlan } from "../../../../domain/entities/subscription-plan.entity";
+import { IPlatformWalletService } from "../../../../domain/interfaces/services/payment/IPlatformWalletService";
+import { WalletTransactionCategory } from "../../../../domain/enums/wallet-transaction-category.enum";
 
 export class ConfirmSubscriptionPaymentUseCase {
   constructor(
     private readonly subscriptionPlanRepository: ISubscriptionPlanRepository,
     private readonly providerSubscriptionRepository: IProviderSubscriptionRepository,
     private readonly providerProfileRepository: IProviderProfileRepository,
+    private readonly platformWalletService: IPlatformWalletService,
     private readonly transactionManager: ITransactionManager,
   ) {}
 
@@ -20,6 +23,7 @@ export class ConfirmSubscriptionPaymentUseCase {
       await this.providerSubscriptionRepository.findByStripePaymentIntentId(
         stripePaymentIntentId,
       );
+
 
     if (!subscription) {
       throw new NotFoundError("Subscription not found for this payment intent");
@@ -52,6 +56,16 @@ export class ConfirmSubscriptionPaymentUseCase {
     }
 
     await this.transactionManager.runInTransaction(async (transaction) => {
+      // Credit platform wallet
+      await this.platformWalletService.credit(
+        subscription.amount,
+        null,
+        `Provider subscription payment received for plan ${plan.name}`,
+        WalletTransactionCategory.SUBSCRIPTION_PAYMENT,
+        transaction,
+      );
+
+
       const activeSubscription = ProviderSubscription.create({
         id: subscription.id,
         providerId: subscription.providerId,

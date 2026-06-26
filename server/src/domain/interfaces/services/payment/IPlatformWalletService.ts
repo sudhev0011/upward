@@ -4,7 +4,7 @@ import { ITransactionContext } from "../../database/transaction-context.interfac
 export interface IPlatformWalletService {
   credit(
     amount: number,
-    bookingId: string,
+    bookingId: string | null,
     description: string,
     category: WalletTransactionCategory,
     transaction?: ITransactionContext,
@@ -12,7 +12,7 @@ export interface IPlatformWalletService {
 
   debit(
     amount: number,
-    bookingId: string,
+    bookingId: string | null,
     description: string,
     category: WalletTransactionCategory,
     transaction?: ITransactionContext,

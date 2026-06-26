@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   authenticateToken,
 } from "../middleware/auth.middleware";
-import { adminProviderController, adminClientController, adminCategoryController, adminServiceController } from "../../infrastructure/di/adminDi";
+import { adminProviderController, adminClientController, adminCategoryController, adminServiceController, adminDashboardController, adminPaymentController } from "../../infrastructure/di/adminDi";
 
 export class AdminRouter {
   public router: Router;
@@ -14,7 +14,9 @@ export class AdminRouter {
 
   private _initializeRoutes(): void {
     this.router.use(authenticateToken);
-    // this.router.use(authorizeRoles('provider'));
+    
+    this.router.get("/dashboard/stats", adminDashboardController.getStats);
+    this.router.get("/payments", adminPaymentController.getPayments);
 
     this.router.get("/clients", adminClientController.getAllClients);
     this.router.patch("/client/block", adminClientController.blockClient);

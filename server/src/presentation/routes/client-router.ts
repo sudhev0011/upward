@@ -5,6 +5,7 @@ import {
   clientProfileController,
   paymentController,
   walletController,
+  clientDashboardController,
 } from "../../infrastructure/di/clientDi";
 import { slotController } from "../../infrastructure/di/provider.Di";
 import { UserRole } from "../../domain/enums/user-role.enum";
@@ -18,6 +19,8 @@ export class ClientRouter {
 
   private _initializeRoutes(): void {
     this.router.use(authenticateToken);
+
+    this.router.get("/dashboard/stats", clientDashboardController.getStats);
 
     this.router.post("/profile", clientProfileController.createClientProfile);
     this.router.get("/profile", clientProfileController.getClientProfile);

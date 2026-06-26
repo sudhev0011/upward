@@ -4,6 +4,9 @@ import { ProviderProfileRepository } from "../persistence/mongodb/repositories/p
 import { UserRepository } from "../persistence/mongodb/repositories/user.repository";
 import { MongoTransactionManager } from "../persistence/mongodb/mongo-transaction.manager";
 import { StripeService } from "../external-services/stripe/stripe.service";
+import { WalletRepository } from "../persistence/mongodb/repositories/wallet.repository";
+import { WalletTransactionRepository } from "../persistence/mongodb/repositories/wallet-transaction.repository";
+import { PlatformWalletService } from "../../application/services/platform-wallet.service";
 
 // Use Cases
 import { CreateSubscriptionPlanUseCase } from "../../application/use-cases/admin/subscription-plan/create-subscription-plan.use-case";
@@ -21,6 +24,13 @@ export const subscriptionPlanRepository = new SubscriptionPlanRepository();
 export const providerSubscriptionRepository = new ProviderSubscriptionRepository();
 export const providerProfileRepository = new ProviderProfileRepository();
 export const userRepository = new UserRepository();
+const walletRepository = new WalletRepository();
+const walletTransactionRepository = new WalletTransactionRepository();
+const platformWalletService = new PlatformWalletService(
+  userRepository,
+  walletRepository,
+  walletTransactionRepository,
+);
 
 // Transaction Manager & Stripe
 export const transactionManager = new MongoTransactionManager();
@@ -53,6 +63,7 @@ export const confirmSubscriptionPaymentUseCase = new ConfirmSubscriptionPaymentU
   subscriptionPlanRepository,
   providerSubscriptionRepository,
   providerProfileRepository,
+  platformWalletService,
   transactionManager,
 );
 

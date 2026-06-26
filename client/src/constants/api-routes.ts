@@ -30,6 +30,7 @@ export const ClientRoutes = {
 
   CLIENT_COMPLETE_BOOKING: (bookingId: string) =>
     `/api/client/bookings/${bookingId}/client-complete`,
+  GET_DASHBOARD_STATS: "/api/client/dashboard/stats",
 } as const;
 
 export const ProviderRoutes = {
@@ -70,6 +71,7 @@ export const ProviderRoutes = {
   PROVIDER_COMPLETE_BOOKING: (bookingId: string) =>
     `/api/provider/bookings/${bookingId}/provider-complete`,
   GET_PAYOUTS: "/api/provider/payouts",
+  GET_DASHBOARD_STATS: "/api/provider/dashboard/stats",
 } as const;
 
 export const AdminRoutes = {
@@ -92,6 +94,8 @@ export const AdminRoutes = {
   GET_ALL_PAGINATED_SERVICES: "/api/admin/services",
   TOGGLE_SERVICE: "/api/admin/service/toggle",
   UPDATE_SERVICE: "/api/admin/service/update",
+  GET_DASHBOARD_STATS: "/api/admin/dashboard/stats",
+  GET_PAYMENTS: "/api/admin/payments",
 } as const;
 
 export const PublicRoutes = {

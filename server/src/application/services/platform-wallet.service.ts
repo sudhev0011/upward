@@ -20,13 +20,13 @@ export class PlatformWalletService implements IPlatformWalletService {
 
   async credit(
     amount: number,
-    bookingId: string,
+    bookingId: string | null,
     description: string,
     category: WalletTransactionCategory,
     transaction?: ITransactionContext,
   ): Promise<void> {
     const platformWallet = await this.getPlatformWallet();
-
+    
     const updatedWallet = platformWallet.credit(amount);
 
     await this.walletRepository.update(
@@ -57,7 +57,7 @@ export class PlatformWalletService implements IPlatformWalletService {
 
   async debit(
     amount: number,
-    bookingId: string,
+    bookingId: string | null,
     description: string,
     category: WalletTransactionCategory,
     transaction?: ITransactionContext,

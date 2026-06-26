@@ -1,6 +1,7 @@
 import { api } from "./axios";
 import type { ApiEnvelope } from "@/interfaces/auth";
 import { ClientRoutes } from "@/constants/api-routes";
+import type { ClientDashboardStats } from "@/interfaces/client/dashboard.interface";
 
 import type {
   ClientProfile,
@@ -139,6 +140,14 @@ export const clientApi = {
       await api.patch<ApiEnvelope<void>>(
         ClientRoutes.CLIENT_COMPLETE_BOOKING(bookingId),
       )
+    ).data;
+  },
+
+  async getDashboardStats(timeframe: string): Promise<ApiEnvelope<ClientDashboardStats>> {
+    return (
+      await api.get<ApiEnvelope<ClientDashboardStats>>(ClientRoutes.GET_DASHBOARD_STATS, {
+        params: { timeframe },
+      })
     ).data;
   },
 };

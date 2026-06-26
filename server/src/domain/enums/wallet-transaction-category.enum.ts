@@ -6,4 +6,6 @@ export enum WalletTransactionCategory {
   REFUND = "refund",
 
   MANUAL_ADJUSTMENT = "manual_adjustment",
+
+  SUBSCRIPTION_PAYMENT = "subscription_payment",
 }

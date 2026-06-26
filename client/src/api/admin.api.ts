@@ -7,6 +7,8 @@ import {
 import { ApiEnvelope, RequestParams } from "@/interfaces/auth";
 import { api } from "./axios";
 import { AdminRoutes } from "@/constants/api-routes";
+import type { AdminDashboardStats } from "@/interfaces/admin/dashboard.interface";
+import type { AdminPaymentsResponse } from "@/interfaces/admin/payments.interface";
 import { ProviderProfile } from "@/interfaces/provider/provider.interface";
 import {
   BlockClientRequest,
@@ -205,6 +207,27 @@ export const adminApi = {
         AdminRoutes.UPDATE_SERVICE,
         data,
       )
+    ).data;
+  },
+
+  async getDashboardStats(timeframe: string): Promise<ApiEnvelope<AdminDashboardStats>> {
+    return (
+      await api.get<ApiEnvelope<AdminDashboardStats>>(AdminRoutes.GET_DASHBOARD_STATS, {
+        params: { timeframe },
+      })
+    ).data;
+  },
+
+  async getPayments(params: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    transactionStatus?: string;
+  }): Promise<ApiEnvelope<AdminPaymentsResponse>> {
+    return (
+      await api.get<ApiEnvelope<AdminPaymentsResponse>>(AdminRoutes.GET_PAYMENTS, {
+        params,
+      })
     ).data;
   },
 };

@@ -1,5 +1,6 @@
 import { api } from "./axios";
 import type { ApiEnvelope } from "@/interfaces/auth";
+import type { ProviderDashboardStats } from "@/interfaces/provider/dashboard.interface";
 import type {
   ProviderProfile,
   UpdateProviderProfileRequest,
@@ -343,6 +344,14 @@ export const providerApi = {
       await api.get<ApiEnvelope<ProviderPayoutsResponse>>(
         ProviderRoutes.GET_PAYOUTS,
       )
+    ).data;
+  },
+
+  async getDashboardStats(timeframe: string): Promise<ApiEnvelope<ProviderDashboardStats>> {
+    return (
+      await api.get<ApiEnvelope<ProviderDashboardStats>>(ProviderRoutes.GET_DASHBOARD_STATS, {
+        params: { timeframe },
+      })
     ).data;
   },
 };

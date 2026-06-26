@@ -99,6 +99,5 @@ export const successResponse = {
   DELETE_NOTIFICATION: 'Notification deleted successfully',
 
   CREATE_REMAINING_PAYMENT_INTENT_SUCCESS: "Remaining payment intent created successfully",
-  
-  
+  GET_DASHBOARD_STATS_SUCCESS: "Dashboard statistics retrieved successfully",
 } as const;

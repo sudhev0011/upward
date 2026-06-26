@@ -7,6 +7,7 @@ import Settings from "@/pages/admin/Settings";
 import Categories from "@/pages/admin/Categories";
 import Services from "@/pages/admin/Services";
 import Subscriptions from "@/pages/admin/Subscriptions";
+import Payments from "@/pages/admin/Payments";
 
 const AdminRoutes = () => {
   return (
@@ -21,7 +22,7 @@ const AdminRoutes = () => {
         <Route path="services" element={<Services />} />
         <Route path="categories" element={<Categories />} />
         <Route path="subscriptions" element={<Subscriptions />} />
-        {/* <Route path="payments" element={<Payments />} /> */}
+        <Route path="payments" element={<Payments />} />
       </Route>
     </Routes>
   );

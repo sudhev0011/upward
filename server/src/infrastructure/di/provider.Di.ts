@@ -52,6 +52,8 @@ import { UnavailabilityResolverService } from "../../application/services/unavai
 import { ConfigureProviderServiceUseCase } from "../../application/use-cases/provider/providerService/set-provider-service-price.use-case";
 import { GetProviderPayoutsUseCase } from "../../application/use-cases/provider/payout/get-provider-payouts.use-case";
 import { PayoutController } from "../../presentation/controllers/provider/payout/payout.controller";
+import { GetProviderDashboardStatsUseCase } from "../../application/use-cases/provider/dashboard/get-provider-dashboard-stats.use-case";
+import { ProviderDashboardController } from "../../presentation/controllers/provider/dashboard/provider-dashboard.controller";
 import { BookingRepository } from "../persistence/mongodb/repositories/booking.repository";
 import { CommissionCalculationService } from "../../application/services/commission-calculation.service";
 import { walletRepository, walletTransactionRepository } from "./clientDi";
@@ -136,3 +138,6 @@ const getProviderPayoutsUseCase = new GetProviderPayoutsUseCase(
   commissionCalculationService
 );
 export const payoutController = new PayoutController(getProviderPayoutsUseCase);
+
+const getProviderDashboardStatsUseCase = new GetProviderDashboardStatsUseCase(bookingRepository);
+export const providerDashboardController = new ProviderDashboardController(getProviderDashboardStatsUseCase);

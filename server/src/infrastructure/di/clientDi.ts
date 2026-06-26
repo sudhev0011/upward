@@ -5,6 +5,8 @@ import { ClientProfileController } from "../../presentation/controllers/client/p
 import { CreateClientProfileUseCase } from "../../application/use-cases/client/profile/create-client-profile.use-case";
 import { GetClientProfileUseCase } from "../../application/use-cases/client/profile/get-client-profile.use-case";
 import { UpdateClientProfileUseCase } from "../../application/use-cases/client/profile/update-client-profile.use-case";
+import { GetClientDashboardStatsUseCase } from "../../application/use-cases/client/dashboard/get-client-dashboard-stats.use-case";
+import { ClientDashboardController } from "../../presentation/controllers/client/dashboard/client-dashboard.controller";
 import { UploadAvatarUseCase } from "../../application/use-cases/client/media/upload-avatar.use-case";
 import { listBookingUseCase, cancelBookingUseCase } from "./bookingDi";
 // repository import
@@ -111,3 +113,6 @@ export const bookingController = new BookingController(createBookingUseCase,list
 export const paymentController = new PaymentController(createPaymentIntentUseCase, createRemainingPaymentIntentUseCase)
 
 export const walletController = new WalletController(getClientWalletUseCase)
+
+const getClientDashboardStatsUseCase = new GetClientDashboardStatsUseCase(bookingRepository);
+export const clientDashboardController = new ClientDashboardController(getClientDashboardStatsUseCase);

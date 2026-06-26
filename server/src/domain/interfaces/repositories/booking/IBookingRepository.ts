@@ -85,4 +85,54 @@ export interface IBookingRepository extends IBaseRepository<Booking> {
   findBookingsReadyForPayout(before: Date): Promise<Booking[]>;
 
   findPendingPayoutBookings(providerId: string): Promise<Booking[]>;
+
+  getClientDashboardStats(
+    clientId: string,
+    startDate: Date,
+    grouping: "hour" | "day" | "week" | "month",
+  ): Promise<{
+    activeBookings: number;
+    tasksCompleted: number;
+    totalSpent: number;
+    savedPros: number;
+    spendingOverview: Array<{ label: string; spent: number }>;
+  }>;
+
+  getProviderDashboardStats(
+    providerId: string,
+    startDate: Date,
+    grouping: "hour" | "day" | "week" | "month",
+  ): Promise<{
+    totalOrders: number;
+    upcomingBookingsCount: number;
+    walletBalance: number;
+    totalEarnings: number;
+    earningsOverview: Array<{ label: string; earnings: number }>;
+  }>;
+
+  getAdminDashboardStats(
+    startDate: Date,
+    grouping: "hour" | "day" | "week" | "month",
+  ): Promise<{
+    pendingOrdersCount: number;
+    totalRevenue: number;
+    activeProviders: number;
+    activeClients: number;
+    revenueOverview: Array<{ label: string; revenue: number }>;
+    serviceDistribution: Array<{ name: string; value: number; fill: string }>;
+    recentTransactions: Array<{
+      id: string;
+      transactionId: string;
+      clientName: string;
+      amount: number;
+      status: string;
+    }>;
+    topProviders: Array<{
+      id: string;
+      name: string;
+      avatar: string;
+      completedJobs: number;
+      rating: number;
+    }>;
+  }>;
 }

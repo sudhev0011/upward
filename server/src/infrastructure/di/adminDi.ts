@@ -2,6 +2,9 @@ import { BlockClientUseCase } from "../../application/use-cases/admin/client/blo
 import { GetAllClientsUseCase } from "../../application/use-cases/admin/client/get-all-clients.use-case";
 import { AdminGetClientByIdUseCase } from "../../application/use-cases/admin/client/get-client-by-id.use-case";
 import { AdminClientController } from "../../presentation/controllers/admin/admin-client.controller";
+import { GetAdminDashboardStatsUseCase } from "../../application/use-cases/admin/dashboard/get-admin-dashboard-stats.use-case";
+import { AdminDashboardController } from "../../presentation/controllers/admin/dashboard/admin-dashboard.controller";
+import { BookingRepository } from "../persistence/mongodb/repositories/booking.repository";
 import { S3Service } from "../external-services/s3/s3.service";
 import { ClientProfileRepository } from "../persistence/mongodb/repositories/client-profile.repository";
 import { UserRepository } from "../persistence/mongodb/repositories/user.repository";
@@ -29,6 +32,9 @@ import { UpdateCategoryUseCase } from "../../application/use-cases/admin/categor
 import { GetAllServicesWithPaginationUseCase } from "../../application/use-cases/service/get-all-services-with-pagination.use-case";
 import { ToggleServiceUseCase } from "../../application/use-cases/service/toggle-service.use-case";
 import { UpdateServiceUseCase } from "../../application/use-cases/service/update-service.use-case";
+import { PaymentRepository } from "../persistence/mongodb/repositories/payment.repository";
+import { GetAdminPaymentsUseCase } from "../../application/use-cases/admin/payments/get-admin-payments.use-case";
+import { AdminPaymentController } from "../../presentation/controllers/admin/admin-payment.controller";
 
 const userRepository = new UserRepository();
 const clientProfileRepository = new ClientProfileRepository()
@@ -67,3 +73,11 @@ export const adminClientController = new AdminClientController(getAllUsersUseCas
 export const adminProviderController = new AdminProviderController(getAllProvidersUseCase, adminGetProviderByIdUseCase, approveProviderUseCase,rejectProviderUseCase, blockProviderUseCase, getProviderKycUseCase);
 export const adminCategoryController = new AdminCategoryController(createCategoryUseCase,getAllCategoriesUseCase, getAllCategoriesWithPaginationUseCase, updateCategoryUseCase)
 export const adminServiceController = new AdminServiceController(createServiceUseCase,deleteServiceUseCase,getAllServicesUseCase, getAllServicesWithPagination, toggleServiceUseCase, updateServiceUseCase)
+
+const bookingRepository = new BookingRepository();
+const getAdminDashboardStatsUseCase = new GetAdminDashboardStatsUseCase(bookingRepository);
+export const adminDashboardController = new AdminDashboardController(getAdminDashboardStatsUseCase);
+
+const paymentRepository = new PaymentRepository();
+const getAdminPaymentsUseCase = new GetAdminPaymentsUseCase(paymentRepository);
+export const adminPaymentController = new AdminPaymentController(getAdminPaymentsUseCase);

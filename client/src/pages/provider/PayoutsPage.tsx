@@ -102,7 +102,7 @@ export default function PayoutsPage() {
                     { year: "numeric", month: "short", day: "numeric" }
                   );
                   const isCredit = tx.type === "credit";
-                  const amountText = `${isCredit ? "+" : "-"}$${tx.amount.toLocaleString()}`;
+                  const amountText = `${isCredit ? "+" : "-"}₹${tx.amount.toLocaleString()}`;
 
                   return (
                     <tr

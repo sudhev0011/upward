@@ -12,6 +12,7 @@ import {
   availabilityOverrideController,
   portfolioController,
   payoutController,
+  providerDashboardController,
 } from "../../infrastructure/di/provider.Di";
 import { UserBlockedMiddleware } from "../middleware/user-blocked.middleware";
 import { getUserByIdUseCase } from "../../infrastructure/di/authDi";
@@ -32,6 +33,8 @@ export class ProviderRouter {
     this.router.use(authenticateToken);
     this.router.use(authorizeRoles("provider"));
     this.router.use(userBlockedMiddleware.checkUserBlocked);
+
+    this.router.get("/dashboard/stats", providerDashboardController.getStats);
 
     this.router.post(
       "/profile",
