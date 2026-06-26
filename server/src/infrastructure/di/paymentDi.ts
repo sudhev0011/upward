@@ -49,12 +49,6 @@ const confirmPaymentUseCase = new ConfirmPaymentUseCase(
 
   notificationService,
 
-  walletRepository,
-
-  walletTransactionRepository,
-
-  userRepository,
-
   platformWalletService,
 );
 

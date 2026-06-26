@@ -1,15 +1,9 @@
-import { WalletTransaction } from "../../../domain/entities/wallet-transaction.entity";
 import { PaymentTransactionStatus } from "../../../domain/enums/payment-transaction-status.enum";
-import { UserRole } from "../../../domain/enums/user-role.enum";
 import { WalletTransactionCategory } from "../../../domain/enums/wallet-transaction-category.enum";
-import { WalletTransactionType } from "../../../domain/enums/wallet-transaction.type.enum";
 import { NotFoundError } from "../../../domain/errors/errors";
 import { ITransactionManager } from "../../../domain/interfaces/database/transaction-manager.interface";
 import { IBookingRepository } from "../../../domain/interfaces/repositories/booking/IBookingRepository";
 import { IPaymentRepository } from "../../../domain/interfaces/repositories/payment/IPaymentRepository";
-import { IUserRepository } from "../../../domain/interfaces/repositories/user/IUserRepository";
-import { IWalletRepository } from "../../../domain/interfaces/repositories/wallet/IWalletRepository";
-import { IWalletTransactionRepository } from "../../../domain/interfaces/repositories/wallet/IWalletTransactionRepository";
 import { INotificationService } from "../../../domain/interfaces/services/INotificationService";
 import { IPlatformWalletService } from "../../../domain/interfaces/services/payment/IPlatformWalletService";
 import { IConfirmPaymentUseCase } from "../../../domain/interfaces/usecases/payment/IConfirmPaymentUseCase";
@@ -23,12 +17,6 @@ export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
     private transactionManager: ITransactionManager,
 
     private notificationService: INotificationService,
-
-    private walletRepository: IWalletRepository,
-
-    private walletTransactionRepository: IWalletTransactionRepository,
-
-    private userRepository: IUserRepository,
 
     private platformWalletService: IPlatformWalletService,
   ) {}

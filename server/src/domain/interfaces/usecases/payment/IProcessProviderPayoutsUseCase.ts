@@ -1,3 +1,3 @@
 export interface IProcessProviderPayoutsUseCase {
-  execute(): Promise<Number>;
+  execute(): Promise<number>;
 }

@@ -9,7 +9,7 @@ export class ProcessProviderPayoutsUseCase implements IProcessProviderPayoutsUse
     private readonly releaseProviderPayoutUseCase: IReleaseProviderPayoutUseCase,
   ) {}
 
-  async execute(): Promise<Number> {
+  async execute(): Promise<number> {
     const before = new Date();
 
     const bookings =
