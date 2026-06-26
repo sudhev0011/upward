@@ -13,6 +13,7 @@ import { BookingListItem } from "@/interfaces/bookings/bookings.interface";
 import { chatApi } from "@/api/chat.api";
 import { useCancelBooking } from "@/hooks/booking/use-cancel-booking";
 import { toast } from "sonner";
+import { generateAndDownloadInvoice } from "@/utils/invoice";
 
 // Sub-components import layout
 import { BookingHeaderProfile } from "./booking-details-sheet-sub/BookingHeaderProfile";
@@ -235,6 +236,17 @@ export const BookingDetailsSheet = ({
                 >
                   <MessageSquare className="h-4 w-4" />{" "}
                   {isMessaging ? "Opening Messenger..." : "Message Provider"}
+                </Button>
+              )}
+
+              {role === "client" && booking.paidAmount > 0 && (
+                <Button
+                  variant="outline"
+                  onClick={() => generateAndDownloadInvoice(booking)}
+                  className="w-full gap-2 h-11 font-semibold border-slate-200 hover:bg-slate-50 dark:border-zinc-800 dark:hover:bg-zinc-900/40"
+                >
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                  Download Invoice
                 </Button>
               )}
 
