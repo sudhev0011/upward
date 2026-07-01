@@ -4,7 +4,6 @@ import {
   LayoutDashboard,
   CalendarCheck,
   MessageSquare,
-  Heart,
   CreditCard,
   Star,
   Settings,
@@ -37,7 +36,6 @@ const NAV_ITEMS: NavItem[] = [
     icon: MessageSquare,
     label: "Messages",
   },
-  { to: "/client/dashboard/saved", icon: Heart, label: "Saved Pros" },
   { to: "/client/dashboard/payments", icon: CreditCard, label: "Payments" },
   { to: "/client/dashboard/reviews", icon: Star, label: "Reviews" },
 ];

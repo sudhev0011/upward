@@ -16,7 +16,7 @@ import { winstonLogger } from "../../infrastructure/config/logger";
 import { PublicRouter } from "../routes/public-router";
 import { bookingExpirationJob, providerPayoutJob } from "../../infrastructure/di/jobsDi";
 import { WebhookRouter } from "../routes/webhook-router";
-import router from "../routes/location.router";
+import { LocationRouter } from "../routes/location.router";
 import { ChatRouter } from "../routes/chat-router";
 import { initSocketServer } from "./socket-server";
 import { SubscriptionRouter } from "../routes/subscription.router";
@@ -62,7 +62,7 @@ export class AppServer {
     this._app.use("/api/provider", new ProviderRouter().router);
     this._app.use("/api/admin", new AdminRouter().router);
     this._app.use("/api/public", new PublicRouter().router);
-    this._app.use("/api/location",router);
+    this._app.use("/api/location",new LocationRouter().router);
     this._app.use("/api/chat", new ChatRouter().router);
     this._app.use("/api/subscriptions", new SubscriptionRouter().router);
     this._app.use("/api/notifications", new NotificationRouter().router);

@@ -6,21 +6,33 @@ import {
   SubscriptionPlanDto,
   ProviderSubscriptionStatusDto,
   CheckoutResponseDto,
+  PaginatedSubscriptionPlanDto,
 } from "@/api/subscription.api";
 import { ApiEnvelope } from "@/interfaces/auth";
 
 export const subscriptionKeys = {
   all: ["subscriptions"] as const,
-  adminPlans: () => [...subscriptionKeys.all, "admin", "plans"] as const,
-  providerActivePlans: () => [...subscriptionKeys.all, "provider", "active-plans"] as const,
-  providerStatus: () => [...subscriptionKeys.all, "provider", "status"] as const,
+  adminPlans: (params?: {
+    page: number;
+    search: string;
+    sort: string;
+    sortOrder: "asc" | "desc";
+  }) => [...subscriptionKeys.all, "admin", "plans", params] as const,
+  providerActivePlans: () =>
+    [...subscriptionKeys.all, "provider", "active-plans"] as const,
+  providerStatus: () =>
+    [...subscriptionKeys.all, "provider", "status"] as const,
 };
 
-
-export const useAdminPlans = () => {
-  return useQuery<ApiEnvelope<SubscriptionPlanDto[]>, Error>({
-    queryKey: subscriptionKeys.adminPlans(),
-    queryFn: () => subscriptionApi.adminGetPlans(),
+export const useAdminPlans = (params: {
+  page: number;
+  search: string;
+  sort: string;
+  sortOrder: "asc" | "desc";
+}) => {
+  return useQuery<ApiEnvelope<PaginatedSubscriptionPlanDto>, Error>({
+    queryKey: subscriptionKeys.adminPlans(params),
+    queryFn: () => subscriptionApi.adminGetPlans(params),
   });
 };
 
@@ -29,11 +41,17 @@ export const useCreateSubscriptionPlan = (options?: {
   onError?: (error: Error) => void;
 }) => {
   const queryClient = useQueryClient();
-  return useMutation<ApiEnvelope<SubscriptionPlanDto>, Error, CreateSubscriptionPlanRequest>({
+  return useMutation<
+    ApiEnvelope<SubscriptionPlanDto>,
+    Error,
+    CreateSubscriptionPlanRequest
+  >({
     mutationFn: (data: CreateSubscriptionPlanRequest) =>
       subscriptionApi.adminCreatePlan(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: subscriptionKeys.adminPlans() });
+      queryClient.invalidateQueries({
+        queryKey: subscriptionKeys.adminPlans(),
+      });
       options?.onSuccess?.();
     },
     onError: options?.onError,
@@ -52,8 +70,12 @@ export const useUpdateSubscriptionPlan = (options?: {
   >({
     mutationFn: ({ id, data }) => subscriptionApi.adminUpdatePlan(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: subscriptionKeys.adminPlans() });
-      queryClient.invalidateQueries({ queryKey: subscriptionKeys.providerActivePlans() });
+      queryClient.invalidateQueries({
+        queryKey: subscriptionKeys.adminPlans(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: subscriptionKeys.providerActivePlans(),
+      });
       options?.onSuccess?.();
     },
     onError: options?.onError,
@@ -68,14 +90,17 @@ export const useDeleteSubscriptionPlan = (options?: {
   return useMutation<ApiEnvelope<void>, Error, string>({
     mutationFn: (id: string) => subscriptionApi.adminDeletePlan(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: subscriptionKeys.adminPlans() });
-      queryClient.invalidateQueries({ queryKey: subscriptionKeys.providerActivePlans() });
+      queryClient.invalidateQueries({
+        queryKey: subscriptionKeys.adminPlans(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: subscriptionKeys.providerActivePlans(),
+      });
       options?.onSuccess?.();
     },
     onError: options?.onError,
   });
 };
-
 
 export const useProviderActivePlans = () => {
   return useQuery<ApiEnvelope<SubscriptionPlanDto[]>, Error>({
@@ -96,7 +121,8 @@ export const useCreateSubscriptionCheckout = (options?: {
   onError?: (error: Error) => void;
 }) => {
   return useMutation<ApiEnvelope<CheckoutResponseDto>, Error, string>({
-    mutationFn: (planId: string) => subscriptionApi.providerCreateCheckout(planId),
+    mutationFn: (planId: string) =>
+      subscriptionApi.providerCreateCheckout(planId),
     onSuccess: (data) => {
       options?.onSuccess?.(data);
     },

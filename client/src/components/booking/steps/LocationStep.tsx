@@ -14,15 +14,22 @@ interface Props {
 
 export default function LocationStep({ formState, onNext, onBack }: Props) {
   const [location, setLocation] = useState<Location | null>(formState.location);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
-  const handleLocation = (location: Location | null): void =>{
-    if(!location){
-      toast.error('please select a proper location')
-      return 
+  const handleLocation = (location: Location | null): void => {
+    if (!location) {
+      toast.error("please select a proper location");
+      return;
     }
 
     onNext(location);
-  }
+  };
+
+  const handleLocationError = (errorMsg: string | null) => {
+    if (errorMsg) {
+      setLocationError(errorMsg);
+    }
+  };
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
@@ -30,8 +37,12 @@ export default function LocationStep({ formState, onNext, onBack }: Props) {
           Where should the service take place?
         </p>
         <p className="text-xs text-muted-foreground/70">
-          This is optional — you can skip if not applicable.
+          Note that some times the location you select don't have enough info in
+          that case please reselect other options
         </p>
+        {locationError && (
+          <p className="text-xs text-red-400">{locationError}</p>
+        )}
       </div>
 
       <div className="flex flex-col gap-2">
@@ -43,6 +54,7 @@ export default function LocationStep({ formState, onNext, onBack }: Props) {
         <LocationAutocomplete
           value={location}
           onChange={(val) => setLocation(val)}
+          onError={handleLocationError}
           placeholder="Search for a location..."
         />
       </div>
@@ -68,7 +80,7 @@ export default function LocationStep({ formState, onNext, onBack }: Props) {
         <Button variant="outline" className="flex-1" onClick={onBack}>
           Back
         </Button>
-        <Button className="flex-1" onClick={()=>handleLocation(location)}>
+        <Button className="flex-1" onClick={() => handleLocation(location)}>
           Continue
         </Button>
       </div>

@@ -14,6 +14,14 @@ export interface SubscriptionPlanDto {
   updatedAt: string;
 }
 
+export interface PaginatedSubscriptionPlanDto{
+  data: SubscriptionPlanDto[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export interface ProviderSubscriptionDto {
   id: string;
   providerId: string;
@@ -55,9 +63,9 @@ export interface CheckoutResponseDto {
 }
 
 export const subscriptionApi = {
-  async adminGetPlans(): Promise<ApiEnvelope<SubscriptionPlanDto[]>> {
-    const res = await api.get<ApiEnvelope<SubscriptionPlanDto[]>>(
-      SubscriptionRoutes.ADMIN_PLANS,
+  async adminGetPlans(params: { page: number; search: string; sort: string; sortOrder: 'asc' | 'desc' }): Promise<ApiEnvelope<PaginatedSubscriptionPlanDto>> {
+    const res = await api.get<ApiEnvelope<PaginatedSubscriptionPlanDto>>(
+      SubscriptionRoutes.ADMIN_PLANS,{params}
     );
     return res.data;
   },

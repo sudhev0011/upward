@@ -14,6 +14,7 @@ import {
   validateUserId,
 } from "../../../shared/utils/presentation/controller.utils";
 import { AuthenticatedRequest } from "../../middleware/auth.middleware";
+import { GetAllPlansQuerySchema } from "../../../application/dtos/admin/subscription/request/getAllPlansRequest.dto";
 
 export class SubscriptionController {
   constructor(
@@ -98,8 +99,16 @@ export class SubscriptionController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const plans = await this.getAllSubscriptionPlansUseCase.execute();
-      sendSuccessResponse(res, "Subscription plans fetched successfully", plans);
+      const validatedQueries = GetAllPlansQuerySchema.parse(req.query);
+
+      const plans =
+        await this.getAllSubscriptionPlansUseCase.execute(validatedQueries);
+
+      sendSuccessResponse(
+        res,
+        "Subscription plans fetched successfully",
+        plans,
+      );
     } catch (error) {
       handleAsyncError(error, next);
     }
@@ -136,10 +145,12 @@ export class SubscriptionController {
       }
 
       const { planId } = req.body;
-      const checkoutData = await this.createSubscriptionCheckoutUseCase.execute({
-        providerId,
-        planId: String(planId),
-      });
+      const checkoutData = await this.createSubscriptionCheckoutUseCase.execute(
+        {
+          providerId,
+          planId: String(planId),
+        },
+      );
 
       sendSuccessResponse(
         res,
@@ -166,12 +177,12 @@ export class SubscriptionController {
         userId: providerId,
       });
 
-      const history = await this.providerSubscriptionRepository.findByProviderId(
-        providerId,
-      );
+      const history =
+        await this.providerSubscriptionRepository.findByProviderId(providerId);
 
       const data = {
-        activeSubscriptionExpiresAt: profile?.activeSubscriptionExpiresAt || null,
+        activeSubscriptionExpiresAt:
+          profile?.activeSubscriptionExpiresAt || null,
         activeSubscriptionPlanName: profile?.activeSubscriptionPlanName || null,
         history,
       };

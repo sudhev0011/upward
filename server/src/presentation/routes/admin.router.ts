@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   authenticateToken,
+  authorizeRoles
 } from "../middleware/auth.middleware";
 import { adminProviderController, adminClientController, adminCategoryController, adminServiceController, adminDashboardController, adminPaymentController } from "../../infrastructure/di/adminDi";
 
@@ -14,6 +15,7 @@ export class AdminRouter {
 
   private _initializeRoutes(): void {
     this.router.use(authenticateToken);
+    this.router.use(authorizeRoles("admin"))
     
     this.router.get("/dashboard/stats", adminDashboardController.getStats);
     this.router.get("/payments", adminPaymentController.getPayments);

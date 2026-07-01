@@ -18,7 +18,7 @@ const GeoPointSchema = z.object({
         );
       },
       {
-        message: "Invalid coordinates",
+        error: "Invalid coordinates",
       },
     ),
 });

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/command";
 import { locationApi } from "@/api/location";
 import { useLocationSearch } from "@/hooks/useLocationSearch";
-import { LocationSuggestion,Location } from "@/interfaces/location.interface";
+import { LocationSuggestion, Location } from "@/interfaces/location.interface";
 import { Check, MapPin, Pencil } from "lucide-react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
@@ -24,52 +24,50 @@ import { toast } from "sonner";
 interface Props {
   value?: Location | null;
 
-  onChange: (
-    location: Location,
-  ) => void;
+  onChange: (location: Location) => void;
+
+  onError: (errorMsg: string | null) => void
 
   placeholder?: string;
 }
 
-export function LocationAutocomplete({
-  value,
-  onChange,
-  placeholder,
-}: Props) {
-  const [open, setOpen] =
-    useState(false);
+export function LocationAutocomplete({ value, onChange, onError, placeholder }: Props) {
+  const [open, setOpen] = useState(false);
 
-  const [search, setSearch] =
-    useState("");
+  const [search, setSearch] = useState("");
 
-  const [isEditing, setIsEditing] =
-    useState(!value);
+  const [isEditing, setIsEditing] = useState(!value);
 
-  const {
-    data: suggestions = [],
-    isLoading,
-  } = useLocationSearch(search);
-  const updateSearch = useEffectEvent((value: string)=>{
-    setSearch(value)
-  })
+  const { data: suggestions = [], isLoading, isPending } = useLocationSearch(search);
+
+  const updateSearch = useEffectEvent((value: string) => {
+    setSearch(value);
+  });
   useEffect(() => {
     if (value?.address) {
       updateSearch(value.address);
     }
   }, [value]);
 
-  const handleSelect = async (
-    suggestion: LocationSuggestion,
-  ) => {
-    const location =
-      await locationApi.getPlaceDetails(
-        suggestion.placeId,
-      );
+  const handleSelect = async (suggestion: LocationSuggestion) => {
+    const location = await locationApi.getPlaceDetails(suggestion.placeId);
 
-      if(!location){
-        toast.error('location not found, please try again with proper selection')
-        return 
-      }
+    if (!location) {
+      toast.error("location not found, please try again with proper selection");
+      return;
+    }
+    if (
+      !location.coordinates.coordinates.every(
+        (val: number | [] ) => typeof val === "number" && isFinite(val),
+      )
+    ) {
+      toast.info(
+        "please select another option from search because the selected location does not have accurate information",
+      );
+      onError("Selected location is not proceedable, Please select another option of the location you want")
+      return;
+    }
+
     onChange(location);
 
     setSearch(location.address);
@@ -86,18 +84,11 @@ export function LocationAutocomplete({
           <MapPin className="h-4 w-4 mt-1 text-primary" />
 
           <div>
-            <p className="text-sm font-medium">
-              {value.address}
-            </p>
+            <p className="text-sm font-medium">{value.address}</p>
 
-            {(value.city ||
-              value.country) && (
+            {(value.city || value.country) && (
               <p className="text-xs text-muted-foreground">
-                {[
-                  value.city,
-                  value.state,
-                  value.country,
-                ]
+                {[value.city, value.state, value.country]
                   .filter(Boolean)
                   .join(", ")}
               </p>
@@ -109,9 +100,7 @@ export function LocationAutocomplete({
           type="button"
           size="sm"
           variant="ghost"
-          onClick={() =>
-            setIsEditing(true)
-          }
+          onClick={() => setIsEditing(true)}
         >
           <Pencil className="h-4 w-4 mr-1" />
           Edit
@@ -121,10 +110,7 @@ export function LocationAutocomplete({
   }
 
   return (
-    <Popover
-      open={open}
-      onOpenChange={setOpen}
-    >
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <div>
           <Input
@@ -134,79 +120,47 @@ export function LocationAutocomplete({
 
               setOpen(true);
             }}
-            placeholder={
-              placeholder ||
-              "Search location..."
-            }
+            placeholder={placeholder || "Search location..."}
             className="bg-secondary/30 border-border/50 rounded-xl focus:border-primary/50 transition-colors"
           />
         </div>
       </PopoverTrigger>
 
       <PopoverContent
+        onOpenAutoFocus={(e) => e.preventDefault()}
         className="w-[var(--radix-popover-trigger-width)] p-0"
         align="start"
       >
-        <Command shouldFilter={false}>
-          <CommandInput
-            placeholder="Search location..."
-            value={search}
-            onValueChange={setSearch}
-          />
+        <Command shouldFilter={false} autoFocus={false}>
 
           <CommandList>
-            {isLoading && (
+            {isPending && (
               <div className="p-4 text-sm text-muted-foreground">
-                Loading...
+                searching...
               </div>
             )}
 
-            {!isLoading &&
-              suggestions.length === 0 &&
-              search.length >= 3 && (
-                <CommandEmpty>
-                  No locations found.
-                </CommandEmpty>
-              )}
+            {!isLoading && suggestions.length === 0 && search.length >= 3 && (
+              <CommandEmpty>No locations found.</CommandEmpty>
+            )}
 
             <CommandGroup>
-              {suggestions.map(
-                (
-                  suggestion: LocationSuggestion,
-                ) => (
-                  <CommandItem
-                    key={
-                      suggestion.placeId
-                    }
-                    value={
-                      suggestion.description
-                    }
-                    onSelect={() =>
-                      handleSelect(
-                        suggestion,
-                      )
-                    }
-                    className="cursor-pointer"
-                  >
-                    <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
+              {suggestions.map((suggestion: LocationSuggestion) => (
+                <CommandItem
+                  key={suggestion.placeId}
+                  value={suggestion.description}
+                  onSelect={() => handleSelect(suggestion)}
+                  className="cursor-pointer"
+                >
+                  <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
 
-                    <span className="flex-1">
-                      {
-                        suggestion.description
-                      }
-                    </span>
+                  <span className="flex-1">{suggestion.description}</span>
 
-                    {value?.placeId ===
-                      suggestion.placeId && (
-                      <Check
-                        className={cn(
-                          "h-4 w-4",
-                        )}
-                      />
-                    )}
-                  </CommandItem>
-                ),
-              )}
+                  {value?.placeId === suggestion.placeId && (
+                    <Check className={cn("h-4 w-4")} />
+                  )}
+                </CommandItem>
+              ))}
             </CommandGroup>
           </CommandList>
         </Command>

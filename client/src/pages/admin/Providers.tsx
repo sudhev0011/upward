@@ -41,6 +41,7 @@ import { useRejectProviderMutation } from "@/hooks/admin/useRejectProvider";
 import { format } from "date-fns";
 import { ProviderProfile } from "@/interfaces/provider/provider.interface";
 
+
 export default function Providers() {
   const [params, setParams] = useState({
     page: 1,
