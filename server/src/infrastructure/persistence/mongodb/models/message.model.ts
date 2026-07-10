@@ -1,11 +1,17 @@
 import { Document, Schema, model, Types } from 'mongoose';
 
+export interface UserMessageState {
+  isRead: boolean;
+  isDeleted: boolean;
+}
+
 export interface MessageDocument extends Document {
   conversationId: Types.ObjectId;
   senderId: Types.ObjectId;
   text: string;
   attachmentUrl: string | null;
-  isRead: boolean;
+  isDelivered: boolean;
+  userStates: Map<string, UserMessageState>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -16,7 +22,15 @@ const MessageSchema = new Schema<MessageDocument>(
     senderId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     text: { type: String, default: "" },
     attachmentUrl: { type: String, default: null },
-    isRead: { type: Boolean, default: false },
+    isDelivered: { type: Boolean, default: false },
+    userStates: {
+      type: Map,
+      of: new Schema({
+        isRead: { type: Boolean, default: false },
+        isDeleted: { type: Boolean, default: false },
+      }, { _id: false }),
+      default: {}
+    },
   },
   {
     timestamps: true,

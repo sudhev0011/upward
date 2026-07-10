@@ -16,19 +16,29 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     senderId: string,
     conversationId: string,
     text: string,
-    attachmentUrl?: string | null
+    attachmentUrl?: string | null,
+    isDelivered?: boolean
   ): Promise<Message> {
     const conversation = await this._chatRepository.findConversationById(conversationId);
     if (!conversation) {
       throw new NotFoundError('Conversation not found');
     }
 
+    const recipientRole = senderId === conversation.clientId ? 'provider' : 'client';
+    const recipientId = recipientRole === 'provider' ? String(conversation.providerId) : String(conversation.clientId);
+
+    const userStates = {
+      [senderId]: { isRead: true, isDeleted: false },
+      [recipientId]: { isRead: false, isDeleted: false }
+    };
+
     const messageEntity = Message.create({
       conversationId,
       senderId,
       text,
       attachmentUrl: attachmentUrl ?? null,
-      isRead: false,
+      isDelivered: isDelivered ?? false,
+      userStates
     });
 
     const savedMessage = await this._chatRepository.saveMessage(messageEntity);

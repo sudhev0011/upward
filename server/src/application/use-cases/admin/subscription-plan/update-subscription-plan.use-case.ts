@@ -1,25 +1,19 @@
 import { SubscriptionPlan } from "../../../../domain/entities/subscription-plan.entity";
 import { NotFoundError, ConflictError } from "../../../../domain/errors/errors";
 import { ISubscriptionPlanRepository } from "../../../../domain/interfaces/repositories/subscription-plan/ISubscriptionPlanRepository";
+import { IUpdateSubscriptionPlanUseCase } from "../../../../domain/interfaces/usecases/subscription/IUpdateSubscriptionPlanUseCase";
+import { UpdateSubscriptionPlanRequest } from "../../../dtos/admin/subscription/request/createSubscriptionPlanRequest.dto";
 
-export interface UpdateSubscriptionPlanRequest {
-  id: string;
-  name?: string;
-  price?: number;
-  billingCycle?: "monthly" | "yearly";
-  features?: string[];
-  isActive?: boolean;
-}
-
-export class UpdateSubscriptionPlanUseCase {
+export class UpdateSubscriptionPlanUseCase implements IUpdateSubscriptionPlanUseCase {
   constructor(
     private readonly subscriptionPlanRepository: ISubscriptionPlanRepository,
   ) {}
 
   async execute(
+    planId: string,
     data: UpdateSubscriptionPlanRequest,
   ): Promise<SubscriptionPlan> {
-    const plan = await this.subscriptionPlanRepository.findById(data.id);
+    const plan = await this.subscriptionPlanRepository.findById(planId);
 
     if (!plan) {
       throw new NotFoundError("Subscription plan not found");

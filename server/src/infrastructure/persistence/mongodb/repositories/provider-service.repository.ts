@@ -228,11 +228,25 @@ export class ProviderServiceRepository
     transaction?: ITransactionContext,
   ): Promise<ProviderService | null> {
     const session = MongoSessionUtil.getSession(transaction);
+    const count = this.countDocuments({providerId})
     return this.findOne(
       {
         providerId,
         serviceId,
         isActive: true,
+      },
+      session,
+    );
+  }
+
+  async servicesCountByProvider(
+    providerId: string,
+    transaction?: ITransactionContext,
+  ): Promise<number> {
+    const session = MongoSessionUtil.getSession(transaction);
+    return this.countDocuments(
+      {
+        providerId,
       },
       session,
     );

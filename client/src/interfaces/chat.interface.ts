@@ -1,10 +1,16 @@
+export interface UserMessageState {
+  isRead: boolean;
+  isDeleted: boolean;
+}
+
 export interface Message {
   id?: string;
   conversationId: string;
   senderId: string;
   text: string;
   attachmentUrl: string | null;
-  isRead: boolean;
+  isDelivered: boolean;
+  userStates: Record<string, UserMessageState>;
   createdAt: string;
 }
 

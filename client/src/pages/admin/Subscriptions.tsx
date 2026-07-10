@@ -10,6 +10,7 @@ import {
   Crown,
   Search,
   ArrowUpDown,
+  XCircle,
 } from "lucide-react";
 
 import {
@@ -44,10 +45,20 @@ import {
   useUpdateSubscriptionPlan,
   useDeleteSubscriptionPlan,
 } from "@/hooks/subscription/useSubscriptions";
-import { SubscriptionPlanDto } from "@/api/subscription.api";
 import { usePagination } from "@/hooks/usePagination";
-import { PlanFormData, PlanFormDialog } from "@/components/admin/subscription/PlanFormDialog";
+import { PlanFormDialog } from "@/components/admin/subscription/PlanFormDialog";
 import { DeletePlanDialog } from "@/components/admin/subscription/DeletePlanDialog";
+import { SubscriptionPlanDto } from "@/api/subscription.api";
+
+export interface PlanFormData {
+  name: string;
+  price: number;
+  billingCycle: "monthly" | "yearly" | "";
+  isActive: boolean;
+  maxServices: number;
+  maxPortfolios: number;
+  maxManualUnavailability: number;
+}
 
 export default function Subscriptions() {
   const [page, setPage] = useState(1);
@@ -83,7 +94,7 @@ export default function Subscriptions() {
   );
   const [isEditing, setIsEditing] = useState(false);
 
-  const plans = response?.data?.data || [];
+  const plans: SubscriptionPlanDto[] = response?.data?.data || [];
   const totalPages = response?.data?.totalPages || 1;
   const currentPage = response?.data?.page || 1;
 
@@ -94,8 +105,10 @@ export default function Subscriptions() {
       name: "",
       price: 0,
       billingCycle: "",
-      featuresString: "",
       isActive: true,
+      maxServices: 2,
+      maxManualUnavailability: 2,
+      maxPortfolios: 2,
     },
   });
 
@@ -116,8 +129,10 @@ export default function Subscriptions() {
       name: "",
       price: 0,
       billingCycle: "",
-      featuresString: "",
       isActive: true,
+      maxServices: 2,
+      maxManualUnavailability: 2,
+      maxPortfolios: 2,
     });
     setDialogOpen(true);
   };
@@ -129,8 +144,10 @@ export default function Subscriptions() {
       name: plan.name,
       price: plan.price,
       billingCycle: plan.billingCycle,
-      featuresString: plan.features.join("\n"),
       isActive: plan.isActive,
+      maxServices: plan.features?.maxServices ?? 2,
+      maxManualUnavailability: plan.features?.maxManualUnavailability ?? 2,
+      maxPortfolios: plan.features?.maxPortfolios ?? 2,
     });
     setDialogOpen(true);
   };
@@ -171,7 +188,7 @@ export default function Subscriptions() {
   };
 
   const onSubmit = (values: PlanFormData) => {
-    if (values.billingCycle === "") {
+    if (!values.billingCycle) {
       toast.error("Please select a billing interval.");
       return;
     }
@@ -180,11 +197,12 @@ export default function Subscriptions() {
       name: values.name,
       price: Number(values.price),
       billingCycle: values.billingCycle as "monthly" | "yearly",
-      features: values.featuresString
-        .split("\n")
-        .map((f) => f.trim())
-        .filter((f) => f.length > 0),
       isActive: values.isActive,
+      features: {
+        maxServices: Number(values.maxServices),
+        maxManualUnavailability: Number(values.maxManualUnavailability),
+        maxPortfolios: Number(values.maxPortfolios),
+      },
     };
 
     if (isEditing && selectedPlan) {
@@ -225,7 +243,8 @@ export default function Subscriptions() {
             Subscriptions
           </h1>
           <p className="text-muted-foreground text-sm">
-            Manage provider subscription tiers, visibility levels, and pricing
+            Manage provider subscription tiers, feature configurations, and
+            pricing limits
           </p>
         </div>
         <Button
@@ -239,7 +258,6 @@ export default function Subscriptions() {
 
       {/* STATS */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {/* ... stats widgets unchanged ... */}
         <Card className="bg-card/50 backdrop-blur-sm border shadow-sm">
           <CardContent className="p-6">
             <div className="flex justify-between items-center">
@@ -359,10 +377,12 @@ export default function Subscriptions() {
       ) : (
         <div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {plans.map((p) => (
+            {response?.data?.data.map((p) => (
               <Card
                 key={p.id}
-                className={`bg-card/50 backdrop-blur-sm border shadow-sm relative overflow-hidden ${!p.isActive ? "opacity-75" : ""}`}
+                className={`bg-card/50 backdrop-blur-sm border shadow-sm relative overflow-hidden ${
+                  !p.isActive ? "opacity-75" : ""
+                }`}
               >
                 <div
                   className={`absolute top-0 left-0 w-full h-1.5 ${p.isActive ? "bg-indigo-500" : "bg-muted"}`}
@@ -419,14 +439,37 @@ export default function Subscriptions() {
                       {p.subscriberCount} Subscribers
                     </Badge>
                   </div>
+
+                  {/* 4. Redesigned Feature Renderer displaying metrics dynamically */}
                   <div className="pt-3 border-t">
-                    <ul className="space-y-1.5">
-                      {p.features.map((f, i) => (
-                        <li key={i} className="text-xs flex items-start gap-2">
-                          <CheckCircle className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
-                          <span className="text-muted-foreground">{f}</span>
-                        </li>
-                      ))}
+                    <ul className="space-y-2">
+                      <li className="text-xs flex items-center gap-2">
+                        <CheckCircle className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
+                        <span className="text-muted-foreground">
+                          Max Services allowed:{" "}
+                          <strong className="text-foreground">
+                            {p.features?.maxServices ?? 0}
+                          </strong>
+                        </span>
+                      </li>
+                      <li className="text-xs flex items-center gap-2">
+                        <CheckCircle className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
+                        <span className="text-muted-foreground">
+                          Max Manual Blocks / 30 Days:{" "}
+                          <strong className="text-foreground">
+                            {p.features?.maxManualUnavailability ?? 0}
+                          </strong>
+                        </span>
+                      </li>
+                      <li className="text-xs flex items-center gap-2">
+                        <CheckCircle className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
+                        <span className="text-muted-foreground">
+                          Max Portfolios allowed:{" "}
+                          <strong className="text-foreground">
+                            {p.features?.maxPortfolios ?? 0}
+                          </strong>
+                        </span>
+                      </li>
                     </ul>
                   </div>
                 </CardContent>

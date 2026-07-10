@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Search, Send, Paperclip, Loader2 } from "lucide-react";
+import { Search, Send, Paperclip, Loader2, Check, CheckCheck, Trash2 } from "lucide-react";
 import { useAppSelector } from "@/hooks/useRedux";
 import { useSocket } from "@/hooks/useSocket";
 import { chatApi } from "@/api/chat.api";
@@ -7,6 +7,17 @@ import { Conversation, Message } from "@/interfaces/chat.interface";
 import { useUploadChatAttachment } from "@/hooks/chat/useUploadChatAttachment";
 import { toast } from "sonner";
 import RenderAttachment from "@/components/common/chat/RenderAttachment";
+
+const renderStatusTicks = (msg: Message, otherParticipantId: string | undefined) => {
+  const isRead = otherParticipantId ? msg.userStates?.[otherParticipantId]?.isRead : false;
+  if (isRead) {
+    return <CheckCheck className="h-3.5 w-3.5 text-emerald-400 inline shrink-0" />;
+  }
+  if (msg.isDelivered) {
+    return <CheckCheck className="h-3.5 w-3.5 text-white/50 inline shrink-0" />;
+  }
+  return <Check className="h-3.5 w-3.5 text-white/50 inline shrink-0" />;
+};
 
 
 const MessagesPage = () => {
@@ -24,6 +35,9 @@ const MessagesPage = () => {
   const uploadAttachmentMutation = useUploadChatAttachment();
 
   const { socket } = useSocket(activeThread);
+
+  const selectedThread = conversations.find((t) => t.id === activeThread);
+  const otherParticipantId = selectedThread?.clientId === currentUserId ? selectedThread?.providerId : selectedThread?.clientId;
 
   const handleAttachmentClick = () => {
     fileInputRef.current?.click();
@@ -62,6 +76,22 @@ const MessagesPage = () => {
         fileInputRef.current.value = "";
       }
     }
+  };
+
+  const handleDeleteMessage = (messageId: string) => {
+    if (!socket || !activeThread) return;
+
+    socket.emit(
+      "delete_message",
+      { messageId, conversationId: activeThread },
+      (res: { success: boolean; error?: string }) => {
+        if (!res.success) {
+          toast.error(res.error || "Failed to delete message");
+        } else {
+          toast.success("Message deleted");
+        }
+      }
+    );
   };
 
   const fetchConversations = async () => {
@@ -125,14 +155,68 @@ const MessagesPage = () => {
       fetchConversations();
     };
 
+    const handleMessageDeleted = (data: { messageId: string; userId: string }) => {
+      setMessages((prev) =>
+        prev.map((msg) => {
+          if (msg.id === data.messageId) {
+            const updatedStates = {
+              ...msg.userStates,
+              [data.userId]: {
+                ...msg.userStates?.[data.userId],
+                isDeleted: true
+              }
+            };
+            return { ...msg, userStates: updatedStates };
+          }
+          return msg;
+        })
+      );
+    };
+
+    const handleMessagesDelivered = (data: { conversationId: string }) => {
+      if (data.conversationId === activeThread) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.senderId === currentUserId ? { ...msg, isDelivered: true } : msg
+          )
+        );
+      }
+    };
+
+    const handleMessagesRead = (data: { conversationId: string; role: 'client' | 'provider' }) => {
+      if (data.conversationId === activeThread && data.role === 'provider' && otherParticipantId) {
+        setMessages((prev) =>
+          prev.map((msg) => {
+            if (msg.senderId === currentUserId) {
+              const updatedStates = {
+                ...msg.userStates,
+                [otherParticipantId]: {
+                  ...msg.userStates?.[otherParticipantId],
+                  isRead: true
+                }
+              };
+              return { ...msg, isDelivered: true, userStates: updatedStates };
+            }
+            return msg;
+          })
+        );
+      }
+    };
+
     socket.on("message_received", handleMessageReceived);
     socket.on("conversation_updated", handleConversationUpdated);
+    socket.on("message_deleted", handleMessageDeleted);
+    socket.on("messages_delivered", handleMessagesDelivered);
+    socket.on("messages_read", handleMessagesRead);
 
     return () => {
       socket.off("message_received", handleMessageReceived);
       socket.off("conversation_updated", handleConversationUpdated);
+      socket.off("message_deleted", handleMessageDeleted);
+      socket.off("messages_delivered", handleMessagesDelivered);
+      socket.off("messages_read", handleMessagesRead);
     };
-  }, [socket, activeThread]);
+  }, [socket, activeThread, otherParticipantId, currentUserId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -168,7 +252,7 @@ const MessagesPage = () => {
       : "U";
   };
 
-  const selectedThread = conversations.find((t) => t.id === activeThread);
+
 
   const filteredThreads = conversations.filter(
     (t) =>
@@ -292,30 +376,42 @@ const MessagesPage = () => {
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-3">
-              {messages.map((m) => {
+              {messages.filter(m => !m.userStates?.[currentUserId]?.isDeleted).map((m) => {
                 const isMe = m.senderId === currentUserId;
                 return (
                   <div
                     key={m.id}
-                    className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+                    className={`flex ${isMe ? "justify-end" : "justify-start"} group relative`}
                   >
-                    <div
-                      className={`max-w-[70%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
-                        isMe
-                          ? "bg-[#719FC4] text-white rounded-br-sm"
-                          : "bg-gray-100 text-gray-800 rounded-bl-sm"
-                      }`}
-                    >
-                      {m.text && <p>{m.text}</p>}
-                      {m.attachmentUrl && RenderAttachment(m.attachmentUrl, isMe)}
-                      <p
-                        className={`text-[10px] mt-1 ${isMe ? "text-white/60 text-right" : "text-gray-400"}`}
+                    <div className={`flex items-center gap-2 max-w-[70%] ${isMe ? "flex-row-reverse" : "flex-row"}`}>
+                      <div
+                        className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                          isMe
+                            ? "bg-[#719FC4] text-white rounded-br-sm"
+                            : "bg-gray-100 text-gray-800 rounded-bl-sm"
+                        }`}
                       >
-                        {new Date(m.createdAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
+                        {m.text && <p>{m.text}</p>}
+                        {m.attachmentUrl && RenderAttachment(m.attachmentUrl, isMe)}
+                        
+                        <div className="flex items-center justify-end gap-1.5 mt-1">
+                          <span className={`text-[10px] ${isMe ? "text-white/60" : "text-gray-400"}`}>
+                            {new Date(m.createdAt).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                          {isMe && renderStatusTicks(m, otherParticipantId)}
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => m.id && handleDeleteMessage(m.id)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 duration-200 shrink-0"
+                        title="Delete Message"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </div>
                   </div>
                 );

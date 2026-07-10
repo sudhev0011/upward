@@ -1,9 +1,12 @@
 import { Unavailability } from "../../../../domain/entities/unavailability.entity";
+import { UnavailabilitySource } from "../../../../domain/enums/unavailability.enum";
 import {
   ConflictError,
+  LimitError,
   ValidationError,
 } from "../../../../domain/errors/errors";
 import { IAvailabilityOverrideRepository } from "../../../../domain/interfaces/repositories/availability-override/IAvailability-override.repository";
+import { IProviderSubscriptionRepository } from "../../../../domain/interfaces/repositories/provider-subscription/IProviderSubscriptionRepository";
 import { IUnavailabilityRepository } from "../../../../domain/interfaces/repositories/unavailability/IUnavaliability-repository";
 import { CreateUnavailabilityRequestDto } from "../../../dtos/provider/unavailability/unavailability-request.dto";
 import { UnavailabilityResponseDto } from "../../../dtos/provider/unavailability/unavailability-response.dto";
@@ -13,16 +16,31 @@ export class CreateUnavailabilityUseCase {
   constructor(
     private readonly _unavailabilityRepository: IUnavailabilityRepository,
     private readonly _availabilityOverrideRepository: IAvailabilityOverrideRepository,
+    private readonly _providerSubscriptionRepository: IProviderSubscriptionRepository,
   ) {}
 
   async execute(
     data: CreateUnavailabilityRequestDto,
   ): Promise<UnavailabilityResponseDto> {
+    if (data.source === UnavailabilitySource.MANUAL) {
+      const limits =
+        await this._providerSubscriptionRepository.getActivePlanLimitsByProvider(
+          data.providerId,
+        );
+
+      const rolling30DayCount =
+        await this._unavailabilityRepository.countManualByProviderForLast30Days(
+          data.providerId,
+        );
+
+      if (rolling30DayCount >= limits.maxManualUnavailability) {
+        throw new LimitError(
+          `Limit reached of your plan. You have already created ${rolling30DayCount} manual unavailabilities in the last 30 days.`,
+        );
+      }
+    }
     const dateOnly = data.endDate.toISOString().split("T")[0];
-    const dayStart = new Date(`${data.startDate}T00:00:00.000Z`);
-    const dayEnd = new Date(`${data.endDate}T23:59:59.999Z`);
-    console.log(dayStart)
-    console.log(dayEnd)
+
     const overRide = await this._availabilityOverrideRepository.findOne({
       date: dateOnly,
     });

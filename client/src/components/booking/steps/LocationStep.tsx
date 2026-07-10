@@ -26,9 +26,7 @@ export default function LocationStep({ formState, onNext, onBack }: Props) {
   };
 
   const handleLocationError = (errorMsg: string | null) => {
-    if (errorMsg) {
-      setLocationError(errorMsg);
-    }
+    setLocationError(errorMsg);
   };
   return (
     <div className="flex flex-col gap-4">

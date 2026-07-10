@@ -6,13 +6,14 @@ import { FindOrCreateConversationUseCase } from '../../application/use-cases/cha
 import { ResetUnreadCountUseCase } from '../../application/use-cases/chat/reset-unread-count.use-case';
 import { SendMessageUseCase } from '../../application/use-cases/chat/send-message.use-case';
 import { GetChatUploadUrlUseCase } from '../../application/use-cases/chat/get-chat-upload-url.use-case';
+import { DeleteMessageUseCase } from '../../application/use-cases/chat/delete-message.use-case';
 import { ChatController } from '../../presentation/controllers/chat.controller';
 import { S3Service } from '../external-services/s3/s3.service';
 import { WinstonLogger } from '../services/logger.service';
 import { notificationService } from './notificationDi';
 
 // Initialize repositories
-const chatRepository = new MongoChatRepository();
+export const chatRepository = new MongoChatRepository();
 const userRepository = new UserRepository();
 
 // Initialize logger and S3
@@ -26,6 +27,7 @@ export const findOrCreateConversationUseCase = new FindOrCreateConversationUseCa
 export const resetUnreadCountUseCase = new ResetUnreadCountUseCase(chatRepository);
 export const sendMessageUseCase = new SendMessageUseCase(chatRepository, userRepository, notificationService);
 export const getChatUploadUrlUseCase = new GetChatUploadUrlUseCase(s3Service);
+export const deleteMessageUseCase = new DeleteMessageUseCase(chatRepository);
 
 // Initialize controller
 export const chatController = new ChatController(

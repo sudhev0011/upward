@@ -12,6 +12,8 @@ export interface IUnavailabilityRepository extends IBaseRepository<Unavailabilit
     rangeEnd: Date,
   ): Promise<Unavailability[]>;
 
+  countManualByProviderForLast30Days(providerId: string): Promise<number>;
+
   findBySource(
     providerId: string,
     source: UnavailabilitySource,

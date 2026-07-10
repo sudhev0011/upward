@@ -4,32 +4,35 @@ import { IBaseRepository } from "../base/IBaseRepository";
 import { PaginatedResult } from "../../../common.types";
 import { ProviderServicePublicItem } from "../../../queries/client/provider-service-public-item";
 
-export interface IProviderServiceRepository extends IBaseRepository<ProviderService>{
-
+export interface IProviderServiceRepository extends IBaseRepository<ProviderService> {
   findByProvider(providerId: string): Promise<ProviderService[]>;
 
   findByProviderAndService(
     providerId: string,
-    serviceId: string
+    serviceId: string,
   ): Promise<ProviderService | null>;
 
   findActive(
     providerId: string,
-    serviceId: string
+    serviceId: string,
   ): Promise<ProviderService | null>;
-  
+
   findGroupedByCategory(
     providerId: string,
     params: {
-    page?: number;
-    limit?: number;
-    search?: string;
-    isActive?: boolean;
-    mode?: "onsite" | "offsite" | "both";
-    sortBy?: string;
-    sortOrder?: "asc" | "desc";
-  }
+      page?: number;
+      limit?: number;
+      search?: string;
+      isActive?: boolean;
+      mode?: "onsite" | "offsite" | "both";
+      sortBy?: string;
+      sortOrder?: "asc" | "desc";
+    },
   ): Promise<PaginatedResult<ProviderServicesGroupedData>>;
 
-getActiveServicesByProvider(providerId: string): Promise<ProviderServicePublicItem[]>;
+  getActiveServicesByProvider(
+    providerId: string,
+  ): Promise<ProviderServicePublicItem[]>;
+
+  servicesCountByProvider(providerId: string): Promise<number>
 }

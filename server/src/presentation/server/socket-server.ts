@@ -3,7 +3,7 @@ import { Server as SocketIOServer, Socket } from 'socket.io';
 import { JwtTokenService } from '../../infrastructure/security/jwt-token-service';
 import { env } from '../../infrastructure/config/env';
 import { winstonLogger } from '../../infrastructure/config/logger';
-import { sendMessageUseCase, resetUnreadCountUseCase } from '../../infrastructure/di/chatDi';
+import { sendMessageUseCase, resetUnreadCountUseCase, deleteMessageUseCase, chatRepository } from '../../infrastructure/di/chatDi';
 import { socketService } from '../../infrastructure/services/socket.service';
 
 interface AuthenticatedSocket extends Socket {
@@ -71,6 +71,15 @@ export function initSocketServer(httpServer: HttpServer): SocketIOServer {
     if (userId) {
       // Join a personal room to receive real-time notifications/updates
       socket.join(`user_${userId}`);
+
+      // Perform connection sync: mark incoming undelivered messages as delivered
+      chatRepository.markIncomingMessagesAsDelivered(userId)
+        .then((updatedConversationIds: string[]) => {
+          for (const convId of updatedConversationIds) {
+            io.to(`chat_${convId}`).emit('messages_delivered', { conversationId: convId });
+          }
+        })
+        .catch((err: unknown) => winstonLogger.error('Sync delivery status error:', err));
     }
 
     // Join conversation room
@@ -110,11 +119,20 @@ export function initSocketServer(httpServer: HttpServer): SocketIOServer {
             return;
           }
 
+          // Check if the recipient is online to determine isDelivered status
+          const conversation = await chatRepository.findConversationById(conversationId);
+          let isRecipientOnline = false;
+          if (conversation) {
+            const recipientId = userId === conversation.clientId ? conversation.providerId : conversation.clientId;
+            isRecipientOnline = io.sockets.adapter.rooms.has(`user_${recipientId}`);
+          }
+
           const message = await sendMessageUseCase.execute(
             userId,
             conversationId,
             text ?? "",
-            attachmentUrl
+            attachmentUrl,
+            isRecipientOnline
           );
 
           // Broadcast message to conversation room
@@ -126,6 +144,43 @@ export function initSocketServer(httpServer: HttpServer): SocketIOServer {
           callback?.({ success: true, data: message });
         } catch (error) {
           winstonLogger.error('Error handling socket send_message:', error);
+          const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+          callback?.({ success: false, error: errorMsg });
+        }
+      }
+    );
+
+    // Delete message event
+    socket.on(
+      'delete_message',
+      async (
+        data: { messageId: string; conversationId: string },
+        callback?: (response: { success: boolean; error?: string }) => void
+      ) => {
+        try {
+          const { messageId, conversationId } = data;
+          if (!messageId || !conversationId) {
+            callback?.({ success: false, error: 'messageId and conversationId are required' });
+            return;
+          }
+          if (!userId) {
+            callback?.({ success: false, error: 'User context not found' });
+            return;
+          }
+
+          const deletedMsg = await deleteMessageUseCase.execute(userId, messageId);
+          if (!deletedMsg) {
+            callback?.({ success: false, error: 'Message not found or unauthorized' });
+            return;
+          }
+
+          // Broadcast deletion event to conversation room
+          io.to(`chat_${conversationId}`).emit('message_deleted', { messageId, userId, conversationId });
+          io.emit('conversation_updated', { conversationId });
+
+          callback?.({ success: true });
+        } catch (error) {
+          winstonLogger.error('Error handling socket delete_message:', error);
           const errorMsg = error instanceof Error ? error.message : 'Unknown error';
           callback?.({ success: false, error: errorMsg });
         }

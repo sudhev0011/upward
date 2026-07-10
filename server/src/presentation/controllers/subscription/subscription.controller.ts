@@ -1,34 +1,36 @@
 import { Request, Response, NextFunction } from "express";
-import { CreateSubscriptionPlanUseCase } from "../../../application/use-cases/admin/subscription-plan/create-subscription-plan.use-case";
-import { UpdateSubscriptionPlanUseCase } from "../../../application/use-cases/admin/subscription-plan/update-subscription-plan.use-case";
-import { DeleteSubscriptionPlanUseCase } from "../../../application/use-cases/admin/subscription-plan/delete-subscription-plan.use-case";
-import { GetAllSubscriptionPlansUseCase } from "../../../application/use-cases/admin/subscription-plan/get-all-subscription-plans.use-case";
-import { GetActivePlansUseCase } from "../../../application/use-cases/provider/subscription/get-active-plans.use-case";
 import { CreateSubscriptionCheckoutUseCase } from "../../../application/use-cases/provider/subscription/create-subscription-checkout.use-case";
 import { IProviderProfileRepository } from "../../../domain/interfaces/repositories/provider/IProviderProfileRepository";
 import { IProviderSubscriptionRepository } from "../../../domain/interfaces/repositories/provider-subscription/IProviderSubscriptionRepository";
 import {
   handleAsyncError,
+  handleValidationError,
   sendCreatedResponse,
   sendSuccessResponse,
   validateUserId,
 } from "../../../shared/utils/presentation/controller.utils";
 import { AuthenticatedRequest } from "../../middleware/auth.middleware";
 import { GetAllPlansQuerySchema } from "../../../application/dtos/admin/subscription/request/getAllPlansRequest.dto";
+import { ICreateSubscriptionPlanUseCase } from "../../../domain/interfaces/usecases/subscription/ICreateSubscriptionPlanUseCase";
+import { IUpdateSubscriptionPlanUseCase } from "../../../domain/interfaces/usecases/subscription/IUpdateSubscriptionPlanUseCase";
+import { IDeleteSubscriptionPlanUseCase } from "../../../domain/interfaces/usecases/subscription/IDeleteSubscriptionPlanUseCase";
+import { IGetActivePlansUseCase } from "../../../domain/interfaces/usecases/subscription/IGetActivePlansUseCase";
+import { IGetAllSubscriptionPlansUseCase } from "../../../domain/interfaces/usecases/subscription/IGetAllSubscriptionPlansUseCase";
+import { ICreateSubscriptionCheckoutUseCase } from "../../../domain/interfaces/usecases/subscription/ICreateSubscriptionCheckoutUseCase";
+import { CreateSubscriptionPlanRequestDto, UpdateSubscriptionPlanRequestDto } from "../../../application/dtos/admin/subscription/request/createSubscriptionPlanRequest.dto";
+import { formatZodErrors } from "../../../shared/utils/presentation/zod-error-formatter.utils";
 
 export class SubscriptionController {
   constructor(
-    private readonly createSubscriptionPlanUseCase: CreateSubscriptionPlanUseCase,
-    private readonly updateSubscriptionPlanUseCase: UpdateSubscriptionPlanUseCase,
-    private readonly deleteSubscriptionPlanUseCase: DeleteSubscriptionPlanUseCase,
-    private readonly getAllSubscriptionPlansUseCase: GetAllSubscriptionPlansUseCase,
-    private readonly getActivePlansUseCase: GetActivePlansUseCase,
-    private readonly createSubscriptionCheckoutUseCase: CreateSubscriptionCheckoutUseCase,
+    private readonly createSubscriptionPlanUseCase: ICreateSubscriptionPlanUseCase,
+    private readonly updateSubscriptionPlanUseCase: IUpdateSubscriptionPlanUseCase,
+    private readonly deleteSubscriptionPlanUseCase: IDeleteSubscriptionPlanUseCase,
+    private readonly getAllSubscriptionPlansUseCase: IGetAllSubscriptionPlansUseCase,
+    private readonly getActivePlansUseCase: IGetActivePlansUseCase,
+    private readonly createSubscriptionCheckoutUseCase: ICreateSubscriptionCheckoutUseCase,
     private readonly providerProfileRepository: IProviderProfileRepository,
     private readonly providerSubscriptionRepository: IProviderSubscriptionRepository,
   ) {}
-
-  // --- Admin Endpoints ---
 
   createPlan = async (
     req: Request,
@@ -36,14 +38,14 @@ export class SubscriptionController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const { name, price, billingCycle, features, isActive } = req.body;
-      const plan = await this.createSubscriptionPlanUseCase.execute({
-        name: String(name),
-        price: Number(price),
-        billingCycle: billingCycle === "yearly" ? "yearly" : "monthly",
-        features: Array.isArray(features) ? features.map(String) : [],
-        isActive: isActive !== undefined ? Boolean(isActive) : undefined,
-      });
+
+      const parsed = CreateSubscriptionPlanRequestDto.safeParse(req.body); 
+
+      if(!parsed.success){
+        return handleValidationError(formatZodErrors(parsed.error), next);
+      }
+
+      const plan = await this.createSubscriptionPlanUseCase.execute(parsed.data);
 
       sendCreatedResponse(res, "Subscription plan created successfully", plan);
     } catch (error) {
@@ -58,20 +60,18 @@ export class SubscriptionController {
   ): Promise<void> => {
     try {
       const { id } = req.params;
-      const { name, price, billingCycle, features, isActive } = req.body;
-      const plan = await this.updateSubscriptionPlanUseCase.execute({
-        id: String(id),
-        name: name !== undefined ? String(name) : undefined,
-        price: price !== undefined ? Number(price) : undefined,
-        billingCycle:
-          billingCycle !== undefined
-            ? billingCycle === "yearly"
-              ? "yearly"
-              : "monthly"
-            : undefined,
-        features: Array.isArray(features) ? features.map(String) : undefined,
-        isActive: isActive !== undefined ? Boolean(isActive) : undefined,
-      });
+
+      if(!id){
+        return handleValidationError('invalid plan id received please provide correct one', next)
+      }
+
+      const parsed = UpdateSubscriptionPlanRequestDto.safeParse(req.body);
+
+      if (!parsed.success) {
+        return handleValidationError(formatZodErrors(parsed.error), next);
+      }
+
+      const plan = await this.updateSubscriptionPlanUseCase.execute(id as string, parsed.data);
 
       sendSuccessResponse(res, "Subscription plan updated successfully", plan);
     } catch (error) {

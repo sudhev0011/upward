@@ -2,12 +2,18 @@ import { api } from "./axios";
 import { SubscriptionRoutes } from "@/constants/api-routes";
 import { ApiEnvelope } from "@/interfaces/auth";
 
+
+export interface PlanFeatures {
+  maxServices: number;
+  maxPortfolios: number;
+  maxManualUnavailability: number;
+}
 export interface SubscriptionPlanDto {
   id: string;
   name: string;
   price: number;
   billingCycle: "monthly" | "yearly";
-  features: string[];
+  features: PlanFeatures;
   subscriberCount: number;
   isActive: boolean;
   createdAt: string;
@@ -45,7 +51,7 @@ export interface CreateSubscriptionPlanRequest {
   name: string;
   price: number;
   billingCycle: "monthly" | "yearly";
-  features: string[];
+  features: PlanFeatures;
   isActive?: boolean;
 }
 
@@ -53,7 +59,7 @@ export interface UpdateSubscriptionPlanRequest {
   name?: string;
   price?: number;
   billingCycle?: "monthly" | "yearly";
-  features?: string[];
+  features?: PlanFeatures;
   isActive?: boolean;
 }
 

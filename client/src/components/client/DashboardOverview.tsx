@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { StatsRow } from "./StatsRow";
-import { BookingsTable } from "./BookingsTable";
 import { useGetClientDashboardStatsQuery } from "@/hooks/client/useGetClientDashboardStatsQuery";
 import { Area, AreaChart, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -79,8 +78,7 @@ export const DashboardOverview = () => {
             </CardContent>
           </Card>
 
-          {/* Row 3 — Bookings (full width) */}
-          <BookingsTable />
+          
         </>
       )}
     </div>

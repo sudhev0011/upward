@@ -5,6 +5,7 @@ export interface ISendMessageUseCase {
     senderId: string,
     conversationId: string,
     text: string,
-    attachmentUrl?: string | null
+    attachmentUrl?: string | null,
+    isDelivered?: boolean
   ): Promise<Message>;
 }

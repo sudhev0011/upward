@@ -51,7 +51,6 @@ export function LocationAutocomplete({ value, onChange, onError, placeholder }: 
 
   const handleSelect = async (suggestion: LocationSuggestion) => {
     const location = await locationApi.getPlaceDetails(suggestion.placeId);
-
     if (!location) {
       toast.error("location not found, please try again with proper selection");
       return;
@@ -67,6 +66,8 @@ export function LocationAutocomplete({ value, onChange, onError, placeholder }: 
       onError("Selected location is not proceedable, Please select another option of the location you want")
       return;
     }
+
+    onError(null)
 
     onChange(location);
 

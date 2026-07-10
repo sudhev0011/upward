@@ -49,11 +49,11 @@ export class AppServer {
       }),
     );
     
+    this._app.use(requestLogger);
     this._app.use("/api/webhooks",new WebhookRouter().router,);
     this._app.use(express.json({ limit: "10mb" }));
     this._app.use(express.urlencoded({ extended: true }));
     this._app.use(cookieParser());
-    this._app.use(requestLogger);
   }
 
   private configureRoutes(): void {
@@ -85,7 +85,7 @@ export class AppServer {
       await connectRedis();
       winstonLogger.info("Connected to Redis");
     } catch (error) {
-      winstonLogger.info("Redis connection failed:", error);
+      winstonLogger.error("Redis connection failed:", error);
       throw error;
     }
   }

@@ -15,4 +15,6 @@ export interface IPortfolioRepository extends IBaseRepository<PortfolioItem> {
     data: Partial<PortfolioItem>
   ): Promise<PortfolioItem | null>;
   deleteByIdAndProviderId(id: string, providerId: string): Promise<boolean>;
+
+  portfoliosCountByProvider(providerId: string): Promise<number>;
 }

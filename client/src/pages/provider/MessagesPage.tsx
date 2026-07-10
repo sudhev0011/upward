@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send, Search, Paperclip, Loader2 } from "lucide-react";
+import { Send, Search, Paperclip, Loader2, Check, CheckCheck, Trash2 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { useAppSelector } from "@/hooks/useRedux";
 import { useSocket } from "@/hooks/useSocket";
@@ -10,6 +10,17 @@ import { Conversation, Message } from "@/interfaces/chat.interface";
 import { useUploadChatAttachment } from "@/hooks/chat/useUploadChatAttachment";
 import { toast } from "sonner";
 import RenderAttachment from "@/components/common/chat/RenderAttachment";
+
+const renderStatusTicks = (msg: Message, otherParticipantId: string | undefined) => {
+  const isRead = otherParticipantId ? msg.userStates?.[otherParticipantId]?.isRead : false;
+  if (isRead) {
+    return <CheckCheck className="h-3.5 w-3.5 text-emerald-400 inline shrink-0" />;
+  }
+  if (msg.isDelivered) {
+    return <CheckCheck className="h-3.5 w-3.5 text-primary-foreground/50 inline shrink-0" />;
+  }
+  return <Check className="h-3.5 w-3.5 text-primary-foreground/50 inline shrink-0" />;
+};
 
 export default function MessagesPage() {
   const currentUser = useAppSelector((state) => state.auth.user);
@@ -26,6 +37,9 @@ export default function MessagesPage() {
   const uploadAttachmentMutation = useUploadChatAttachment();
 
   const { socket } = useSocket(activeChat);
+
+  const selectedConversation = conversations.find((c) => c.id === activeChat);
+  const otherParticipantId = selectedConversation?.clientId === currentUserId ? selectedConversation?.providerId : selectedConversation?.clientId;
 
   const handleAttachmentClick = () => {
     fileInputRef.current?.click();
@@ -64,6 +78,22 @@ export default function MessagesPage() {
         fileInputRef.current.value = "";
       }
     }
+  };
+
+  const handleDeleteMessage = (messageId: string) => {
+    if (!socket || !activeChat) return;
+
+    socket.emit(
+      "delete_message",
+      { messageId, conversationId: activeChat },
+      (res: { success: boolean; error?: string }) => {
+        if (!res.success) {
+          toast.error(res.error || "Failed to delete message");
+        } else {
+          toast.success("Message deleted");
+        }
+      }
+    );
   };
 
   const fetchConversations = async () => {
@@ -127,14 +157,68 @@ export default function MessagesPage() {
       fetchConversations();
     };
 
+    const handleMessageDeleted = (data: { messageId: string; userId: string }) => {
+      setMessages((prev) =>
+        prev.map((msg) => {
+          if (msg.id === data.messageId) {
+            const updatedStates = {
+              ...msg.userStates,
+              [data.userId]: {
+                ...msg.userStates?.[data.userId],
+                isDeleted: true
+              }
+            };
+            return { ...msg, userStates: updatedStates };
+          }
+          return msg;
+        })
+      );
+    };
+
+    const handleMessagesDelivered = (data: { conversationId: string }) => {
+      if (data.conversationId === activeChat) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.senderId === currentUserId ? { ...msg, isDelivered: true } : msg
+          )
+        );
+      }
+    };
+
+    const handleMessagesRead = (data: { conversationId: string; role: 'client' | 'provider' }) => {
+      if (data.conversationId === activeChat && data.role === 'client' && otherParticipantId) {
+        setMessages((prev) =>
+          prev.map((msg) => {
+            if (msg.senderId === currentUserId) {
+              const updatedStates = {
+                ...msg.userStates,
+                [otherParticipantId]: {
+                  ...msg.userStates?.[otherParticipantId],
+                  isRead: true
+                }
+              };
+              return { ...msg, isDelivered: true, userStates: updatedStates };
+            }
+            return msg;
+          })
+        );
+      }
+    };
+
     socket.on("message_received", handleMessageReceived);
     socket.on("conversation_updated", handleConversationUpdated);
+    socket.on("message_deleted", handleMessageDeleted);
+    socket.on("messages_delivered", handleMessagesDelivered);
+    socket.on("messages_read", handleMessagesRead);
 
     return () => {
       socket.off("message_received", handleMessageReceived);
       socket.off("conversation_updated", handleConversationUpdated);
+      socket.off("message_deleted", handleMessageDeleted);
+      socket.off("messages_delivered", handleMessagesDelivered);
+      socket.off("messages_read", handleMessagesRead);
     };
-  }, [socket, activeChat]);
+  }, [socket, activeChat, otherParticipantId, currentUserId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -170,7 +254,7 @@ export default function MessagesPage() {
       : "U";
   };
 
-  const selectedConversation = conversations.find((c) => c.id === activeChat);
+
 
   const filteredConversations = conversations.filter(
     (c) =>
@@ -303,30 +387,42 @@ export default function MessagesPage() {
               </div>
 
               <div className="flex-1 overflow-auto p-4 space-y-3">
-                {messages.map((msg) => {
+                {messages.filter(msg => !msg.userStates?.[currentUserId]?.isDeleted).map((msg) => {
                   const isMe = msg.senderId === currentUserId;
                   return (
                     <div
                       key={msg.id}
-                      className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+                      className={`flex ${isMe ? "justify-end" : "justify-start"} group relative`}
                     >
-                      <div
-                        className={`max-w-[70%] rounded-2xl px-4 py-3 ${
-                          isMe
-                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/10"
-                            : "bg-secondary/50 text-card-foreground"
-                        }`}
-                      >
-                        {msg.text && <p className="text-sm leading-relaxed">{msg.text}</p>}
-                        {msg.attachmentUrl && RenderAttachment(msg.attachmentUrl, isMe)}
-                        <p
-                          className={`text-[11px] mt-1.5 ${isMe ? "text-primary-foreground/60" : "text-muted-foreground"}`}
+                      <div className={`flex items-center gap-2 max-w-[70%] ${isMe ? "flex-row-reverse" : "flex-row"}`}>
+                        <div
+                          className={`rounded-2xl px-4 py-3 ${
+                            isMe
+                              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/10"
+                              : "bg-secondary/50 text-card-foreground"
+                          }`}
                         >
-                          {new Date(msg.createdAt).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </p>
+                          {msg.text && <p className="text-sm leading-relaxed">{msg.text}</p>}
+                          {msg.attachmentUrl && RenderAttachment(msg.attachmentUrl, isMe)}
+                          
+                          <div className="flex items-center justify-end gap-1.5 mt-1.5">
+                            <span className={`text-[11px] ${isMe ? "text-primary-foreground/60" : "text-muted-foreground"}`}>
+                              {new Date(msg.createdAt).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+                            {isMe && renderStatusTicks(msg, otherParticipantId)}
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => msg.id && handleDeleteMessage(msg.id)}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 duration-200 shrink-0"
+                          title="Delete Message"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </div>
                     </div>
                   );

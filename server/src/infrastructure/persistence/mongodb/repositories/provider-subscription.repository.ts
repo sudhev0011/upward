@@ -10,6 +10,8 @@ import {
 import { ProviderSubscriptionMapper } from "../../../mapers.persistence/provider-subscription/provider-subscription.mapper";
 
 import { MongoSessionUtil } from "../helper/mongo-session.utils";
+import { SubscriptionPlanDocument } from "../models/subscription-plan.model";
+import { PlanFeatures } from "../../../../domain/interfaces/subscription-plan.interface";
 
 export class ProviderSubscriptionRepository
   extends RepositoryBase<ProviderSubscription, ProviderSubscriptionDocument>
@@ -58,6 +60,29 @@ export class ProviderSubscriptionRepository
       .sort({ createdAt: -1 })
       .session(session || null);
     return documents.map((doc) => this.mapToEntity(doc));
+  }
+
+  async getActivePlanLimitsByProvider(
+    providerId: string,
+  ): Promise<PlanFeatures> {
+    const activeSubscription = await ProviderSubscriptionModel.findOne({
+      providerId: providerId,
+      status: "active",
+      endDate: { $gte: new Date() },
+    }).populate<{ planId: SubscriptionPlanDocument }>("planId");
+
+    if (!activeSubscription || !activeSubscription.planId) {
+      return {
+        maxServices: 2,
+        maxPortfolios: 2,
+        maxManualUnavailability: 2,
+      };
+    }
+    return {
+      maxServices: activeSubscription.planId.features.maxServices,
+      maxPortfolios: activeSubscription.planId.features.maxPortfolios,
+      maxManualUnavailability: activeSubscription.planId.features.maxManualUnavailability,
+    };
   }
 
   protected mapToEntity(

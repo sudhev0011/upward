@@ -9,11 +9,12 @@ import { UnavailabilitySource } from "../../../../domain/enums/unavailability.en
 import { ITransactionContext } from "../../../../domain/interfaces/database/transaction-context.interface";
 import { MongoSessionUtil } from "../helper/mongo-session.utils";
 import { UnavailabilityInfraMapper } from "../../../mapers.persistence/unavailability/unavailability-mapper";
+import { IUnavailabilityRepository } from "../../../../domain/interfaces/repositories/unavailability/IUnavaliability-repository";
 
-export class UnavailabilityRepository extends RepositoryBase<
-  Unavailability,
-  UnavailabilityDocument
-> {
+export class UnavailabilityRepository
+  extends RepositoryBase<Unavailability, UnavailabilityDocument>
+  implements IUnavailabilityRepository
+{
   constructor() {
     super(UnavailabilityModel);
   }
@@ -37,6 +38,21 @@ export class UnavailabilityRepository extends RepositoryBase<
       },
       session,
     );
+  }
+
+  async countManualByProviderForLast30Days(
+    providerId: string,
+  ): Promise<number> {
+    const now = new Date();
+
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(now.getDate() - 30);
+
+    return await UnavailabilityModel.countDocuments({
+      providerId: providerId,
+      source: "manual",
+      createdAt: { $gte: thirtyDaysAgo, $lte: now },
+    });
   }
 
   async findBySource(
@@ -82,7 +98,6 @@ export class UnavailabilityRepository extends RepositoryBase<
 
     return result.deletedCount ?? 0;
   }
-
 
   protected mapToEntity(document: UnavailabilityDocument): Unavailability {
     return UnavailabilityInfraMapper.mapToEntity(document);

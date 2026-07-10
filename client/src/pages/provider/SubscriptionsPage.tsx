@@ -14,9 +14,16 @@ import {
   Calendar,
   ShieldCheck,
   Zap,
+  XCircle,
 } from "lucide-react";
 
-import { Card, CardContent, CardTitle, CardHeader, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardTitle,
+  CardHeader,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -72,7 +79,9 @@ function StripeCheckoutForm({ onSuccess }: { onSuccess: () => void }) {
       return;
     }
 
-    toast.error("Payment could not be completed. Please try a different payment method.");
+    toast.error(
+      "Payment could not be completed. Please try a different payment method.",
+    );
   };
 
   return (
@@ -83,7 +92,10 @@ function StripeCheckoutForm({ onSuccess }: { onSuccess: () => void }) {
 
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <ShieldCheck className="h-3.5 w-3.5 text-primary shrink-0" />
-        <span>Your checkout is secured by Stripe. We never store credit card details.</span>
+        <span>
+          Your checkout is secured by Stripe. We never store credit card
+          details.
+        </span>
       </div>
 
       <Button
@@ -106,7 +118,12 @@ function StripeCheckoutForm({ onSuccess }: { onSuccess: () => void }) {
 
 function StripeDialog({ clientSecret, onSuccess, onClose }: StripeDialogProps) {
   return (
-    <Dialog open={true} onOpenChange={(open) => { if (!open) onClose(); }}>
+    <Dialog
+      open={true}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
@@ -114,7 +131,8 @@ function StripeDialog({ clientSecret, onSuccess, onClose }: StripeDialogProps) {
             Complete Subscription Purchase
           </DialogTitle>
           <DialogDescription>
-            Provide your card or payment method to authorize the plan activation.
+            Provide your card or payment method to authorize the plan
+            activation.
           </DialogDescription>
         </DialogHeader>
 
@@ -146,7 +164,9 @@ export default function SubscriptionsPage() {
   const { data: statusRes, isLoading: loadingStatus } = useProviderStatus();
   const checkoutMutation = useCreateSubscriptionCheckout();
 
-  const [checkoutClientSecret, setCheckoutClientSecret] = useState<string | null>(null);
+  const [checkoutClientSecret, setCheckoutClientSecret] = useState<
+    string | null
+  >(null);
 
   const plans = plansRes?.data || [];
   const status = statusRes?.data;
@@ -155,8 +175,7 @@ export default function SubscriptionsPage() {
   const handleCheckoutInit = (planId: string) => {
     checkoutMutation.mutate(planId, {
       onSuccess: (res) => {
-        if(res.data)
-        setCheckoutClientSecret(res.data.clientSecret);
+        if (res.data) setCheckoutClientSecret(res.data.clientSecret);
       },
       onError: (err) => {
         toast.error(err.message || "Failed to initialize checkout session");
@@ -166,7 +185,9 @@ export default function SubscriptionsPage() {
 
   const handlePaymentSuccess = () => {
     setCheckoutClientSecret(null);
-    queryClient.invalidateQueries({ queryKey: subscriptionKeys.providerStatus() });
+    queryClient.invalidateQueries({
+      queryKey: subscriptionKeys.providerStatus(),
+    });
   };
 
   const hasActiveSubscription =
@@ -177,9 +198,12 @@ export default function SubscriptionsPage() {
     <div className="space-y-8">
       {/* HEADER */}
       <div className="space-y-1">
-        <h1 className="text-3xl font-extrabold tracking-tight">Subscriptions & Billing</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight">
+          Subscriptions & Billing
+        </h1>
         <p className="text-muted-foreground text-sm">
-          Keep your listing visible to clients, verify premium placement, and track purchase invoices.
+          Keep your listing visible to clients, verify premium placement, and
+          track purchase invoices.
         </p>
       </div>
 
@@ -187,7 +211,9 @@ export default function SubscriptionsPage() {
       {loadingStatus ? (
         <div className="h-40 flex items-center justify-center border rounded-2xl bg-card/20">
           <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
-          <span className="text-muted-foreground text-sm">Fetching billing profile...</span>
+          <span className="text-muted-foreground text-sm">
+            Fetching billing profile...
+          </span>
         </div>
       ) : hasActiveSubscription ? (
         <Card className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border-indigo-500/20 text-white relative overflow-hidden shadow-xl">
@@ -196,23 +222,30 @@ export default function SubscriptionsPage() {
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Crown className="h-6 w-6 text-amber-400 fill-amber-400/20" />
-                <h2 className="text-2xl font-black">Active Tier: {status?.activeSubscriptionPlanName}</h2>
+                <h2 className="text-2xl font-black">
+                  Active Tier: {status?.activeSubscriptionPlanName}
+                </h2>
                 <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white border-0 font-bold uppercase tracking-wider text-[10px] px-2.5 h-5 ml-1">
                   Active
                 </Badge>
               </div>
               <p className="text-indigo-200 text-sm font-medium">
-                Your profile is active, verified, and listing prominently in client search categories!
+                Your profile is active, verified, and listing prominently in
+                client search categories!
               </p>
             </div>
             <div className="flex gap-4 items-center shrink-0 border-t border-white/10 md:border-t-0 pt-4 md:pt-0 w-full md:w-auto">
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-indigo-400" />
                 <div>
-                  <p className="text-[10px] font-bold uppercase text-indigo-300 tracking-wider">Renewal Date</p>
+                  <p className="text-[10px] font-bold uppercase text-indigo-300 tracking-wider">
+                    Renewal Date
+                  </p>
                   <p className="font-semibold text-sm">
                     {status?.activeSubscriptionExpiresAt
-                      ? new Date(status.activeSubscriptionExpiresAt).toLocaleDateString(undefined, {
+                      ? new Date(
+                          status.activeSubscriptionExpiresAt,
+                        ).toLocaleDateString(undefined, {
                           dateStyle: "medium",
                         })
                       : "N/A"}
@@ -231,7 +264,9 @@ export default function SubscriptionsPage() {
                 Listing Invisible to Clients
               </h2>
               <p className="text-slate-500 text-sm max-w-xl">
-                You do not have an active subscription plan. Your profile and services are currently hidden from public discovery pages. Subscribe below to list your services.
+                You do not have an active subscription plan. Your profile and
+                services are currently hidden from public discovery pages.
+                Subscribe below to list your services.
               </p>
             </div>
           </CardContent>
@@ -241,14 +276,20 @@ export default function SubscriptionsPage() {
       {/* PLAN COMPARISON GRID */}
       <div className="space-y-4">
         <div className="text-center md:text-left">
-          <h2 className="text-xl font-extrabold tracking-tight">Available Subscription Tiers</h2>
-          <p className="text-muted-foreground text-xs">Choose the interval and features best suited for your scale.</p>
+          <h2 className="text-xl font-extrabold tracking-tight">
+            Available Subscription Tiers
+          </h2>
+          <p className="text-muted-foreground text-xs">
+            Choose the interval and features best suited for your scale.
+          </p>
         </div>
 
         {loadingPlans ? (
           <div className="py-20 flex flex-col items-center gap-3">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-muted-foreground text-sm">Loading available plans...</p>
+            <p className="text-muted-foreground text-sm">
+              Loading available plans...
+            </p>
           </div>
         ) : plans.length === 0 ? (
           <div className="rounded-xl border-2 border-dashed p-12 text-center text-muted-foreground">
@@ -257,12 +298,16 @@ export default function SubscriptionsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {plans.map((p) => {
-              const isPopular = p.name.toLowerCase().includes("professional") || p.name.toLowerCase().includes("pro");
+              const isPopular =
+                p.name.toLowerCase().includes("professional") ||
+                p.name.toLowerCase().includes("pro");
               return (
                 <Card
                   key={p.id}
                   className={`bg-card/40 backdrop-blur-sm border shadow-sm flex flex-col relative overflow-hidden transition-all hover:shadow-lg hover:-translate-y-0.5 ${
-                    isPopular ? "border-indigo-500/40 ring-1 ring-indigo-500/20" : ""
+                    isPopular
+                      ? "border-indigo-500/40 ring-1 ring-indigo-500/20"
+                      : ""
                   }`}
                 >
                   {isPopular && (
@@ -271,7 +316,9 @@ export default function SubscriptionsPage() {
                     </div>
                   )}
                   <CardHeader className="pb-4">
-                    <CardTitle className="text-lg font-bold">{p.name}</CardTitle>
+                    <CardTitle className="text-lg font-bold">
+                      {p.name}
+                    </CardTitle>
                     <CardDescription className="text-xs uppercase mt-0.5 tracking-wider font-semibold">
                       {p.billingCycle} billing
                     </CardDescription>
@@ -285,24 +332,49 @@ export default function SubscriptionsPage() {
                     </div>
 
                     <ul className="space-y-2.5 flex-1">
-                      {p.features.map((f, i) => (
-                        <li key={i} className="text-xs flex items-start gap-2.5">
-                          <CheckCircle className="h-4 w-4 text-indigo-500 mt-0.5 shrink-0" />
-                          <span className="text-muted-foreground font-medium leading-relaxed">{f}</span>
-                        </li>
-                      ))}
+                      <li className="text-xs flex items-center gap-2">
+                        <CheckCircle className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
+                        <span className="text-muted-foreground">
+                          Max Services allowed:{" "}
+                          <strong className="text-foreground">
+                            {p.features?.maxServices ?? 0}
+                          </strong>
+                        </span>
+                      </li>
+                      <li className="text-xs flex items-center gap-2">
+                        <CheckCircle className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
+                        <span className="text-muted-foreground">
+                          Max Manual Blocks / 30 Days:{" "}
+                          <strong className="text-foreground">
+                            {p.features?.maxManualUnavailability ?? 0}
+                          </strong>
+                        </span>
+                      </li>
+                      <li className="text-xs flex items-center gap-2">
+                        <CheckCircle className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
+                        <span className="text-muted-foreground">
+                          Max Portfolios:{" "}
+                          <strong className="text-foreground">
+                            {p.features?.maxPortfolios ?? 0}
+                          </strong>
+                        </span>
+                      </li>
                     </ul>
 
                     <Button
                       onClick={() => handleCheckoutInit(p.id)}
-                      disabled={checkoutMutation.isPending && checkoutMutation.variables === p.id}
+                      disabled={
+                        (checkoutMutation.isPending &&
+                        checkoutMutation.variables === p.id) || (status?.activeSubscriptionPlanName == p.name)
+                      }
                       className={`w-full mt-4 h-9 shadow-md ${
                         isPopular
                           ? "bg-indigo-600 hover:bg-indigo-700 text-white"
                           : "bg-primary hover:bg-primary/95"
                       }`}
                     >
-                      {checkoutMutation.isPending && checkoutMutation.variables === p.id ? (
+                      {checkoutMutation.isPending &&
+                      checkoutMutation.variables === p.id ? (
                         <>
                           <Loader2 className="h-4 w-4 animate-spin mr-2" />
                           Initializing...
@@ -331,8 +403,12 @@ export default function SubscriptionsPage() {
       {/* BILLING HISTORY */}
       <div className="space-y-4">
         <div>
-          <h2 className="text-xl font-extrabold tracking-tight">Billing & Invoices</h2>
-          <p className="text-muted-foreground text-xs">Track your active plans and previous transaction receipts.</p>
+          <h2 className="text-xl font-extrabold tracking-tight">
+            Billing & Invoices
+          </h2>
+          <p className="text-muted-foreground text-xs">
+            Track your active plans and previous transaction receipts.
+          </p>
         </div>
 
         <Card className="border bg-card/15 shadow-sm overflow-hidden">
@@ -349,32 +425,48 @@ export default function SubscriptionsPage() {
               </thead>
               <tbody className="divide-y text-slate-700">
                 {history.map((h) => (
-                  <tr key={h.id} className="hover:bg-muted/10 transition-colors">
+                  <tr
+                    key={h.id}
+                    className="hover:bg-muted/10 transition-colors"
+                  >
                     <td className="px-6 py-4 font-mono text-xs">
-                      {h.stripePaymentIntentId ? h.stripePaymentIntentId.slice(-12).toUpperCase() : "PENDING_CHECKOUT"}
+                      {h.stripePaymentIntentId
+                        ? h.stripePaymentIntentId.slice(-12).toUpperCase()
+                        : "PENDING_CHECKOUT"}
                     </td>
                     <td className="px-6 py-4">
                       <Badge
-                        variant={h.status === "active" ? "default" : h.status === "pending" ? "secondary" : "destructive"}
+                        variant={
+                          h.status === "active"
+                            ? "default"
+                            : h.status === "pending"
+                              ? "secondary"
+                              : "destructive"
+                        }
                         className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5"
                       >
                         {h.status}
                       </Badge>
                     </td>
                     <td className="px-6 py-4 text-xs">
-                      {h.startDate ? new Date(h.startDate).toLocaleDateString() : "N/A"}
+                      {h.startDate
+                        ? new Date(h.startDate).toLocaleDateString()
+                        : "N/A"}
                     </td>
                     <td className="px-6 py-4 text-xs">
-                      {h.endDate ? new Date(h.endDate).toLocaleDateString() : "N/A"}
+                      {h.endDate
+                        ? new Date(h.endDate).toLocaleDateString()
+                        : "N/A"}
                     </td>
-                    <td className="px-6 py-4 font-bold text-xs">
-                      ₹{h.amount}
-                    </td>
+                    <td className="px-6 py-4 font-bold text-xs">₹{h.amount}</td>
                   </tr>
                 ))}
                 {history.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="text-center py-8 text-muted-foreground italic text-xs">
+                    <td
+                      colSpan={5}
+                      className="text-center py-8 text-muted-foreground italic text-xs"
+                    >
                       No invoices found in your billing history.
                     </td>
                   </tr>

@@ -1,3 +1,8 @@
+export interface UserMessageState {
+  isRead: boolean;
+  isDeleted: boolean;
+}
+
 export class Message {
   constructor(
     public readonly id: string | undefined,
@@ -5,7 +10,8 @@ export class Message {
     public readonly senderId: string,
     public readonly text: string,
     public readonly attachmentUrl: string | null,
-    public readonly isRead: boolean,
+    public readonly isDelivered: boolean,
+    public readonly userStates: Record<string, UserMessageState>,
     public readonly createdAt: Date
   ) {}
 
@@ -15,7 +21,8 @@ export class Message {
     senderId: string;
     text: string;
     attachmentUrl?: string | null;
-    isRead?: boolean;
+    isDelivered?: boolean;
+    userStates: Record<string, UserMessageState>;
     createdAt?: Date;
   }): Message {
     const now = new Date();
@@ -25,7 +32,8 @@ export class Message {
       data.senderId,
       data.text,
       data.attachmentUrl ?? null,
-      data.isRead ?? false,
+      data.isDelivered ?? false,
+      data.userStates,
       data.createdAt ?? now
     );
   }

@@ -1,16 +1,11 @@
 import { SubscriptionPlan } from "../../../../domain/entities/subscription-plan.entity";
 import { ConflictError } from "../../../../domain/errors/errors";
 import { ISubscriptionPlanRepository } from "../../../../domain/interfaces/repositories/subscription-plan/ISubscriptionPlanRepository";
+import { ICreateSubscriptionPlanUseCase } from "../../../../domain/interfaces/usecases/subscription/ICreateSubscriptionPlanUseCase";
+import { CreateSubscriptionPlanRequest } from "../../../dtos/admin/subscription/request/createSubscriptionPlanRequest.dto";
 
-export interface CreateSubscriptionPlanRequest {
-  name: string;
-  price: number;
-  billingCycle: "monthly" | "yearly";
-  features: string[];
-  isActive?: boolean;
-}
-
-export class CreateSubscriptionPlanUseCase {
+export class CreateSubscriptionPlanUseCase
+  implements ICreateSubscriptionPlanUseCase {
   constructor(
     private readonly subscriptionPlanRepository: ISubscriptionPlanRepository,
   ) {}

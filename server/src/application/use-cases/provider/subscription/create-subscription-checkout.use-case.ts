@@ -3,18 +3,12 @@ import { NotFoundError } from "../../../../domain/errors/errors";
 import { ISubscriptionPlanRepository } from "../../../../domain/interfaces/repositories/subscription-plan/ISubscriptionPlanRepository";
 import { IProviderSubscriptionRepository } from "../../../../domain/interfaces/repositories/provider-subscription/IProviderSubscriptionRepository";
 import { IPaymentGateway } from "../../../../domain/interfaces/services/payment/IPaymentGateway";
+import { CreateSubscriptionCheckoutResponse } from "../../../dtos/admin/subscription/response/createSubscriptionCheckout.response";
+import { CreateSubscriptionCheckoutRequest } from "../../../dtos/admin/subscription/request/createSubscriptionCheckoutRequest.dto";
+import { ICreateSubscriptionCheckoutUseCase } from "../../../../domain/interfaces/usecases/subscription/ICreateSubscriptionCheckoutUseCase";
 
-export interface CreateSubscriptionCheckoutRequest {
-  providerId: string;
-  planId: string;
-}
 
-export interface CreateSubscriptionCheckoutResponse {
-  clientSecret: string;
-  subscription: ProviderSubscription;
-}
-
-export class CreateSubscriptionCheckoutUseCase {
+export class CreateSubscriptionCheckoutUseCase implements ICreateSubscriptionCheckoutUseCase {
   constructor(
     private readonly subscriptionPlanRepository: ISubscriptionPlanRepository,
     private readonly providerSubscriptionRepository: IProviderSubscriptionRepository,

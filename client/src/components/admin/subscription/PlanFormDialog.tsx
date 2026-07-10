@@ -12,12 +12,15 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
+// 1. Updated form structure to hold explicit configuration properties
 export interface PlanFormData {
   name: string;
   price: number;
   billingCycle: "monthly" | "yearly" | "";
-  featuresString: string;
   isActive: boolean;
+  maxServices: number;
+  maxManualUnavailability: number;
+  maxPortfolios: number;
 }
 
 interface PlanFormDialogProps {
@@ -49,13 +52,17 @@ export function PlanFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
-            {isEditing ? "Edit Subscription Tier" : "Create New Subscription Tier"}
+            {isEditing
+              ? "Edit Subscription Tier"
+              : "Create New Subscription Tier"}
           </DialogTitle>
         </DialogHeader>
+
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-2">
+          {/* Plan Name */}
           <div className="space-y-1">
             <Label htmlFor="name">Plan Name</Label>
             <Input
@@ -76,6 +83,7 @@ export function PlanFormDialog({
             )}
           </div>
 
+          {/* Pricing & Cycle */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <Label htmlFor="price">Price (₹)</Label>
@@ -86,6 +94,7 @@ export function PlanFormDialog({
                 {...register("price", {
                   required: "Price is required",
                   min: { value: 0, message: "Price cannot be negative" },
+                  valueAsNumber: true,
                 })}
               />
               {errors.price && (
@@ -120,22 +129,82 @@ export function PlanFormDialog({
             </div>
           </div>
 
-          <div className="space-y-1">
-            <Label htmlFor="featuresString">Features (one per line)</Label>
-            <textarea
-              id="featuresString"
-              rows={4}
-              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              placeholder="e.g. Featured Search Listing&#10;Unlimited Job Bidding&#10;Premium Chat Badges"
-              {...register("featuresString")}
-            />
+          <hr className="my-2 border-muted" />
+
+          {/* 2. Structured Numerical Feature Limits */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold text-muted-foreground tracking-wider uppercase">
+              Plan Limits & Features
+            </h4>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <Label htmlFor="maxServices">Max Active Services</Label>
+                <Input
+                  id="maxServices"
+                  type="number"
+                  placeholder="3"
+                  {...register("maxServices", {
+                    required: "Required",
+                    min: { value: 1, message: "Must be at least 1" },
+                    valueAsNumber: true,
+                  })}
+                />
+                {errors.maxServices && (
+                  <p className="text-xs font-medium text-destructive mt-1">
+                    {errors.maxServices.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="maxManualUnavailability">
+                  Manual Blocks / 30 Days
+                </Label>
+                <Input
+                  id="maxManualUnavailability"
+                  type="number"
+                  placeholder="2"
+                  {...register("maxManualUnavailability", {
+                    required: "Required",
+                    min: { value: 0, message: "Cannot be negative" },
+                    valueAsNumber: true,
+                  })}
+                />
+                {errors.maxManualUnavailability && (
+                  <p className="text-xs font-medium text-destructive mt-1">
+                    {errors.maxManualUnavailability.message}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="maxPortfolios">Max Portfolios</Label>
+              <Input
+                id="maxPortfolios"
+                type="number"
+                placeholder="1"
+                {...register("maxPortfolios", {
+                  required: "Required",
+                  min: { value: 1, message: "Must be at least 1" },
+                  valueAsNumber: true,
+                })}
+              />
+              {errors.maxPortfolios && (
+                <p className="text-xs font-medium text-destructive mt-1">
+                  {errors.maxPortfolios.message}
+                </p>
+              )}
+            </div>
           </div>
 
-          <div className="flex items-center justify-between border p-3 rounded-lg bg-muted/20">
-            <div className="space-y-0.5">
+          {/* Plan Status */}
+          <div className="flex items-center justify-between border p-3 rounded-lg bg-muted/10">
+            <div className="space-y-0.5 pr-2">
               <Label className="text-sm font-semibold">Active Tier</Label>
               <p className="text-xs text-muted-foreground">
-                Allow providers to see and subscribe to this plan.
+                Allow providers to see and subscribe to this plan immediately.
               </p>
             </div>
             <Switch
@@ -144,6 +213,7 @@ export function PlanFormDialog({
             />
           </div>
 
+          {/* Form Actions */}
           <DialogFooter className="pt-2">
             <Button
               type="button"

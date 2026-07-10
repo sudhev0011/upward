@@ -20,13 +20,21 @@ export class ConversationMapper {
 
 export class MessageMapper {
   static toEntity(doc: MessageDocument): Message {
+    const userStates: Record<string, { isRead: boolean; isDeleted: boolean }> = {};
+    if (doc.userStates) {
+      doc.userStates.forEach((val, key) => {
+        userStates[key] = { isRead: val.isRead, isDeleted: val.isDeleted };
+      });
+    }
+
     return Message.create({
       id: String(doc._id),
       conversationId: String(doc.conversationId),
       senderId: String(doc.senderId),
       text: doc.text,
       attachmentUrl: doc.attachmentUrl,
-      isRead: doc.isRead,
+      isDelivered: doc.isDelivered,
+      userStates,
       createdAt: doc.createdAt,
     });
   }

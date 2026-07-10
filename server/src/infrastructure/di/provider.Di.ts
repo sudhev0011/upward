@@ -57,6 +57,7 @@ import { ProviderDashboardController } from "../../presentation/controllers/prov
 import { BookingRepository } from "../persistence/mongodb/repositories/booking.repository";
 import { CommissionCalculationService } from "../../application/services/commission-calculation.service";
 import { walletRepository, walletTransactionRepository } from "./clientDi";
+import { ProviderSubscriptionRepository } from "../persistence/mongodb/repositories/provider-subscription.repository";
 
 
 //repo init
@@ -69,6 +70,7 @@ const avaliabilityRepository = new AvailabilityRepository()
 const unavailabilityRepository = new UnavailabilityRepository()
 const availabilityOverrideRepository = new AvailabilityOverrideRepository();
 const portfolioRepository = new PortfolioRepository()
+const providerSubscriptionRepository = new ProviderSubscriptionRepository()
 
 // service init
 const logger = new WinstonLogger();
@@ -88,21 +90,21 @@ const saveProviderBankUseCase = new SaveProviderBankUseCase(providerBankReposito
 const uploadKycDocumentUseCase = new UploadKycDocumentUseCase(s3Service);
 export const getProviderKycUseCase = new GetProviderKycUseCase(providerKycRepository,s3Service,encryptionService);
 const getProviderBankUseCase = new GetProviderBankUseCase(providerBankRepository,s3Service,encryptionService);
-const createProviderServiceUseCase = new CreateProviderServiceUseCase(providerServiceRepository);
+const createProviderServiceUseCase = new CreateProviderServiceUseCase(providerServiceRepository,providerSubscriptionRepository);
 const getProviderServicesByCategoryUseCase = new GetProviderServicesByCategoryUseCase(userRepository,providerServiceRepository)
 const configureProviderServiceUseCase = new ConfigureProviderServiceUseCase(providerServiceRepository, serviceRespository,providerProfileRepository,categoryRepository,logger);
 const deleteProviderServiceUseCase = new DeleteProviderServiceUseCase(providerServiceRepository)
 const setAvailabilityUseCase = new SetAvailabilityUseCase(avaliabilityRepository)
 export const getAvailabilityUseCase = new GetAvailabilityUseCase(avaliabilityRepository)
 export const getUnavailabilitiesUseCase = new GetUnavailabilitiesUseCase(unavailabilityRepository)
-const createUnavailabilityUseCase = new CreateUnavailabilityUseCase(unavailabilityRepository,availabilityOverrideRepository)
+const createUnavailabilityUseCase = new CreateUnavailabilityUseCase(unavailabilityRepository,availabilityOverrideRepository,providerSubscriptionRepository)
 const deleteUnavailabilityUseCase = new DeleteUnavailabilityUseCase(unavailabilityRepository)
 const setAvailabilityOverrideUseCase = new SetAvailabilityOverrideUseCase(availabilityOverrideRepository,unavailabilityRepository);
 export const getAvailabilityOverridesUseCase = new GetAvailabilityOverridesUseCase(availabilityOverrideRepository);
 const deleteAvailabilityOverrideUseCase = new DeleteAvailabilityOverrideUseCase(availabilityOverrideRepository);
 
-const getUploadUrlUseCase = new GetUploadUrlUseCase(s3Service)
-const createPortfolioItemUseCase = new CreatePortfolioItemUseCase(portfolioRepository)
+const getUploadUrlUseCase = new GetUploadUrlUseCase(s3Service,portfolioRepository,providerSubscriptionRepository)
+const createPortfolioItemUseCase = new CreatePortfolioItemUseCase(portfolioRepository,providerSubscriptionRepository)
 export const getPortfolioUseCase = new GetPortfolioUseCase(portfolioRepository)
 const deletePortfolioItemUseCase = new DeletePortfolioItemUseCase(portfolioRepository, s3Service)
 const updatePortfolioItemUseCase = new UpdatePortfolioItemUseCase(portfolioRepository)

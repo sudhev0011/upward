@@ -1,8 +1,9 @@
 import { ISubscriptionPlanRepository } from "../../../../domain/interfaces/repositories/subscription-plan/ISubscriptionPlanRepository";
 import { ListSubscriptionsDto } from "../../../dtos/admin/subscription/response/listSubscriptions.dto";
 import { GetAllPlansRequestDto } from "../../../dtos/admin/subscription/request/getAllPlansRequest.dto";
+import { IGetAllSubscriptionPlansUseCase } from "../../../../domain/interfaces/usecases/subscription/IGetAllSubscriptionPlansUseCase";
 
-export class GetAllSubscriptionPlansUseCase {
+export class GetAllSubscriptionPlansUseCase implements IGetAllSubscriptionPlansUseCase {
   constructor(
     private readonly subscriptionPlanRepository: ISubscriptionPlanRepository,
   ) {}

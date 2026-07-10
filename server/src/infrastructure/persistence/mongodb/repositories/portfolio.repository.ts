@@ -8,6 +8,8 @@ import {
 import { IPortfolioRepository } from "../../../../domain/interfaces/repositories/portfolio/IPortfolioRepository";
 import { PortfolioPaginatedResult } from "../../../../domain/common.types";
 import { PortfolioMapper } from "../../../mapers.persistence/portfolio/portfolio-mapper";
+import { MongoSessionUtil } from "../helper/mongo-session.utils";
+import { ITransactionContext } from "../../../../domain/interfaces/database/transaction-context.interface";
 export class PortfolioRepository
   extends RepositoryBase<PortfolioItem, PortfolioItemDocument>
   implements IPortfolioRepository
@@ -79,14 +81,27 @@ export class PortfolioRepository
     return result.deletedCount > 0;
   }
 
+  async portfoliosCountByProvider(
+    providerId: string,
+    transaction?: ITransactionContext,
+  ): Promise<number> {
+    const session = MongoSessionUtil.getSession(transaction);
+
+    return this.countDocuments(
+      {
+        providerId,
+      },
+      session,
+    );
+  }
 
   protected mapToEntity(document: PortfolioItemDocument): PortfolioItem {
-    return PortfolioMapper.mapToEntity(document)
+    return PortfolioMapper.mapToEntity(document);
   }
 
   protected mapToDocument(
     entity: Partial<PortfolioItem>,
   ): Partial<PortfolioItemDocument> {
-    return PortfolioMapper.mapToDocument(entity)
+    return PortfolioMapper.mapToDocument(entity);
   }
 }

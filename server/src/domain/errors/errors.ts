@@ -56,8 +56,8 @@ export class UnprocessableEntityError extends AppError {
   }
 }
 
-export class DailyLimitError extends AppError {
-  constructor(message = 'Daily limit exceeded') {
+export class LimitError extends AppError {
+  constructor(message = 'limit exceeded') {
     super(message, HttpStatus.TOO_MANY_REQUESTS);
   }
 }
