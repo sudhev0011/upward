@@ -9,7 +9,6 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
@@ -26,7 +25,7 @@ interface Props {
 
   onChange: (location: Location) => void;
 
-  onError: (errorMsg: string | null) => void
+  onError?: (errorMsg: string | null) => void;
 
   placeholder?: string;
 }
@@ -63,11 +62,11 @@ export function LocationAutocomplete({ value, onChange, onError, placeholder }: 
       toast.info(
         "please select another option from search because the selected location does not have accurate information",
       );
-      onError("Selected location is not proceedable, Please select another option of the location you want")
+      onError?.("Selected location is not proceedable, Please select another option of the location you want")
       return;
     }
 
-    onError(null)
+    onError?.(null)
 
     onChange(location);
 

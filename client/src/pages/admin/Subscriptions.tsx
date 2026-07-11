@@ -10,7 +10,6 @@ import {
   Crown,
   Search,
   ArrowUpDown,
-  XCircle,
 } from "lucide-react";
 
 import {

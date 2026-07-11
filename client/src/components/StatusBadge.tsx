@@ -13,6 +13,7 @@ type Status =
   | "suspended"
   | "provider completed"
   | "client completed"
+  | "expired"
 
 const statusStyles: Record<Status, string> = {
   active:      "bg-success/10 text-success border-success/20 shadow-sm shadow-success/5",
@@ -25,6 +26,7 @@ const statusStyles: Record<Status, string> = {
   unverified:  "bg-muted text-muted-foreground border-border",
   cancelled:   "bg-destructive/10 text-destructive border-destructive/20 shadow-sm shadow-destructive/5",
   failed:      "bg-destructive/10 text-destructive border-destructive/20 shadow-sm shadow-destructive/5",
+  expired:      "bg-destructive/10 text-destructive border-destructive/20 shadow-sm shadow-destructive/5",
   suspended:   "bg-destructive/10 text-destructive border-destructive/20 shadow-sm shadow-destructive/5",
   refunded:    "bg-warning/10 text-warning border-warning/20 shadow-sm shadow-warning/5",
 };

@@ -26,7 +26,7 @@ interface OrderDetailsDialogProps {
   onClose: () => void;
   mapStatusStyle: (
     status: string,
-  ) => "active" | "pending" | "completed" | "cancelled" | "failed" | "provider completed" | "client completed";
+  ) => "active" | "pending" | "completed" | "cancelled" | "failed" | "provider completed" | "client completed" | "expired";
 }
 
 export function OrderDetailsDialog({

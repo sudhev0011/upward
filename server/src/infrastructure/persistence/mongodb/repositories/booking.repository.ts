@@ -810,7 +810,14 @@ export class BookingRepository
     const bookingRevenueResult = await BookingModel.aggregate([
       {
         $match: {
-          status: BookingStatus.COMPLETED,
+          status: {
+            $in: [
+              BookingStatus.COMPLETED,
+              BookingStatus.CONFIRMED,
+              BookingStatus.PROVIDER_COMPLETED,
+              BookingStatus.CLIENT_COMPLETED,
+            ],
+          },
           createdAt: { $gte: startDate },
         },
       },
@@ -865,7 +872,14 @@ export class BookingRepository
     const bookingTrend = await BookingModel.aggregate([
       {
         $match: {
-          status: BookingStatus.COMPLETED,
+          status: {
+            $in: [
+              BookingStatus.COMPLETED,
+              BookingStatus.CONFIRMED,
+              BookingStatus.PROVIDER_COMPLETED,
+              BookingStatus.CLIENT_COMPLETED,
+            ],
+          },
           createdAt: { $gte: startDate },
         },
       },

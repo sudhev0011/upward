@@ -21,7 +21,6 @@ import {
 import { useEffect, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { usePagination } from "@/hooks/usePagination";
-import { current } from "@reduxjs/toolkit";
 export interface ColumnDef<TRow> {
   header: string;
   width?: string;
@@ -59,21 +58,16 @@ export function DataTable<TRow>({
   totalPages = 1,
   onPageChange,
 }: DataTableProps<TRow>) {
-  // 1. Maintain local visual state independently
   const [localSearch, setLocalSearch] = useState(search);
 
   const { pageNumbers } = usePagination({ currentPage, totalPages });
 
-  // 2. Track the debounced value
   const debouncedSearch = useDebounce(localSearch, 500);
 
-  // 3. Keep local state in sync ONLY when the parent's actual search state changes
-  // (e.g., if the parent resets the search filter externally)
   useEffect(() => {
     setLocalSearch(search);
   }, [search]);
 
-  // 4. Emit the updated value to the parent ONLY if it differs from the current parent state
   useEffect(() => {
     if (debouncedSearch !== search) {
       onSearchChange(debouncedSearch);
@@ -140,35 +134,6 @@ export function DataTable<TRow>({
           </TableBody>
         </Table>
       </CardContent>
-
-      {/* ── Pagination Footer ── */}
-      {/* {totalPages > 1 && (
-        <div className="flex items-center justify-between px-4 py-3 border-t">
-          <p className="text-xs text-muted-foreground">
-            Page {currentPage} of {totalPages}
-          </p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={currentPage <= 1}
-              onClick={() => onPageChange?.(currentPage - 1)}
-              className="h-8 w-8 p-0"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={currentPage >= totalPages}
-              onClick={() => onPageChange?.(currentPage + 1)}
-              className="h-8 w-8 p-0"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      )} */}
 
       {totalPages > 1 && (
         <Pagination className="mt-8">

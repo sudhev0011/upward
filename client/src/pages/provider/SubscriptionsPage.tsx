@@ -14,7 +14,6 @@ import {
   Calendar,
   ShieldCheck,
   Zap,
-  XCircle,
 } from "lucide-react";
 
 import {
