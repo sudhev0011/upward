@@ -17,6 +17,7 @@ export class CreateProviderServiceUseCase implements ICreateProviderServiceUseCa
   ): Promise<ProviderServiceResponseDto> {
     const existed = await this._providerServiceRepository.findOne({
       serviceId: data.serviceId,
+      providerId: data.providerId
     });
 
     if (existed) {

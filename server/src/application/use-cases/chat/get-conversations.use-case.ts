@@ -17,11 +17,8 @@ export class GetConversationsUseCase implements IGetConversationsUseCase {
       const user = await this._userRepository.findById(participantId);
 
       let lastMessage = null;
-      if (conv.id) {
-        const msgs = await this._chatRepository.findMessagesByConversationId(conv.id, 1, 0);
-        if (msgs.length > 0) {
-          lastMessage = msgs[0];
-        }
+      if(conv.lastMessageId){
+        lastMessage = await this._chatRepository.findMessageByMessageId(conv.lastMessageId)
       }
 
       results.push({

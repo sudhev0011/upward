@@ -15,6 +15,8 @@ import { IBlockProviderUseCase } from "../../../domain/interfaces/usecases/admin
 import { RejectProviderDtoSchema } from "../../../application/dtos/admin/provider/request/reject-provider-request.dto";
 import { IRejectProviderUseCase } from "../../../domain/interfaces/usecases/admin/provider/IRejectProviderUseCase";
 import { IGetProviderKycUseCase } from "../../../domain/interfaces/usecases/provider/kyc/IGetProviderKycUseCase";
+import { IGetProviderBankUseCase } from "../../../domain/interfaces/usecases/provider/kyc/IGetProviderBankUseCase";
+import { IApproveProviderBankUseCase } from "../../../domain/interfaces/usecases/admin/provider/IApproveProviderBankUseCase";
 import { successResponse } from "../../../shared/constants";
 
 export class AdminProviderController {
@@ -25,6 +27,8 @@ export class AdminProviderController {
     private readonly _rejectProviderUseCase: IRejectProviderUseCase,
     private readonly _blockProviderUseCase: IBlockProviderUseCase,
     private readonly _getProviderKycUseCase: IGetProviderKycUseCase,
+    private readonly _getProviderBankUseCase: IGetProviderBankUseCase,
+    private readonly _approveProviderBankUseCase: IApproveProviderBankUseCase,
   ) {}
   getAllProviders = async (
     req: Request,
@@ -127,4 +131,32 @@ export class AdminProviderController {
         handleAsyncError(error, next);
       }
     };
+
+  getProviderBank = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const bankData = await this._getProviderBankUseCase.execute(id as string);
+      sendSuccessResponse(res, "Bank details retrieved successfully", bankData);
+    } catch (error) {
+      handleAsyncError(error, next);
+    }
+  };
+
+  approveProviderBank = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const { id } = req.params;
+      await this._approveProviderBankUseCase.execute(id as string);
+      sendSuccessResponse(res, "Bank details verified successfully", null);
+    } catch (error) {
+      handleAsyncError(error, next);
+    }
+  };
 }

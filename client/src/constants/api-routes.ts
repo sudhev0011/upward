@@ -72,6 +72,7 @@ export const ProviderRoutes = {
     `/api/provider/bookings/${bookingId}/provider-complete`,
   GET_PAYOUTS: "/api/provider/payouts",
   GET_DASHBOARD_STATS: "/api/provider/dashboard/stats",
+  PAYOUT_REQUESTS: "/api/provider/payout-requests",
 } as const;
 
 export const AdminRoutes = {
@@ -80,6 +81,8 @@ export const AdminRoutes = {
   APPROVE_PROVIDER: "/api/admin/provider/approve",
   APPROVE_REJECT: "/api/admin/provider/reject",
   BLOCK_PROVIDER: "/api/admin/provider/block",
+  GET_PROVIDER_BANK: (providerId: string) => `/api/admin/provider/${providerId}/bank`,
+  APPROVE_PROVIDER_BANK: (providerId: string) => `/api/admin/provider/${providerId}/bank/approve`,
   GET_CLIENT_PROFILES: "/api/admin/clients",
   GET_CLIENT_PROFILE_BY_ID: "/api/admin/client/:id",
   BLOCK_CLIENT: "/api/admin/client/block",
@@ -96,6 +99,7 @@ export const AdminRoutes = {
   UPDATE_SERVICE: "/api/admin/service/update",
   GET_DASHBOARD_STATS: "/api/admin/dashboard/stats",
   GET_PAYMENTS: "/api/admin/payments",
+  PAYOUT_REQUESTS: "/api/admin/payout-requests",
 } as const;
 
 export const PublicRoutes = {

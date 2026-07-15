@@ -100,4 +100,7 @@ export const successResponse = {
 
   CREATE_REMAINING_PAYMENT_INTENT_SUCCESS: "Remaining payment intent created successfully",
   GET_DASHBOARD_STATS_SUCCESS: "Dashboard statistics retrieved successfully",
+  CREATE_PAYOUT_REQUEST_SUCCESS: "Payout request submitted successfully",
+  GET_PAYOUT_REQUESTS_SUCCESS: "Payout requests retrieved successfully",
+  PROCESS_PAYOUT_REQUEST_SUCCESS: "Payout request processed successfully",
 } as const;

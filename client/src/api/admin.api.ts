@@ -230,4 +230,28 @@ export const adminApi = {
       })
     ).data;
   },
+
+  async getPayoutRequests(): Promise<ApiEnvelope<any[]>> {
+    return (
+      await api.get<ApiEnvelope<any[]>>(AdminRoutes.PAYOUT_REQUESTS)
+    ).data;
+  },
+
+  async processPayoutRequest(id: string, data: { status: 'transferred' | 'rejected'; adminNotes?: string }): Promise<ApiEnvelope<void>> {
+    return (
+      await api.put<ApiEnvelope<void>>(`${AdminRoutes.PAYOUT_REQUESTS}/${id}`, data)
+    ).data;
+  },
+
+  async getProviderBank(providerId: string): Promise<ApiEnvelope<any>> {
+    return (
+      await api.get<ApiEnvelope<any>>(AdminRoutes.GET_PROVIDER_BANK(providerId))
+    ).data;
+  },
+
+  async approveProviderBank(providerId: string): Promise<ApiEnvelope<void>> {
+    return (
+      await api.patch<ApiEnvelope<void>>(AdminRoutes.APPROVE_PROVIDER_BANK(providerId))
+    ).data;
+  },
 };

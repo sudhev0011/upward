@@ -141,5 +141,13 @@ export class ProviderRouter {
       "/payouts",
       payoutController.getPayouts,
     );
+    this.router.post(
+      "/payout-requests",
+      payoutController.createPayoutRequest,
+    );
+    this.router.get(
+      "/payout-requests",
+      payoutController.getPayoutRequests,
+    );
   }
 }

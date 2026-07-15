@@ -68,6 +68,11 @@
         loginMutation(data, {
           onSuccess: (response) => {
             if (response.success && response.data) {
+              if(!response.data.isVerified){
+                toast.info('This account is not verfied, an otp has sent to the mail please verify it.');
+                navigate('/verify-otp')
+                return;
+              }
               dispatch(setCredentials(response.data));
               toast.success("Login successful");
               if(response?.data?.roles?.length === 1){

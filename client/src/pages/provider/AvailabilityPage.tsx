@@ -93,77 +93,97 @@ export default function AvailabilityPage() {
       </div>
 
       {/* Weekly Schedule */}
-      <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle className="text-card-foreground text-base flex items-center gap-2">
-            <Clock className="h-4 w-4 text-primary" /> Weekly Schedule
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Set your regular working hours for each day of the week.
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {DAYS.map((day) => {
-            const schedule = weeklySchedule[day];
-            return (
-              <div
-                key={day}
-                className="flex items-center gap-4 p-3 rounded-xl bg-secondary/10 border border-border/30"
+      <Card className="border-border/50 bg-card/80 backdrop-blur-sm w-full">
+  <CardHeader className="p-4 sm:p-6">
+    <CardTitle className="text-card-foreground text-base flex items-center gap-2">
+      <Clock className="h-4 w-4 text-primary" /> Weekly Schedule
+    </CardTitle>
+    <p className="text-sm text-muted-foreground mt-1">
+      Set your regular working hours for each day of the week.
+    </p>
+  </CardHeader>
+  
+  <CardContent className="p-4 sm:p-6 pt-0 space-y-3">
+    {DAYS.map((day) => {
+      const schedule = weeklySchedule[day];
+      return (
+        <div
+          key={day}
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-secondary/10 border border-border/30 transition-all"
+        >
+          {/* Top Section: Switch & Day Name */}
+          <div className="flex items-center gap-3 shrink-0">
+            <Switch
+              checked={schedule.enabled}
+              onCheckedChange={(val) => updateSchedule(day, "enabled", val)}
+              className="shrink-0"
+            />
+            <span
+              className={`text-sm font-semibold min-w-[70px] sm:w-24 ${
+                schedule.enabled ? "text-foreground" : "text-muted-foreground"
+              }`}
+            >
+              {DAY_LABELS[day]}
+            </span>
+            
+            {/* Mobile-only "Day off" indicator to keep it aligned vertically on small viewports */}
+            {!schedule.enabled && (
+              <span className="text-xs text-muted-foreground italic sm:hidden ml-auto">
+                Day off
+              </span>
+            )}
+          </div>
+
+          {/* Time Picker Section: Collapses vertically on mobile, expands on desktop */}
+          {schedule.enabled ? (
+            <div className="flex items-center gap-2 w-full sm:w-auto sm:flex-1 sm:justify-end">
+              <Select
+                value={schedule.start}
+                onValueChange={(val) => updateSchedule(day, "start", val)}
               >
-                <Switch
-                  checked={schedule.enabled}
-                  onCheckedChange={(val) => updateSchedule(day, "enabled", val)}
-                  className="shrink-0"
-                />
-                <span
-                  className={`w-24 text-sm font-medium ${schedule.enabled ? "text-foreground" : "text-muted-foreground"}`}
-                >
-                  {DAY_LABELS[day]}
-                </span>
-                {schedule.enabled ? (
-                  <div className="flex items-center gap-2 flex-1">
-                    <Select
-                      value={schedule.start}
-                      onValueChange={(val) => updateSchedule(day, "start", val)}
-                    >
-                      <SelectTrigger className="w-[130px] h-9 text-xs rounded-lg">
-                        <SelectValue>{to12h(schedule.start)}</SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {TIME_OPTIONS.map((t) => (
-                          <SelectItem key={t} value={t}>
-                            {to12h(t)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <span className="text-muted-foreground text-xs">to</span>
-                    <Select
-                      value={schedule.end}
-                      onValueChange={(val) => updateSchedule(day, "end", val)}
-                    >
-                      <SelectTrigger className="w-[130px] h-9 text-xs rounded-lg">
-                        <SelectValue>{to12h(schedule.end)}</SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {TIME_OPTIONS.map((t) => (
-                          <SelectItem key={t} value={t}>
-                            {to12h(t)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                ) : (
-                  <span className="text-xs text-muted-foreground italic">
-                    Day off
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </CardContent>
-      </Card>
+                {/* w-full on mobile, fixed width on desktop */}
+                <SelectTrigger className="w-full sm:w-[120px] md:w-[130px] h-9 text-xs rounded-lg bg-background">
+                  <SelectValue>{to12h(schedule.start)}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {TIME_OPTIONS.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {to12h(t)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <span className="text-muted-foreground text-xs px-1 shrink-0">to</span>
+
+              <Select
+                value={schedule.end}
+                onValueChange={(val) => updateSchedule(day, "end", val)}
+              >
+                {/* w-full on mobile, fixed width on desktop */}
+                <SelectTrigger className="w-full sm:w-[120px] md:w-[130px] h-9 text-xs rounded-lg bg-background">
+                  <SelectValue>{to12h(schedule.end)}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {TIME_OPTIONS.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {to12h(t)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : (
+            // Desktop-only "Day off" text alignment
+            <span className="hidden sm:inline text-xs text-muted-foreground italic">
+              Day off
+            </span>
+          )}
+        </div>
+      );
+    })}
+  </CardContent>
+</Card>
 
       {/* Booking Window */}
       <Card className="border-border/50 bg-card/80 backdrop-blur-sm">

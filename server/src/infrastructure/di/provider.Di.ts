@@ -1,4 +1,8 @@
 import { CreateProviderProfileUseCase } from "../../application/use-cases/provider/profile/create-provider-profile.use-case";
+import { PayoutRequestRepository } from "../persistence/mongodb/repositories/payout-request.repository";
+import { MongoTransactionManager } from "../persistence/mongodb/mongo-transaction.manager";
+import { CreatePayoutRequestUseCase } from "../../application/use-cases/provider/payout/create-payout-request.use-case";
+import { GetProviderPayoutRequestsUseCase } from "../../application/use-cases/provider/payout/get-provider-payout-requests.use-case";
 import { GetProviderProfileUseCase } from "../../application/use-cases/provider/profile/get-provider-profile.use-case";
 import { UpdateProviderProfileUseCase } from "../../application/use-cases/provider/profile/update-provider-profile.use-case";
 import { ProviderProfileRepository } from "../persistence/mongodb/repositories/provider-profile.repository";
@@ -64,7 +68,7 @@ import { ProviderSubscriptionRepository } from "../persistence/mongodb/repositor
 const userRepository = new UserRepository(); 
 const providerProfileRepository = new ProviderProfileRepository();
 export const providerKycRepository = new ProviderKycRepository();
-const providerBankRepository = new ProviderBankRepository();
+export const providerBankRepository = new ProviderBankRepository();
 export const providerServiceRepository = new ProviderServiceRepository()
 const avaliabilityRepository = new AvailabilityRepository()
 const unavailabilityRepository = new UnavailabilityRepository()
@@ -89,7 +93,7 @@ const submitProviderKycUseCase = new SubmitProviderKycUseCase(providerKycReposit
 const saveProviderBankUseCase = new SaveProviderBankUseCase(providerBankRepository, s3Service,encryptionService);
 const uploadKycDocumentUseCase = new UploadKycDocumentUseCase(s3Service);
 export const getProviderKycUseCase = new GetProviderKycUseCase(providerKycRepository,s3Service,encryptionService);
-const getProviderBankUseCase = new GetProviderBankUseCase(providerBankRepository,s3Service,encryptionService);
+export const getProviderBankUseCase = new GetProviderBankUseCase(providerBankRepository,s3Service,encryptionService);
 const createProviderServiceUseCase = new CreateProviderServiceUseCase(providerServiceRepository,providerSubscriptionRepository);
 const getProviderServicesByCategoryUseCase = new GetProviderServicesByCategoryUseCase(userRepository,providerServiceRepository)
 const configureProviderServiceUseCase = new ConfigureProviderServiceUseCase(providerServiceRepository, serviceRespository,providerProfileRepository,categoryRepository,logger);
@@ -133,13 +137,31 @@ export const slotController = new SlotController(getAvailableSlotsUseCase)
 // Payouts wiring
 const bookingRepository = new BookingRepository();
 const commissionCalculationService = new CommissionCalculationService();
+const payoutRequestRepository = new PayoutRequestRepository();
+const mongoTransactionManager = new MongoTransactionManager();
+
 const getProviderPayoutsUseCase = new GetProviderPayoutsUseCase(
   walletRepository,
   walletTransactionRepository,
   bookingRepository,
   commissionCalculationService
 );
-export const payoutController = new PayoutController(getProviderPayoutsUseCase);
+const createPayoutRequestUseCase = new CreatePayoutRequestUseCase(
+  payoutRequestRepository,
+  walletRepository,
+  walletTransactionRepository,
+  providerBankRepository,
+  mongoTransactionManager
+);
+const getProviderPayoutRequestsUseCase = new GetProviderPayoutRequestsUseCase(
+  payoutRequestRepository
+);
+
+export const payoutController = new PayoutController(
+  getProviderPayoutsUseCase,
+  createPayoutRequestUseCase,
+  getProviderPayoutRequestsUseCase
+);
 
 const getProviderDashboardStatsUseCase = new GetProviderDashboardStatsUseCase(bookingRepository);
 export const providerDashboardController = new ProviderDashboardController(getProviderDashboardStatsUseCase);

@@ -347,6 +347,23 @@ export const providerApi = {
     ).data;
   },
 
+  async createPayoutRequest(amount: number): Promise<ApiEnvelope<void>> {
+    return (
+      await api.post<ApiEnvelope<void>>(
+        ProviderRoutes.PAYOUT_REQUESTS,
+        { amount }
+      )
+    ).data;
+  },
+
+  async getPayoutRequests(): Promise<ApiEnvelope<any[]>> {
+    return (
+      await api.get<ApiEnvelope<any[]>>(
+        ProviderRoutes.PAYOUT_REQUESTS
+      )
+    ).data;
+  },
+
   async getDashboardStats(timeframe: string): Promise<ApiEnvelope<ProviderDashboardStats>> {
     return (
       await api.get<ApiEnvelope<ProviderDashboardStats>>(ProviderRoutes.GET_DASHBOARD_STATS, {

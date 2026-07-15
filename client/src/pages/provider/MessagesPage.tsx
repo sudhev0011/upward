@@ -1,7 +1,15 @@
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send, Search, Paperclip, Loader2, Check, CheckCheck, Trash2 } from "lucide-react";
+import {
+  Send,
+  Search,
+  Paperclip,
+  Loader2,
+  Check,
+  CheckCheck,
+  Trash2,
+} from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { useAppSelector } from "@/hooks/useRedux";
 import { useSocket } from "@/hooks/useSocket";
@@ -11,15 +19,26 @@ import { useUploadChatAttachment } from "@/hooks/chat/useUploadChatAttachment";
 import { toast } from "sonner";
 import RenderAttachment from "@/components/common/chat/RenderAttachment";
 
-const renderStatusTicks = (msg: Message, otherParticipantId: string | undefined) => {
-  const isRead = otherParticipantId ? msg.userStates?.[otherParticipantId]?.isRead : false;
+const renderStatusTicks = (
+  msg: Message,
+  otherParticipantId: string | undefined,
+) => {
+  const isRead = otherParticipantId
+    ? msg.userStates?.[otherParticipantId]?.isRead
+    : false;
   if (isRead) {
-    return <CheckCheck className="h-3.5 w-3.5 text-emerald-400 inline shrink-0" />;
+    return (
+      <CheckCheck className="h-3.5 w-3.5 text-emerald-400 inline shrink-0" />
+    );
   }
   if (msg.isDelivered) {
-    return <CheckCheck className="h-3.5 w-3.5 text-primary-foreground/50 inline shrink-0" />;
+    return (
+      <CheckCheck className="h-3.5 w-3.5 text-primary-foreground/50 inline shrink-0" />
+    );
   }
-  return <Check className="h-3.5 w-3.5 text-primary-foreground/50 inline shrink-0" />;
+  return (
+    <Check className="h-3.5 w-3.5 text-primary-foreground/50 inline shrink-0" />
+  );
 };
 
 export default function MessagesPage() {
@@ -39,7 +58,10 @@ export default function MessagesPage() {
   const { socket } = useSocket(activeChat);
 
   const selectedConversation = conversations.find((c) => c.id === activeChat);
-  const otherParticipantId = selectedConversation?.clientId === currentUserId ? selectedConversation?.providerId : selectedConversation?.clientId;
+  const otherParticipantId =
+    selectedConversation?.clientId === currentUserId
+      ? selectedConversation?.providerId
+      : selectedConversation?.clientId;
 
   const handleAttachmentClick = () => {
     fileInputRef.current?.click();
@@ -52,7 +74,7 @@ export default function MessagesPage() {
     const toastId = toast.loading(`Uploading ${file.name}...`);
     try {
       const { fileUrl } = await uploadAttachmentMutation.mutateAsync(file);
-      
+
       socket.emit(
         "send_message",
         {
@@ -67,7 +89,7 @@ export default function MessagesPage() {
           } else {
             toast.success("Attachment sent!", { id: toastId });
           }
-        }
+        },
       );
     } catch (err: unknown) {
       console.error("Upload failed:", err);
@@ -92,7 +114,7 @@ export default function MessagesPage() {
         } else {
           toast.success("Message deleted");
         }
-      }
+      },
     );
   };
 
@@ -157,7 +179,10 @@ export default function MessagesPage() {
       fetchConversations();
     };
 
-    const handleMessageDeleted = (data: { messageId: string; userId: string }) => {
+    const handleMessageDeleted = (data: {
+      messageId: string;
+      userId: string;
+    }) => {
       setMessages((prev) =>
         prev.map((msg) => {
           if (msg.id === data.messageId) {
@@ -165,13 +190,13 @@ export default function MessagesPage() {
               ...msg.userStates,
               [data.userId]: {
                 ...msg.userStates?.[data.userId],
-                isDeleted: true
-              }
+                isDeleted: true,
+              },
             };
             return { ...msg, userStates: updatedStates };
           }
           return msg;
-        })
+        }),
       );
     };
 
@@ -179,14 +204,23 @@ export default function MessagesPage() {
       if (data.conversationId === activeChat) {
         setMessages((prev) =>
           prev.map((msg) =>
-            msg.senderId === currentUserId ? { ...msg, isDelivered: true } : msg
-          )
+            msg.senderId === currentUserId
+              ? { ...msg, isDelivered: true }
+              : msg,
+          ),
         );
       }
     };
 
-    const handleMessagesRead = (data: { conversationId: string; role: 'client' | 'provider' }) => {
-      if (data.conversationId === activeChat && data.role === 'client' && otherParticipantId) {
+    const handleMessagesRead = (data: {
+      conversationId: string;
+      role: "client" | "provider";
+    }) => {
+      if (
+        data.conversationId === activeChat &&
+        data.role === "client" &&
+        otherParticipantId
+      ) {
         setMessages((prev) =>
           prev.map((msg) => {
             if (msg.senderId === currentUserId) {
@@ -194,13 +228,13 @@ export default function MessagesPage() {
                 ...msg.userStates,
                 [otherParticipantId]: {
                   ...msg.userStates?.[otherParticipantId],
-                  isRead: true
-                }
+                  isRead: true,
+                },
               };
               return { ...msg, isDelivered: true, userStates: updatedStates };
             }
             return msg;
-          })
+          }),
         );
       }
     };
@@ -254,8 +288,6 @@ export default function MessagesPage() {
       : "U";
   };
 
-
-
   const filteredConversations = conversations.filter(
     (c) =>
       c.participant?.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -263,7 +295,7 @@ export default function MessagesPage() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       <div>
         <h1 className="text-3xl font-bold text-foreground tracking-tight">
           Messages
@@ -271,7 +303,7 @@ export default function MessagesPage() {
         <p className="text-muted-foreground mt-1.5">Chat with your clients.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100vh-240px)]">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 h-[calc(100vh-180px)]">
         <Card className="border-border/50 bg-card/80 backdrop-blur-sm lg:col-span-1 flex flex-col overflow-hidden">
           <div className="p-3 border-b border-border/50">
             <div className="relative">
@@ -316,11 +348,11 @@ export default function MessagesPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <span
-                        className={`text-sm ${hasUnread ? "font-bold text-card-foreground" : "font-semibold text-muted-foreground"}`}
+                        className={`text-sm truncate ${hasUnread ? "font-bold text-card-foreground" : "font-semibold text-muted-foreground"}`}
                       >
                         {participantName}
                       </span>
-                      <span className="text-[11px] text-muted-foreground">
+                      <span className="text-[11px] text-muted-foreground shrink-0 ml-2">
                         {conv.lastMessage
                           ? new Date(
                               conv.lastMessage.createdAt,
@@ -338,7 +370,7 @@ export default function MessagesPage() {
                     </p>
                   </div>
                   {hasUnread && (
-                    <span className="h-5 min-w-[20px] rounded-full bg-primary flex items-center justify-center text-[10px] text-primary-foreground font-bold px-1.5">
+                    <span className="h-5 min-w-[20px] rounded-full bg-primary flex items-center justify-center text-[10px] text-primary-foreground font-bold px-1.5 shrink-0">
                       {conv.unreadCountProvider}
                     </span>
                   )}
@@ -353,10 +385,10 @@ export default function MessagesPage() {
           </div>
         </Card>
 
-        <Card className="border-border/50 bg-card/80 backdrop-blur-sm lg:col-span-2 flex flex-col overflow-hidden">
+        <Card className="border-border/50 bg-card/80 backdrop-blur-sm lg:col-span-3 flex flex-col overflow-hidden">
           {selectedConversation ? (
             <>
-              <div className="flex items-center gap-3 border-b border-border/50 bg-background px-4 py-4">
+              <div className="flex items-center gap-3 border-b border-border/50 bg-background px-4 py-2">
                 <div className="h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 ring-1 ring-border/50 shadow-sm">
                   {!selectedConversation.participant?.avatar ? (
                     <div className="flex h-full w-full items-center justify-center">
@@ -386,43 +418,82 @@ export default function MessagesPage() {
                 </div>
               </div>
 
-              <div className="flex-1 overflow-auto p-4 space-y-3">
-                {messages.filter(msg => !msg.userStates?.[currentUserId]?.isDeleted).map((msg) => {
+              <div className="flex-1 overflow-auto p-6 space-y-4">
+                {messages.map((msg) => {
                   const isMe = msg.senderId === currentUserId;
+                  const isDeleted = msg.userStates?.[currentUserId]?.isDeleted;
+
                   return (
                     <div
                       key={msg.id}
                       className={`flex ${isMe ? "justify-end" : "justify-start"} group relative`}
                     >
-                      <div className={`flex items-center gap-2 max-w-[70%] ${isMe ? "flex-row-reverse" : "flex-row"}`}>
-                        <div
-                          className={`rounded-2xl px-4 py-3 ${
-                            isMe
-                              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/10"
-                              : "bg-secondary/50 text-card-foreground"
-                          }`}
-                        >
-                          {msg.text && <p className="text-sm leading-relaxed">{msg.text}</p>}
-                          {msg.attachmentUrl && RenderAttachment(msg.attachmentUrl, isMe)}
-                          
-                          <div className="flex items-center justify-end gap-1.5 mt-1.5">
-                            <span className={`text-[11px] ${isMe ? "text-primary-foreground/60" : "text-muted-foreground"}`}>
+                      <div
+                        className={`flex items-center gap-2 max-w-[75%] ${isMe ? "flex-row-reverse" : "flex-row"}`}
+                      >
+                        {isDeleted ? (
+                          <div
+                            className={`rounded-2xl px-4 py-2.5 border border-dashed flex items-center gap-2 ${
+                              isMe
+                                ? "bg-secondary/20 text-muted-foreground border-border"
+                                : "bg-secondary/10 text-muted-foreground border-border/50"
+                            }`}
+                          >
+                            <span className="text-xs italic select-none">
+                              This message was deleted
+                            </span>
+                            <span className="text-[10px] text-muted-foreground/60 ml-2">
                               {new Date(msg.createdAt).toLocaleTimeString([], {
                                 hour: "2-digit",
                                 minute: "2-digit",
                               })}
                             </span>
-                            {isMe && renderStatusTicks(msg, otherParticipantId)}
                           </div>
-                        </div>
+                        ) : (
+                          <>
+                            <div
+                              className={`rounded-2xl px-4 py-3 ${
+                                isMe
+                                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/10"
+                                  : "bg-secondary/50 text-card-foreground"
+                              }`}
+                            >
+                              {msg.text && (
+                                <p className="text-sm leading-relaxed">
+                                  {msg.text}
+                                </p>
+                              )}
+                              {msg.attachmentUrl &&
+                                RenderAttachment(msg.attachmentUrl, isMe)}
 
-                        <button
-                          onClick={() => msg.id && handleDeleteMessage(msg.id)}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 duration-200 shrink-0"
-                          title="Delete Message"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                              <div className="flex items-center justify-end gap-1.5 mt-1.5">
+                                <span
+                                  className={`text-[11px] ${isMe ? "text-primary-foreground/60" : "text-muted-foreground"}`}
+                                >
+                                  {new Date(msg.createdAt).toLocaleTimeString(
+                                    [],
+                                    {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    },
+                                  )}
+                                </span>
+                                {isMe &&
+                                  renderStatusTicks(msg, otherParticipantId)}
+                              </div>
+                            </div>
+
+                            <button
+                              onClick={() =>
+                                msg.id && handleDeleteMessage(msg.id)
+                              }
+                              className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 duration-200 shrink-0"
+                              title="Delete Message"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
                   );
@@ -432,11 +503,11 @@ export default function MessagesPage() {
 
               <div className="p-4 border-t border-border/50">
                 <div className="flex gap-2">
-                  <input 
-                    type="file" 
-                    ref={fileInputRef} 
-                    onChange={handleFileChange} 
-                    className="hidden" 
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
                   />
                   <Button
                     type="button"

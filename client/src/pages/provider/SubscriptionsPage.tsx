@@ -364,7 +364,7 @@ export default function SubscriptionsPage() {
                       onClick={() => handleCheckoutInit(p.id)}
                       disabled={
                         (checkoutMutation.isPending &&
-                        checkoutMutation.variables === p.id) || (status?.activeSubscriptionPlanName == p.name)
+                        checkoutMutation.variables === p.id)
                       }
                       className={`w-full mt-4 h-9 shadow-md ${
                         isPopular

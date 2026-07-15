@@ -35,11 +35,14 @@ import { Label } from "@/components/ui/label";
 import { useGetProviderProfiles } from "@/hooks/admin/useGetProviderProfiles";
 import { useGetProviderProfileById } from "@/hooks/admin/useGetProviderProfileById";
 import { useGetProviderKyc } from "@/hooks/admin/useGetProviderKyc";
+import { useGetAdminProviderBank } from "@/hooks/admin/useGetAdminProviderBank";
+import { useApproveAdminProviderBank } from "@/hooks/admin/useApproveAdminProviderBank";
 import { useBlockProviderMutation } from "@/hooks/admin/useBlockProvider";
 import { useApproveProviderMutation } from "@/hooks/admin/useApproveProvider";
 import { useRejectProviderMutation } from "@/hooks/admin/useRejectProvider";
 import { format } from "date-fns";
 import { ProviderProfile } from "@/interfaces/provider/provider.interface";
+import { toast } from "sonner";
 
 
 export default function Providers() {
@@ -66,6 +69,11 @@ export default function Providers() {
 
   const { data: kycData, isLoading: isKycLoading } =
     useGetProviderKyc(selectedProviderId);
+
+  const { data: bankData, isLoading: isBankLoading } =
+    useGetAdminProviderBank(selectedProviderId);
+
+  const approveBankMutation = useApproveAdminProviderBank();
 
   const closeDialog = () => {
     setSelectedProviderId(null);
@@ -499,6 +507,125 @@ export default function Providers() {
                     <div className="text-center py-10 border-2 border-dashed rounded-2xl">
                       <p className="text-muted-foreground text-sm">
                         The provider hasn't uploaded verification documents yet.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <Separator />
+
+                {/* Bank Verification Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold flex items-center gap-2 text-lg">
+                      <Briefcase className="h-5 w-5 text-primary" /> Bank Coordinates & Passbook Document
+                    </h4>
+                  </div>
+
+                  {isBankLoading ? (
+                    <div className="h-32 bg-muted animate-pulse rounded-xl" />
+                  ) : bankData ? (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label className="text-xs text-muted-foreground px-1">
+                            PASSBOOK / CHECK DOCUMENT
+                          </Label>
+                          <div className="group relative border rounded-xl overflow-hidden bg-black/5 aspect-video flex items-center justify-center">
+                            <img
+                              src={bankData.passbookUrl}
+                              className="object-contain w-full h-full p-2"
+                              alt="Passbook"
+                            />
+                            <a
+                              href={bankData.passbookUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="absolute top-2 right-2 p-1.5 bg-black/60 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </a>
+                          </div>
+                        </div>
+
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4 bg-primary/5 p-4 rounded-xl border border-primary/10 h-full content-center">
+                            <div>
+                              <p className="text-[10px] text-muted-foreground uppercase font-bold">
+                                Bank Name
+                              </p>
+                              <p className="font-semibold text-sm">
+                                {bankData.bankName}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-[10px] text-muted-foreground uppercase font-bold">
+                                Holder Name
+                              </p>
+                              <p className="font-semibold text-sm">
+                                {bankData.accountHolderName}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-[10px] text-muted-foreground uppercase font-bold">
+                                Account Number
+                              </p>
+                              <p className="font-mono text-sm tracking-widest">
+                                {bankData.accountNumber}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-[10px] text-muted-foreground uppercase font-bold">
+                                IFSC Code
+                              </p>
+                              <p className="font-mono text-sm tracking-widest">
+                                {bankData.ifscCode}
+                              </p>
+                            </div>
+                            <div className="col-span-2">
+                              <p className="text-[10px] text-muted-foreground uppercase font-bold">
+                                Branch Name
+                              </p>
+                              <p className="font-semibold text-sm">
+                                {bankData.branchName}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Bank Approval Button */}
+                      <div className="bg-card border rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                        <div>
+                          <p className="text-xs font-semibold text-muted-foreground uppercase">Bank Status</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Badge variant={bankData.status === "approved" ? "default" : "secondary"}>
+                              {bankData.status === "approved" ? "Verified" : "Pending Verification"}
+                            </Badge>
+                          </div>
+                        </div>
+                        {bankData.status !== "approved" && (
+                          <Button
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                            onClick={async () => {
+                              try {
+                                await approveBankMutation.mutateAsync(selectedProviderId!);
+                                toast.success("Bank details marked as verified successfully!");
+                              } catch (err: any) {
+                                toast.error(err?.response?.data?.message || "Failed to verify bank details.");
+                              }
+                            }}
+                            disabled={approveBankMutation.isPending}
+                          >
+                            {approveBankMutation.isPending ? "Verifying..." : "Mark Bank Doc as Verified"}
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-10 border-2 border-dashed rounded-2xl">
+                      <p className="text-muted-foreground text-sm">
+                        The provider hasn't uploaded bank details yet.
                       </p>
                     </div>
                   )}

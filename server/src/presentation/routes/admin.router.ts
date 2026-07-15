@@ -3,7 +3,7 @@ import {
   authenticateToken,
   authorizeRoles
 } from "../middleware/auth.middleware";
-import { adminProviderController, adminClientController, adminCategoryController, adminServiceController, adminDashboardController, adminPaymentController } from "../../infrastructure/di/adminDi";
+import { adminProviderController, adminClientController, adminCategoryController, adminServiceController, adminDashboardController, adminPaymentController, adminPayoutController } from "../../infrastructure/di/adminDi";
 
 export class AdminRouter {
   public router: Router;
@@ -19,6 +19,8 @@ export class AdminRouter {
     
     this.router.get("/dashboard/stats", adminDashboardController.getStats);
     this.router.get("/payments", adminPaymentController.getPayments);
+    this.router.get("/payout-requests", adminPayoutController.getPayoutRequests);
+    this.router.put("/payout-requests/:id", adminPayoutController.processPayoutRequest);
 
     this.router.get("/clients", adminClientController.getAllClients);
     this.router.patch("/client/block", adminClientController.blockClient);
@@ -30,6 +32,8 @@ export class AdminRouter {
     this.router.put("/provider/reject",adminProviderController.rejectProvider);
     this.router.patch("/provider/block",adminProviderController.blockProvider);
     this.router.get('/kyc/identity/:userId', adminProviderController.getProviderKyc);
+    this.router.get("/provider/:id/bank", adminProviderController.getProviderBank);
+    this.router.patch("/provider/:id/bank/approve", adminProviderController.approveProviderBank);
 
     this.router.post("/category", adminCategoryController.createCategory);
     this.router.get("/categories/all", adminCategoryController.getAllCategories);

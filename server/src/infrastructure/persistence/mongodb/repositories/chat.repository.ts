@@ -184,4 +184,15 @@ export class MongoChatRepository implements IChatRepository {
 
     return updatedConversationIds;
   }
+
+  async findMessageByMessageId(messageId: string): Promise<Message | null>{
+
+    if (!Types.ObjectId.isValid(messageId)) null;
+
+    const doc = await MessageModel.findById(messageId);
+
+    if(!doc) return null;
+
+    return MessageMapper.toEntity(doc);
+  }
 }

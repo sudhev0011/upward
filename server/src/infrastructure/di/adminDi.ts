@@ -17,7 +17,13 @@ import { ApproveProviderUseCase } from "../../application/use-cases/admin/provid
 import { AdminProviderController } from "../../presentation/controllers/admin/admin-provider.controller";
 import { BlockProviderUseCase } from "../../application/use-cases/admin/provider/block-provider.use-case";
 import { RejectProviderUseCase } from "../../application/use-cases/admin/provider/reject-provider.use-case";
-import { getProviderKycUseCase, providerKycRepository } from "./provider.Di";
+import { ApproveProviderBankUseCase } from "../../application/use-cases/admin/provider/approve-provider-bank.use-case";
+import { PayoutRequestRepository } from "../persistence/mongodb/repositories/payout-request.repository";
+import { MongoTransactionManager } from "../persistence/mongodb/mongo-transaction.manager";
+import { GetAdminPayoutRequestsUseCase } from "../../application/use-cases/admin/payout/get-admin-payout-requests.use-case";
+import { ProcessPayoutRequestUseCase } from "../../application/use-cases/admin/payout/process-payout-request.use-case";
+import { AdminPayoutController } from "../../presentation/controllers/admin/payout/admin-payout.controller";
+import { walletRepository, walletTransactionRepository } from "./clientDi";
 import { AdminCategoryController } from "../../presentation/controllers/admin/admin-category.controller";
 import { CreateCategoryUseCase } from "../../application/use-cases/admin/category/create-category.use-case";
 import { CategoryRepository } from "../persistence/mongodb/repositories/category.repository";
@@ -35,21 +41,31 @@ import { UpdateServiceUseCase } from "../../application/use-cases/service/update
 import { PaymentRepository } from "../persistence/mongodb/repositories/payment.repository";
 import { GetAdminPaymentsUseCase } from "../../application/use-cases/admin/payments/get-admin-payments.use-case";
 import { AdminPaymentController } from "../../presentation/controllers/admin/admin-payment.controller";
+import { GetProviderKycUseCase } from "../../application/use-cases/provider/kyc/get-provider-kyc.use-case";
+import { GetProviderBankUseCase } from "../../application/use-cases/provider/kyc/get-provider-bank.use.case";
+import { EncryptionService } from "../security/encryption-service";
+import { ProviderKycRepository } from "../persistence/mongodb/repositories/provider-kyc.repository";
+import { ProviderBankRepository } from "../persistence/mongodb/repositories/provider-bank.repository";
 
 const userRepository = new UserRepository();
 const clientProfileRepository = new ClientProfileRepository()
 const providerProfileRepository = new ProviderProfileRepository()
 export const categoryRepository = new CategoryRepository()
 export const serviceRespository = new ServiceRepository();
+const providerKycRepository = new ProviderKycRepository();
+const providerBankRepository = new ProviderBankRepository();
 
 // service
 const logger = new WinstonLogger();
 const s3Service = new S3Service(logger);
+const encryptionService = new EncryptionService();
 
 // useCase init
 const getAllUsersUseCase = new GetAllClientsUseCase(userRepository,clientProfileRepository,s3Service)
 const blockUserUseCase = new BlockClientUseCase(userRepository)
 const adminGetUserByIdUseCase = new AdminGetClientByIdUseCase(userRepository,getClientProfileUseCase); 
+export const getProviderKycUseCase = new GetProviderKycUseCase(providerKycRepository,s3Service,encryptionService);
+export const getProviderBankUseCase = new GetProviderBankUseCase(providerBankRepository,s3Service,encryptionService);
 
 const getAllProvidersUseCase = new GetAllProvidersUseCase(providerProfileRepository);
 const adminGetProviderByIdUseCase = new ProviderGetByIdUseCase(userRepository, providerProfileRepository);
@@ -69,8 +85,19 @@ const updateServiceUseCase = new UpdateServiceUseCase(serviceRespository)
 
 
 // cntrl init
+const approveProviderBankUseCase = new ApproveProviderBankUseCase(providerBankRepository);
+
 export const adminClientController = new AdminClientController(getAllUsersUseCase,adminGetUserByIdUseCase,blockUserUseCase,)
-export const adminProviderController = new AdminProviderController(getAllProvidersUseCase, adminGetProviderByIdUseCase, approveProviderUseCase,rejectProviderUseCase, blockProviderUseCase, getProviderKycUseCase);
+export const adminProviderController = new AdminProviderController(
+  getAllProvidersUseCase,
+  adminGetProviderByIdUseCase,
+  approveProviderUseCase,
+  rejectProviderUseCase,
+  blockProviderUseCase,
+  getProviderKycUseCase,
+  getProviderBankUseCase,
+  approveProviderBankUseCase
+);
 export const adminCategoryController = new AdminCategoryController(createCategoryUseCase,getAllCategoriesUseCase, getAllCategoriesWithPaginationUseCase, updateCategoryUseCase)
 export const adminServiceController = new AdminServiceController(createServiceUseCase,deleteServiceUseCase,getAllServicesUseCase, getAllServicesWithPagination, toggleServiceUseCase, updateServiceUseCase)
 
@@ -81,3 +108,21 @@ export const adminDashboardController = new AdminDashboardController(getAdminDas
 const paymentRepository = new PaymentRepository();
 const getAdminPaymentsUseCase = new GetAdminPaymentsUseCase(paymentRepository);
 export const adminPaymentController = new AdminPaymentController(getAdminPaymentsUseCase);
+
+const payoutRequestRepository = new PayoutRequestRepository();
+const mongoTransactionManager = new MongoTransactionManager();
+const getAdminPayoutRequestsUseCase = new GetAdminPayoutRequestsUseCase(
+  payoutRequestRepository,
+  userRepository,
+  providerBankRepository
+);
+const processPayoutRequestUseCase = new ProcessPayoutRequestUseCase(
+  payoutRequestRepository,
+  walletRepository,
+  walletTransactionRepository,
+  mongoTransactionManager
+);
+export const adminPayoutController = new AdminPayoutController(
+  getAdminPayoutRequestsUseCase,
+  processPayoutRequestUseCase
+);

@@ -158,7 +158,7 @@ export class ProviderProfileRepository
       initialMatch.ratingAvg = { $gte: minRating };
     }
     if (location) {
-      initialMatch.location = { $regex: location, $options: "i" };
+      initialMatch["location.city"] = { $regex: location, $options: "i" };
     }
     pipeline.push({ $match: initialMatch });
 
