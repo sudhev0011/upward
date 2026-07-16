@@ -111,23 +111,23 @@ export const AdminRoutes = {
 } as const;
 
 export const PublicRoutes = {
-  GET_SERVICES: "api/public/services",
+  GET_SERVICES: "/api/public/services",
   GET_CATEGORIES: "/api/public/categories",
   GET_SERVICES_BY_CATEGORY: "/api/public/services/:categoryId",
   GET_PROVIDERS_BY_CATEGORY: "api/public/providers",
-  GET_PROVIDER_PORTFOLIO: "api/public/providers/:providerId/portfolio",
-  GET_PROVIDER_AVAILABILITY: "api/public/providers/:providerId/availability",
+  GET_PROVIDER_PORTFOLIO: "/api/public/providers/:providerId/portfolio",
+  GET_PROVIDER_AVAILABILITY: "/api/public/providers/:providerId/availability",
   GET_PROVIDER_AVAILABILITY_OVERRIDES:
-    "api/public/providers/:providerId/availability/overrides",
+    "/api/public/providers/:providerId/availability/overrides",
   GET_PROVIDER_UNAVAILABILITY:
-    "api/public/providers/:providerId/unavailability",
-  GET_PROVIDER_PROFILE: "api/public/providers/:providerId/profile",
-  GET_PROVIDER_ACTIVE_SERVICES: "api/public/providers/:providerId/services",
+    "/api/public/providers/:providerId/unavailability",
+  GET_PROVIDER_PROFILE: "/api/public/providers/:providerId/profile",
+  GET_PROVIDER_ACTIVE_SERVICES: "/api/public/providers/:providerId/services",
 } as const;
 
 export const LocationRoutes = {
-  GET_LOCATION: 'api/location/search',
-  GET_LOCATION_DETAILS: 'api/location/details'
+  GET_LOCATION: '/api/location/search',
+  GET_LOCATION_DETAILS: '/api/location/details'
 } as const;
 
 export const SubscriptionRoutes = {
