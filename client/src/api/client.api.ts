@@ -24,6 +24,8 @@ import {
   ListBookingsResponse,
   WalletResponse,
 } from "@/interfaces/bookings/bookings.interface";
+import type { Location } from "@/interfaces/location.interface";
+
 
 export const clientApi = {
   async getProfile(): Promise<ApiEnvelope<ClientProfile>> {
@@ -148,6 +150,29 @@ export const clientApi = {
       await api.get<ApiEnvelope<ClientDashboardStats>>(ClientRoutes.GET_DASHBOARD_STATS, {
         params: { timeframe },
       })
+    ).data;
+  },
+  async rescheduleOnsiteBooking(
+    bookingId: string,
+    data: { bookingDate: string; startTime: string; location: Location },
+  ): Promise<ApiEnvelope<void>> {
+    return (
+      await api.patch<ApiEnvelope<void>>(
+        ClientRoutes.RESCHEDULE_BOOKING_ONSITE(bookingId),
+        data,
+      )
+    ).data;
+  },
+
+  async rescheduleOffsiteBooking(
+    bookingId: string,
+    data: { bookingDate: string },
+  ): Promise<ApiEnvelope<void>> {
+    return (
+      await api.patch<ApiEnvelope<void>>(
+        ClientRoutes.RESCHEDULE_BOOKING_OFFSITE(bookingId),
+        data,
+      )
     ).data;
   },
 };
