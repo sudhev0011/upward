@@ -27,6 +27,9 @@ import { CreateOffsiteBookingRequestDtoSchema } from "../../../../application/dt
 import { CompleteBookingUseCase } from "../../../../application/use-cases/booking/complete-booking.use-case";
 import { IProviderCompleteBookingUseCase } from "../../../../domain/interfaces/usecases/booking/IProviderCompleteBookingUseCase";
 import { IClientCompleteBookingUseCase } from "../../../../domain/interfaces/usecases/booking/IClientCompleteBookingUseCase";
+import { IRescheduleBookingUseCase } from "../../../../domain/interfaces/usecases/booking/IRescheduleBookingUseCase";
+import { RescheduleOnsiteBookingRequestDtoSchema } from "../../../../application/dtos/booking/reschedule-onsite-booking-request.dto";
+import { RescheduleOffsiteBookingRequestDtoSchema } from "../../../../application/dtos/booking/reschedule-offsite-booking-request.dto";
 
 export class BookingController {
   constructor(
@@ -43,6 +46,8 @@ export class BookingController {
     private readonly _providerCompleteBookingUseCase: IProviderCompleteBookingUseCase,
 
     private readonly _clientCompleteBookingUseCase: IClientCompleteBookingUseCase,
+
+    private readonly _rescheduleBookingUseCase: IRescheduleBookingUseCase,
   ) {}
 
   /**
@@ -213,6 +218,65 @@ export class BookingController {
       await this._clientCompleteBookingUseCase.execute(clientId, bookingId);
 
       sendSuccessResponse(res, "Booking marked as completed by client", null);
+    } catch (error) {
+      handleAsyncError(error, next);
+    }
+  };
+
+
+  rescheduleOnsiteBooking = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const clientId = validateUserId(req);
+      const bookingId = req.params.id as string;
+
+      const parsed = RescheduleOnsiteBookingRequestDtoSchema.safeParse(req.body);
+
+      if (!parsed.success) {
+        return handleValidationError(formatZodErrors(parsed.error), next);
+      }
+
+      await this._rescheduleBookingUseCase.execute({
+        bookingId,
+        clientId,
+        newBookingDate: parsed.data.bookingDate,
+        newStartTime: parsed.data.startTime,
+        newLocation: parsed.data.location,
+      });
+
+      sendSuccessResponse(res, "Booking rescheduled successfully", null);
+    } catch (error) {
+      handleAsyncError(error, next);
+    }
+  };
+
+  rescheduleOffsiteBooking = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const clientId = validateUserId(req);
+      const bookingId = req.params.id as string;
+
+      const parsed = RescheduleOffsiteBookingRequestDtoSchema.safeParse(req.body);
+
+      if (!parsed.success) {
+        return handleValidationError(formatZodErrors(parsed.error), next);
+      }
+
+      await this._rescheduleBookingUseCase.execute({
+        bookingId,
+        clientId,
+        newBookingDate: parsed.data.bookingDate,
+        newStartTime: null,
+        newLocation: null,
+      });
+
+      sendSuccessResponse(res, "Booking rescheduled successfully", null);
     } catch (error) {
       handleAsyncError(error, next);
     }

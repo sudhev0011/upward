@@ -41,7 +41,7 @@ import { WalletTransactionRepository } from "../persistence/mongodb/repositories
 import { GetClientWalletUseCase } from "../../application/use-cases/wallet/get-client-wallet.use-case";
 import { WalletController } from "../../presentation/controllers/client/wallet/wallet.controller";
 import { NanoIdBookingIdtor } from "../services/NanoIdBookingNumberGenerator";
-import { createOffsiteBookingUseCase } from "./bookingDi";
+import { createOffsiteBookingUseCase, rescheduleBookingUseCase } from "./bookingDi";
 import { CreateRemainingPaymentIntentUseCase } from "../../application/use-cases/payment/create-remaining-payment-intent.use-case";
 import { CompleteBookingUseCase } from "../../application/use-cases/booking/complete-booking.use-case";
 import { ProviderCompleteBookingUseCase } from "../../application/use-cases/booking/provider-complete-booking.use-case";
@@ -108,7 +108,7 @@ const clientCompleteBookingUseCase = new ClientCompleteBookingUseCase(bookingRep
 // controller inint
 export const clientProfileController = new ClientProfileController(uploadAvatarUseCase,createClientProfileUseCase,getClientProfileUseCase,updateClientProfileUseCase)
 
-export const bookingController = new BookingController(createBookingUseCase,listBookingUseCase,cancelBookingUseCase,createOffsiteBookingUseCase, completeBookingUseCase, providerCompleteBookingUseCase, clientCompleteBookingUseCase)
+export const bookingController = new BookingController(createBookingUseCase,listBookingUseCase,cancelBookingUseCase,createOffsiteBookingUseCase, completeBookingUseCase, providerCompleteBookingUseCase, clientCompleteBookingUseCase, rescheduleBookingUseCase)
 
 export const paymentController = new PaymentController(createPaymentIntentUseCase, createRemainingPaymentIntentUseCase)
 

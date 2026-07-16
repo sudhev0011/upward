@@ -30,8 +30,16 @@ export const ClientRoutes = {
 
   CLIENT_COMPLETE_BOOKING: (bookingId: string) =>
     `/api/client/bookings/${bookingId}/client-complete`,
+
+  RESCHEDULE_BOOKING_ONSITE: (bookingId: string) =>
+    `/api/client/bookings/${bookingId}/reschedule/onsite`,
+
+  RESCHEDULE_BOOKING_OFFSITE: (bookingId: string) =>
+    `/api/client/bookings/${bookingId}/reschedule/offsite`,
+
   GET_DASHBOARD_STATS: "/api/client/dashboard/stats",
 } as const;
+
 
 export const ProviderRoutes = {
   PROFILE: "/api/provider/profile",

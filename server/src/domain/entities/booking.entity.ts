@@ -513,6 +513,79 @@ export class Booking {
       new Date(),
     );
   }
+  /**
+   * RESCHEDULE BOOKING
+   * Only allowed when the booking is CONFIRMED and the current booking date
+   * is still at least 7 days away (mirrors the cancellation lock rule).
+   */
+  reschedule(data: {
+    newBookingDate: string;
+    newStartDateTime: Date | null;
+    newEndDateTime: Date | null;
+  }): Booking {
+    if (this.status !== BookingStatus.CONFIRMED) {
+      throw new UnprocessableEntityError(
+        "Only confirmed bookings can be rescheduled",
+      );
+    }
+
+    const now = new Date();
+    const currentBookingDate = new Date(this.bookingDate);
+    const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
+
+    if (currentBookingDate.getTime() - now.getTime() < oneWeekInMs) {
+      throw new UnprocessableEntityError(
+        "Confirmed bookings can only be rescheduled at least one week before the scheduled date",
+      );
+    }
+
+    return new Booking(
+      this.id,
+      this.bookingId,
+      this.clientId,
+      this.providerId,
+      this.serviceId,
+      this.providerServiceId,
+
+      this.status,
+
+      this.paymentType,
+
+      this.paymentStatus,
+
+      this.totalAmount,
+      this.paidAmount,
+      this.remainingAmount,
+
+      this.refundAmount,
+
+      data.newBookingDate,
+
+      this.bookingMode,
+
+      data.newStartDateTime,
+      data.newEndDateTime,
+      this.location,
+
+      this.notes,
+
+      this.requirements,
+
+      this.cancelledBy,
+      this.cancellationReason,
+      this.cancelledAt,
+
+      this.providerCompletedAt,
+      this.clientCompletedAt,
+      this.completedAt,
+
+      this.expiresAt,
+
+      this.createdAt,
+      new Date(),
+    );
+  }
+
   markClientComplete(): Booking {
     if (this.status !== BookingStatus.PROVIDER_COMPLETED) {
       throw new ValidationError("Provider must complete booking first");

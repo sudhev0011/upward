@@ -48,6 +48,15 @@ export class ClientRouter {
       "/bookings/:id/cancel",
       bookingController.cancelBooking(UserRole.CLIENT),
     );
+    this.router.patch(
+      "/bookings/:id/reschedule/onsite",
+      bookingController.rescheduleOnsiteBooking,
+    );
+    this.router.patch(
+      "/bookings/:id/reschedule/offsite",
+      bookingController.rescheduleOffsiteBooking,
+    );
+
     this.router.post(
       "/payments/create-intent",
 

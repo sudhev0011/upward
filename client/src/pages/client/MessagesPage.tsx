@@ -376,45 +376,73 @@ const MessagesPage = () => {
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-3">
-              {messages.filter(m => !m.userStates?.[currentUserId]?.isDeleted).map((m) => {
-                const isMe = m.senderId === currentUserId;
+              {messages.map((msg) => {
+                const isMe = msg.senderId === currentUserId;
+                const isDeleted = msg.userStates?.[currentUserId]?.isDeleted;
                 return (
                   <div
-                    key={m.id}
+                    key={msg.id}
                     className={`flex ${isMe ? "justify-end" : "justify-start"} group relative`}
                   >
-                    <div className={`flex items-center gap-2 max-w-[70%] ${isMe ? "flex-row-reverse" : "flex-row"}`}>
-                      <div
-                        className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
-                          isMe
-                            ? "bg-[#719FC4] text-white rounded-br-sm"
-                            : "bg-gray-100 text-gray-800 rounded-bl-sm"
-                        }`}
-                      >
-                        {m.text && <p>{m.text}</p>}
-                        {m.attachmentUrl && RenderAttachment(m.attachmentUrl, isMe)}
-                        
-                        <div className="flex items-center justify-end gap-1.5 mt-1">
-                          <span className={`text-[10px] ${isMe ? "text-white/60" : "text-gray-400"}`}>
-                            {new Date(m.createdAt).toLocaleTimeString([], {
+                    <div className={`flex items-center gap-2 max-w-[75%] ${isMe ? "flex-row-reverse" : "flex-row"}`}>
+                      {isDeleted ? (
+                        <div
+                          className={`rounded-2xl px-4 py-2.5 border border-dashed flex items-center gap-2 ${
+                            isMe
+                              ? "bg-secondary/20 text-muted-foreground border-border"
+                              : "bg-secondary/10 text-muted-foreground border-border/50"
+                          }`}
+                        >
+                          <span className="text-xs italic select-none">
+                            This message was deleted
+                          </span>
+                          <span className="text-[10px] text-muted-foreground/60 ml-2">
+                            {new Date(msg.createdAt).toLocaleTimeString([], {
                               hour: "2-digit",
                               minute: "2-digit",
                             })}
                           </span>
-                          {isMe && renderStatusTicks(m, otherParticipantId)}
                         </div>
-                      </div>
+                      ) : (
+                        <>
+                          <div
+                            className={`rounded-2xl px-4 py-3 ${
+                              isMe
+                                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/10"
+                                : "bg-secondary/50 text-card-foreground"
+                            }`}
+                          >
+                            {msg.text && (
+                              <p className="text-sm leading-relaxed">
+                                {msg.text}
+                              </p>
+                            )}
+                            {msg.attachmentUrl &&
+                              RenderAttachment(msg.attachmentUrl, isMe)}
 
-                      <button
-                        onClick={() => m.id && handleDeleteMessage(m.id)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 duration-200 shrink-0"
-                        title="Delete Message"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                            <div className="flex items-center justify-end gap-1.5 mt-1.5">
+                              <span className={`text-[11px] ${isMe ? "text-primary-foreground/60" : "text-muted-foreground"}`}>
+                                {new Date(msg.createdAt).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </span>
+                              {isMe && renderStatusTicks(msg, otherParticipantId)}
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={() => msg.id && handleDeleteMessage(msg.id)}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 duration-200 shrink-0"
+                            title="Delete Message"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
-                );
+                );  
               })}
               <div ref={messagesEndRef} />
             </div>

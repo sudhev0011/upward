@@ -8,6 +8,7 @@ import {
   AlertTriangle,
   CreditCard,
   FileText,
+  RotateCcw,
 } from "lucide-react";
 import { BookingListItem } from "@/interfaces/bookings/bookings.interface";
 import { chatApi } from "@/api/chat.api";
@@ -22,6 +23,7 @@ import { BookingLedger } from "./booking-details-sheet-sub/BookingLedger";
 import { BookingCancellationForm } from "./booking-details-sheet-sub/BookingCancellationForm";
 import PayRemainingModal from "@/components/booking/PayRemainingModal";
 import { useCompleteBooking } from "@/hooks/booking/use-complete-booking";
+import RescheduleBookingModal from "./RescheduleBookingModal";
 
 interface BookingDetailsSheetProps {
   booking: BookingListItem | null;
@@ -65,6 +67,7 @@ export const BookingDetailsSheet = ({
   const [isMessaging, setIsMessaging] = useState(false);
   const [showConfirmCancel, setShowConfirmCancel] = useState(false);
   const [showPayRemaining, setShowPayRemaining] = useState(false);
+  const [showReschedule, setShowReschedule] = useState(false);
 
   const { mutateAsync: cancelBooking, isPending: isCancelling } =
     useCancelBooking();
@@ -304,22 +307,41 @@ export const BookingDetailsSheet = ({
                       variant="outline"
                       className="w-full gap-2 h-11 text-muted-foreground/60 bg-muted/20"
                     >
+                      <RotateCcw className="h-4 w-4" />
+                      Reschedule (Locked)
+                    </Button>
+                    <Button
+                      disabled
+                      variant="outline"
+                      className="w-full gap-2 h-11 text-muted-foreground/60 bg-muted/20"
+                    >
                       <AlertTriangle className="h-4 w-4" />
                       Cancel Booking (Locked)
                     </Button>
                     <p className="text-[11px] text-rose-500 font-medium text-center px-2">
-                      Confirmed bookings can only be cancelled at least 7 days
-                      before execution.
+                      Confirmed bookings can only be cancelled or rescheduled at
+                      least 7 days before execution.
                     </p>
                   </div>
                 ) : (
-                  <Button
-                    onClick={() => setShowConfirmCancel(true)}
-                    variant="outline"
-                    className="w-full gap-2 h-11 text-rose-600 border-rose-200 hover:bg-rose-50 font-semibold"
-                  >
-                    <AlertTriangle className="h-4 w-4" /> Cancel Booking
-                  </Button>
+                  <>
+                    {isConfirmed && (
+                      <Button
+                        onClick={() => setShowReschedule(true)}
+                        variant="outline"
+                        className="w-full gap-2 h-11 text-blue-600 border-blue-200 hover:bg-blue-50 dark:border-blue-800 dark:hover:bg-blue-950/30 font-semibold"
+                      >
+                        <RotateCcw className="h-4 w-4" /> Reschedule Booking
+                      </Button>
+                    )}
+                    <Button
+                      onClick={() => setShowConfirmCancel(true)}
+                      variant="outline"
+                      className="w-full gap-2 h-11 text-rose-600 border-rose-200 hover:bg-rose-50 font-semibold"
+                    >
+                      <AlertTriangle className="h-4 w-4" /> Cancel Booking
+                    </Button>
+                  </>
                 ))}
             </>
           ) : (
@@ -338,6 +360,14 @@ export const BookingDetailsSheet = ({
         bookingId={booking.id}
         remainingAmount={booking.remainingAmount}
       />
+
+      {showReschedule && (
+        <RescheduleBookingModal
+          open={showReschedule}
+          onClose={() => setShowReschedule(false)}
+          booking={booking}
+        />
+      )}
     </Sheet>
   );
 };
