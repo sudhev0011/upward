@@ -34,7 +34,7 @@ const ClientLayout = () => {
           onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
           sidebarOpen={sidebarOpen}
         />
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 p-6 overflow-auto bg-secondary/20">
           <Outlet />
         </main>
       </div>

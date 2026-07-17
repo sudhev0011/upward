@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+const SOCKET_URL = import.meta.env.VITE_ENV == 'production' ? import.meta.env.VITE_SOCKET_URL : import.meta.env.VITE_API_URL
 
 let globalSocket: Socket | null = null;
 
