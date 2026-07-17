@@ -12,6 +12,7 @@ export class Message {
     public readonly attachmentUrl: string | null,
     public readonly isDelivered: boolean,
     public readonly userStates: Record<string, UserMessageState>,
+    public readonly reactions: Record<string, string>, 
     public readonly createdAt: Date
   ) {}
 
@@ -23,6 +24,7 @@ export class Message {
     attachmentUrl?: string | null;
     isDelivered?: boolean;
     userStates: Record<string, UserMessageState>;
+    reactions?: Record<string, string>;
     createdAt?: Date;
   }): Message {
     const now = new Date();
@@ -34,6 +36,7 @@ export class Message {
       data.attachmentUrl ?? null,
       data.isDelivered ?? false,
       data.userStates,
+      data.reactions ?? {},
       data.createdAt ?? now
     );
   }

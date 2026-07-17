@@ -3,7 +3,7 @@ import { Server as SocketIOServer, Socket } from 'socket.io';
 import { JwtTokenService } from '../../infrastructure/security/jwt-token-service';
 import { env } from '../../infrastructure/config/env';
 import { winstonLogger } from '../../infrastructure/config/logger';
-import { sendMessageUseCase, resetUnreadCountUseCase, deleteMessageUseCase, chatRepository } from '../../infrastructure/di/chatDi';
+import { sendMessageUseCase, resetUnreadCountUseCase, deleteMessageUseCase, chatRepository, addMessageReactionUseCase } from '../../infrastructure/di/chatDi';
 import { socketService } from '../../infrastructure/services/socket.service';
 
 interface AuthenticatedSocket extends Socket {
@@ -144,6 +144,50 @@ export function initSocketServer(httpServer: HttpServer): SocketIOServer {
           callback?.({ success: true, data: message });
         } catch (error) {
           winstonLogger.error('Error handling socket send_message:', error);
+          const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+          callback?.({ success: false, error: errorMsg });
+        }
+      }
+    );
+
+    // Add message reaction event
+    socket.on(
+      'send_message_reaction',
+      async (
+        data: { messageId: string; conversationId: string; reaction: string },
+        callback?: (response: { success: boolean; error?: string }) => void
+      ) => {
+        try {
+          const { messageId, conversationId, reaction } = data;
+          
+          if (!messageId || !conversationId || !reaction) {
+            callback?.({ success: false, error: 'messageId, conversationId, and reaction are required' });
+            return;
+          }
+          if (!userId) {
+            callback?.({ success: false, error: 'User context not found' });
+            return;
+          }
+
+          // 2. EXECUTING through your formal Use Case pipeline
+          const updatedMessage = await addMessageReactionUseCase.execute(messageId, userId, reaction);
+          
+          if (!updatedMessage) {
+            callback?.({ success: false, error: 'Message not found or update unauthorized' });
+            return;
+          }
+
+          // 3. BROADCAST the reaction payload live to everyone in the room
+          io.to(`chat_${conversationId}`).emit('message_reaction_updated', {
+            messageId,
+            userId,
+            reaction,
+            conversationId
+          });
+
+          callback?.({ success: true });
+        } catch (error) {
+          winstonLogger.error('Error handling socket send_message_reaction:', error);
           const errorMsg = error instanceof Error ? error.message : 'Unknown error';
           callback?.({ success: false, error: errorMsg });
         }

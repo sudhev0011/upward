@@ -11,6 +11,7 @@ export interface Message {
   attachmentUrl: string | null;
   isDelivered: boolean;
   userStates: Record<string, UserMessageState>;
+  reactions: Record<string, string>
   createdAt: string;
 }
 

@@ -27,6 +27,8 @@ export class MessageMapper {
       });
     }
 
+    const reactionsObj = doc.reactions instanceof Map ? Object.fromEntries(doc.reactions) : doc.reactions || {};
+
     return Message.create({
       id: String(doc._id),
       conversationId: String(doc.conversationId),
@@ -35,6 +37,7 @@ export class MessageMapper {
       attachmentUrl: doc.attachmentUrl,
       isDelivered: doc.isDelivered,
       userStates,
+      reactions: reactionsObj,
       createdAt: doc.createdAt,
     });
   }

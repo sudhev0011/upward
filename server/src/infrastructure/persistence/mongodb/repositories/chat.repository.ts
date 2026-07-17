@@ -1,13 +1,19 @@
-import { Types } from 'mongoose';
-import { IChatRepository } from '../../../../domain/interfaces/repositories/chat/IChatRepository';
-import { Conversation } from '../../../../domain/entities/conversation.entity';
-import { Message } from '../../../../domain/entities/message.entity';
-import { ConversationModel } from '../models/conversation.model';
-import { MessageModel } from '../models/message.model';
-import { ConversationMapper, MessageMapper } from '../../../mapers.persistence/chat/chat.mapper';
+import { Types } from "mongoose";
+import { IChatRepository } from "../../../../domain/interfaces/repositories/chat/IChatRepository";
+import { Conversation } from "../../../../domain/entities/conversation.entity";
+import { Message } from "../../../../domain/entities/message.entity";
+import { ConversationModel } from "../models/conversation.model";
+import { MessageModel } from "../models/message.model";
+import {
+  ConversationMapper,
+  MessageMapper,
+} from "../../../mapers.persistence/chat/chat.mapper";
 
 export class MongoChatRepository implements IChatRepository {
-  async findOrCreateConversation(clientId: string, providerId: string): Promise<Conversation> {
+  async findOrCreateConversation(
+    clientId: string,
+    providerId: string,
+  ): Promise<Conversation> {
     const clientOid = new Types.ObjectId(clientId);
     const providerOid = new Types.ObjectId(providerId);
 
@@ -28,10 +34,14 @@ export class MongoChatRepository implements IChatRepository {
     return ConversationMapper.toEntity(doc);
   }
 
-  async findConversationById(conversationId: string): Promise<Conversation | null> {
+  async findConversationById(
+    conversationId: string,
+  ): Promise<Conversation | null> {
     if (!Types.ObjectId.isValid(conversationId)) return null;
 
-    const doc = await ConversationModel.findById(new Types.ObjectId(conversationId));
+    const doc = await ConversationModel.findById(
+      new Types.ObjectId(conversationId),
+    );
     if (!doc) return null;
 
     return ConversationMapper.toEntity(doc);
@@ -64,7 +74,7 @@ export class MongoChatRepository implements IChatRepository {
   async findMessagesByConversationId(
     conversationId: string,
     limit: number,
-    skip: number
+    skip: number,
   ): Promise<Message[]> {
     if (!Types.ObjectId.isValid(conversationId)) return [];
 
@@ -78,63 +88,104 @@ export class MongoChatRepository implements IChatRepository {
     return docs.map((doc) => MessageMapper.toEntity(doc));
   }
 
-  async resetUnreadCount(conversationId: string, role: 'client' | 'provider'): Promise<void> {
+  async resetUnreadCount(
+    conversationId: string,
+    role: "client" | "provider",
+  ): Promise<void> {
     if (!Types.ObjectId.isValid(conversationId)) return;
 
-    const updateField = role === 'client' ? { unreadCountClient: 0 } : { unreadCountProvider: 0 };
-    await ConversationModel.findByIdAndUpdate(new Types.ObjectId(conversationId), {
-      $set: updateField,
-    });
+    const updateField =
+      role === "client" ? { unreadCountClient: 0 } : { unreadCountProvider: 0 };
+    await ConversationModel.findByIdAndUpdate(
+      new Types.ObjectId(conversationId),
+      {
+        $set: updateField,
+      },
+    );
 
-    const conversation = await ConversationModel.findById(new Types.ObjectId(conversationId));
+    const conversation = await ConversationModel.findById(
+      new Types.ObjectId(conversationId),
+    );
     if (conversation) {
-      const readerId = role === 'client' ? String(conversation.clientId) : String(conversation.providerId);
-      const senderId = role === 'client' ? conversation.providerId : conversation.clientId;
+      const readerId =
+        role === "client"
+          ? String(conversation.clientId)
+          : String(conversation.providerId);
+      const senderId =
+        role === "client" ? conversation.providerId : conversation.clientId;
 
       await MessageModel.updateMany(
         {
           conversationId: new Types.ObjectId(conversationId),
           senderId: senderId,
-          [`userStates.${readerId}.isRead`]: false
+          [`userStates.${readerId}.isRead`]: false,
         },
         {
           $set: {
             [`userStates.${readerId}.isRead`]: true,
-            isDelivered: true
-          }
-        }
+            isDelivered: true,
+          },
+        },
       );
     }
   }
 
-  async incrementUnreadCount(conversationId: string, role: 'client' | 'provider'): Promise<void> {
+  async incrementUnreadCount(
+    conversationId: string,
+    role: "client" | "provider",
+  ): Promise<void> {
     if (!Types.ObjectId.isValid(conversationId)) return;
 
-    const updateField = role === 'client' ? { unreadCountClient: 1 } : { unreadCountProvider: 1 };
-    await ConversationModel.findByIdAndUpdate(new Types.ObjectId(conversationId), {
-      $inc: updateField,
-    });
+    const updateField =
+      role === "client" ? { unreadCountClient: 1 } : { unreadCountProvider: 1 };
+    await ConversationModel.findByIdAndUpdate(
+      new Types.ObjectId(conversationId),
+      {
+        $inc: updateField,
+      },
+    );
   }
 
-  async updateLastMessage(conversationId: string, messageId: string): Promise<void> {
-    if (!Types.ObjectId.isValid(conversationId) || !Types.ObjectId.isValid(messageId)) return;
+  async updateLastMessage(
+    conversationId: string,
+    messageId: string,
+  ): Promise<void> {
+    if (
+      !Types.ObjectId.isValid(conversationId) ||
+      !Types.ObjectId.isValid(messageId)
+    )
+      return;
 
-    await ConversationModel.findByIdAndUpdate(new Types.ObjectId(conversationId), {
-      $set: { lastMessageId: new Types.ObjectId(messageId) },
-    });
+    await ConversationModel.findByIdAndUpdate(
+      new Types.ObjectId(conversationId),
+      {
+        $set: { lastMessageId: new Types.ObjectId(messageId) },
+      },
+    );
   }
 
-  async markMessageAsDeleted(messageId: string, userId: string): Promise<Message | null> {
-    if (!Types.ObjectId.isValid(messageId) || !Types.ObjectId.isValid(userId)) return null;
+  async markMessageAsDeleted(
+    messageId: string,
+    userId: string,
+  ): Promise<Message | null> {
+    if (!Types.ObjectId.isValid(messageId) || !Types.ObjectId.isValid(userId))
+      return null;
 
-    const messageDoc = await MessageModel.findById(new Types.ObjectId(messageId));
+    const messageDoc = await MessageModel.findById(
+      new Types.ObjectId(messageId),
+    );
     if (!messageDoc) return null;
 
-    const conversation = await ConversationModel.findById(messageDoc.conversationId);
+    const conversation = await ConversationModel.findById(
+      messageDoc.conversationId,
+    );
     if (!conversation) return null;
 
     const userOid = new Types.ObjectId(userId);
-    if (!conversation.clientId.equals(userOid) && !conversation.providerId.equals(userOid)) {
+    if (
+      !conversation.clientId.equals(userOid) &&
+      !conversation.providerId.equals(userOid)
+    ) {
       return null;
     }
 
@@ -142,10 +193,10 @@ export class MongoChatRepository implements IChatRepository {
       new Types.ObjectId(messageId),
       {
         $set: {
-          [`userStates.${userId}.isDeleted`]: true
-        }
+          [`userStates.${userId}.isDeleted`]: true,
+        },
       },
-      { new: true }
+      { new: true },
     );
 
     if (!doc) return null;
@@ -158,23 +209,24 @@ export class MongoChatRepository implements IChatRepository {
     const userOid = new Types.ObjectId(userId);
 
     const conversations = await ConversationModel.find({
-      $or: [{ clientId: userOid }, { providerId: userOid }]
+      $or: [{ clientId: userOid }, { providerId: userOid }],
     });
 
     const updatedConversationIds: string[] = [];
 
     for (const conv of conversations) {
-      const otherParticipantId = String(conv.clientId) === userId ? conv.providerId : conv.clientId;
+      const otherParticipantId =
+        String(conv.clientId) === userId ? conv.providerId : conv.clientId;
 
       const updateResult = await MessageModel.updateMany(
         {
           conversationId: conv._id,
           senderId: otherParticipantId,
-          isDelivered: false
+          isDelivered: false,
         },
         {
-          $set: { isDelivered: true }
-        }
+          $set: { isDelivered: true },
+        },
       );
 
       if (updateResult.modifiedCount > 0) {
@@ -185,14 +237,32 @@ export class MongoChatRepository implements IChatRepository {
     return updatedConversationIds;
   }
 
-  async findMessageByMessageId(messageId: string): Promise<Message | null>{
-
+  async findMessageByMessageId(messageId: string): Promise<Message | null> {
     if (!Types.ObjectId.isValid(messageId)) null;
 
     const doc = await MessageModel.findById(messageId);
 
-    if(!doc) return null;
+    if (!doc) return null;
 
     return MessageMapper.toEntity(doc);
+  }
+
+  async addReaction(
+    messageId: string,
+    userId: string,
+    reaction: string,
+  ): Promise<Message | null> {
+    const rawDoc = await MessageModel.findByIdAndUpdate(
+      messageId,
+      {
+        $set: { [`reactions.${userId}`]: reaction },
+      },
+      { new: true },
+    );
+
+    if (!rawDoc) return null;
+
+    // Map database Document back to pristine clean domain entity
+    return MessageMapper.toEntity(rawDoc);
   }
 }

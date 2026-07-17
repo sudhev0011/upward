@@ -13,4 +13,5 @@ export interface IChatRepository {
   markMessageAsDeleted(messageId: string, senderId: string): Promise<Message | null>;
   markIncomingMessagesAsDelivered(userId: string): Promise<string[]>;
   findMessageByMessageId(messageId: string): Promise<Message | null>;
+  addReaction(messageId: string, userId: string, reaction: string): Promise<Message | null>;
 }

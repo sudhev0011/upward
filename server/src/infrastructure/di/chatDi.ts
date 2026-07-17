@@ -5,6 +5,7 @@ import { GetMessagesUseCase } from '../../application/use-cases/chat/get-message
 import { FindOrCreateConversationUseCase } from '../../application/use-cases/chat/find-or-create-conversation.use-case';
 import { ResetUnreadCountUseCase } from '../../application/use-cases/chat/reset-unread-count.use-case';
 import { SendMessageUseCase } from '../../application/use-cases/chat/send-message.use-case';
+import { AddMessageReactionUseCase } from '../../application/use-cases/chat/add-message-reaction.use-case';
 import { GetChatUploadUrlUseCase } from '../../application/use-cases/chat/get-chat-upload-url.use-case';
 import { DeleteMessageUseCase } from '../../application/use-cases/chat/delete-message.use-case';
 import { ChatController } from '../../presentation/controllers/chat.controller';
@@ -28,6 +29,7 @@ export const resetUnreadCountUseCase = new ResetUnreadCountUseCase(chatRepositor
 export const sendMessageUseCase = new SendMessageUseCase(chatRepository, userRepository, notificationService);
 export const getChatUploadUrlUseCase = new GetChatUploadUrlUseCase(s3Service);
 export const deleteMessageUseCase = new DeleteMessageUseCase(chatRepository);
+export const addMessageReactionUseCase = new AddMessageReactionUseCase(chatRepository);
 
 // Initialize controller
 export const chatController = new ChatController(

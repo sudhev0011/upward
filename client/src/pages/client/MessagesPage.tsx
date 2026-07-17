@@ -124,7 +124,11 @@ export default function MessagesPage() {
       const response = await chatApi.getConversations();
       if (response.success && response.data) {
         setConversations(response.data);
-        if (response.data.length > 0 && !activeChat && window.innerWidth >= 1024) {
+        if (
+          response.data.length > 0 &&
+          !activeChat &&
+          window.innerWidth >= 1024
+        ) {
           setActiveChat(response.data[0].id);
         }
       }
@@ -243,11 +247,33 @@ export default function MessagesPage() {
       }
     };
 
+    const handleReactionUpdated = (data: {
+      messageId: string;
+      userId: string;
+      reaction: string;
+    }) => {
+      setMessages((prev) =>
+        prev.map((msg) => {
+          if (msg.id === data.messageId) {
+            return {
+              ...msg,
+              reactions: {
+                ...msg.reactions,
+                [data.userId]: data.reaction,
+              },
+            };
+          }
+          return msg;
+        }),
+      );
+    };
+
     socket.on("message_received", handleMessageReceived);
     socket.on("conversation_updated", handleConversationUpdated);
     socket.on("message_deleted", handleMessageDeleted);
     socket.on("messages_delivered", handleMessagesDelivered);
     socket.on("messages_read", handleMessagesRead);
+    socket.on("message_reaction_updated", handleReactionUpdated);
 
     return () => {
       socket.off("message_received", handleMessageReceived);
@@ -255,6 +281,7 @@ export default function MessagesPage() {
       socket.off("message_deleted", handleMessageDeleted);
       socket.off("messages_delivered", handleMessagesDelivered);
       socket.off("messages_read", handleMessagesRead);
+      socket.off("message_reaction_updated", handleReactionUpdated);
     };
   }, [socket, activeChat, otherParticipantId, currentUserId]);
 
@@ -301,7 +328,7 @@ export default function MessagesPage() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 h-[calc(100vh-180px)] min-h-[500px]">
       {/* CONVERSATION LIST PANEL */}
-      <Card 
+      <Card
         className={`border-border/50 bg-card/80 backdrop-blur-sm lg:col-span-1 flex flex-col overflow-hidden transition-all duration-300 ${
           activeChat ? "hidden lg:flex" : "flex"
         }`}
@@ -359,7 +386,9 @@ export default function MessagesPage() {
                     </span>
                     <span className="text-[11px] text-muted-foreground shrink-0 ml-2">
                       {conv.lastMessage
-                        ? new Date(conv.lastMessage.createdAt).toLocaleTimeString([], {
+                        ? new Date(
+                            conv.lastMessage.createdAt,
+                          ).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
                           })
@@ -367,7 +396,9 @@ export default function MessagesPage() {
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground truncate mt-0.5">
-                    {conv.lastMessage ? conv.lastMessage.text : "No messages yet"}
+                    {conv.lastMessage
+                      ? conv.lastMessage.text
+                      : "No messages yet"}
                   </p>
                 </div>
 
@@ -389,7 +420,7 @@ export default function MessagesPage() {
       </Card>
 
       {/* CHAT WINDOW PANEL */}
-      <Card 
+      <Card
         className={`border-border/50 bg-card/80 backdrop-blur-sm lg:col-span-3 flex flex-col overflow-hidden transition-all duration-300 ${
           !activeChat ? "hidden lg:flex" : "flex"
         }`}
@@ -411,7 +442,9 @@ export default function MessagesPage() {
                 {!selectedConversation.participant?.avatar ? (
                   <div className="flex h-full w-full items-center justify-center">
                     <span className="text-xs font-bold text-primary">
-                      {getInitials(selectedConversation.participant?.name || "")}
+                      {getInitials(
+                        selectedConversation.participant?.name || "",
+                      )}
                     </span>
                   </div>
                 ) : (
@@ -434,7 +467,7 @@ export default function MessagesPage() {
             </div>
 
             <div className="flex-1 overflow-auto p-4 md:p-6 space-y-4">
-              {messages.map((msg) => {
+              {/* {messages.map((msg) => {
                 const isMe = msg.senderId === currentUserId;
                 const isDeleted = msg.userStates?.[currentUserId]?.isDeleted;
 
@@ -492,6 +525,134 @@ export default function MessagesPage() {
 
                           <button
                             onClick={() => msg.id && handleDeleteMessage(msg.id)}
+                            className="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 duration-200 shrink-0 p-1"
+                            title="Delete Message"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                );
+              })} */}
+
+              {messages.map((msg) => {
+                const isMe = msg.senderId === currentUserId;
+                const isDeleted = msg.userStates?.[currentUserId]?.isDeleted;
+
+                // The WhatsApp emoji lineup
+                const EMOJI_PALETTE = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
+
+                const handleEmitReaction = (emoji: string) => {
+                  if (!socket || !activeChat || !msg.id) return;
+
+                  // Emit the exact event our updated backend socket is listening for
+                  socket.emit("send_message_reaction", {
+                    messageId: msg.id,
+                    conversationId: activeChat,
+                    reaction: emoji,
+                  });
+                };
+
+                return (
+                  <div
+                    key={msg.id}
+                    className={`flex ${isMe ? "justify-end" : "justify-start"} group relative mb-3`}
+                  >
+                    {!isDeleted && (
+                      <div
+                        className={`absolute -top-10 z-10 hidden group-hover:flex items-center justify-center pt-2 pb-2 px-4 transition-all duration-150 ${
+                          isMe ? "right-2" : "left-2"
+                        }`}
+                      >
+                        <div className="flex items-center gap-1 bg-background border border-border/60 shadow-md rounded-full px-2 py-0.5 backdrop-blur-sm">
+                          {EMOJI_PALETTE.map((emoji) => (
+                            <button
+                              key={emoji}
+                              onClick={() => handleEmitReaction(emoji)}
+                              className="hover:scale-125 active:scale-90 transition-transform text-base px-0.5"
+                            >
+                              {emoji}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div
+                      className={`flex items-center gap-2 max-w-[85%] sm:max-w-[75%] ${isMe ? "flex-row-reverse" : "flex-row"}`}
+                    >
+                      {isDeleted ? (
+                        <div
+                          className={`rounded-2xl px-4 py-2.5 border border-dashed flex items-center gap-2 ${isMe ? "bg-secondary/20 text-muted-foreground border-border" : "bg-secondary/10 text-muted-foreground border-border/50"}`}
+                        >
+                          <span className="text-xs italic select-none">
+                            This message was deleted
+                          </span>
+                        </div>
+                      ) : (
+                        <>
+                          {/* MESSAGE CHAT CONTENT CONTAINER */}
+                          <div
+                            className={`rounded-2xl px-4 py-3 relative transition-all duration-150 ${
+                              isMe
+                                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/10"
+                                : "bg-secondary/50 text-card-foreground"
+                            } ${msg.reactions && Object.keys(msg.reactions).length > 0 ? "mb-2" : ""}`}
+                          >
+                            {msg.text && (
+                              <p className="text-sm leading-relaxed break-words">
+                                {msg.text}
+                              </p>
+                            )}
+                            {msg.attachmentUrl &&
+                              RenderAttachment(msg.attachmentUrl, isMe)}
+
+                            <div className="flex items-center justify-end gap-1.5 mt-1.5">
+                              <span
+                                className={`text-[11px] ${isMe ? "text-primary-foreground/60" : "text-muted-foreground"}`}
+                              >
+                                {new Date(msg.createdAt).toLocaleTimeString(
+                                  [],
+                                  { hour: "2-digit", minute: "2-digit" },
+                                )}
+                              </span>
+                              {isMe &&
+                                renderStatusTicks(msg, otherParticipantId)}
+                            </div>
+
+                            {/* RENDER ACTIVE REACTIONS ON MESSAGE PILL BASE */}
+                            {msg.reactions &&
+                              Object.keys(msg.reactions).length > 0 && (
+                                <div
+                                  className={`absolute -bottom-2.5 flex items-center gap-0.5 bg-background border border-border/80 shadow-sm rounded-full px-1.5 py-0.5 select-none ${
+                                    isMe ? "left-2" : "right-2"
+                                  }`}
+                                >
+                                  {Object.entries(msg.reactions).map(
+                                    ([userId, userReactionEmoji]) => (
+                                      <span
+                                        key={userId}
+                                        className="text-xs"
+                                        title={
+                                          userId === currentUserId
+                                            ? "You reacted"
+                                            : "Participant reacted"
+                                        }
+                                      >
+                                        {userReactionEmoji}
+                                      </span>
+                                    ),
+                                  )}
+                                </div>
+                              )}
+                          </div>
+
+                          <button
+                            onClick={() =>
+                              msg.id && handleDeleteMessage(msg.id)
+                            }
                             className="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 duration-200 shrink-0 p-1"
                             title="Delete Message"
                           >

@@ -12,6 +12,7 @@ export interface MessageDocument extends Document {
   attachmentUrl: string | null;
   isDelivered: boolean;
   userStates: Map<string, UserMessageState>;
+  reactions: Record<string, string>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -31,6 +32,7 @@ const MessageSchema = new Schema<MessageDocument>(
       }, { _id: false }),
       default: {}
     },
+    reactions: { type: Schema.Types.Map, of: String, default: {} },
   },
   {
     timestamps: true,
