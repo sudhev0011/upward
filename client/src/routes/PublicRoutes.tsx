@@ -11,6 +11,7 @@ import PublicLayout from '@/layouts/PublicLayout';
 import { RoleGuard } from '@/components/common/RoleGuard';
 import { ProviderListingPage } from '@/pages/public/ProviderListingPage';
 import { ProviderProfilePage } from '@/pages/public/ProviderProfilePage';
+import NotFound from '@/pages/public/NotFound';
 
 const PublicRoutes = () => {
   return (
@@ -54,6 +55,8 @@ const PublicRoutes = () => {
           <Route path="/providers/:providerId" element={<ProviderProfilePage />} />
 
         </Route>
+
+        <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };

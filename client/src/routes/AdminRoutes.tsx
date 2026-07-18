@@ -8,6 +8,7 @@ import Categories from "@/pages/admin/Categories";
 import Services from "@/pages/admin/Services";
 import Subscriptions from "@/pages/admin/Subscriptions";
 import Payments from "@/pages/admin/Payments";
+import NotFound from "@/pages/public/NotFound";
 
 const AdminRoutes = () => {
   return (
@@ -23,7 +24,9 @@ const AdminRoutes = () => {
         <Route path="categories" element={<Categories />} />
         <Route path="subscriptions" element={<Subscriptions />} />
         <Route path="payments" element={<Payments />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };

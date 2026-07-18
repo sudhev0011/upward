@@ -12,6 +12,7 @@ import AvailabilityPage from "@/pages/provider/AvailabilityPage";
 import MessagesPage from "@/pages/provider/MessagesPage";
 import SettingsPage from "@/pages/provider/SettingsPage";
 import SubscriptionsPage from "@/pages/provider/SubscriptionsPage";
+import NotFound from "@/pages/public/NotFound";
 
 const ProviderRoutes = () => {
   return (
@@ -29,7 +30,9 @@ const ProviderRoutes = () => {
         <Route path="messages" element={<MessagesPage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="subscriptions" element={<SubscriptionsPage />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
