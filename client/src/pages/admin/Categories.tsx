@@ -72,10 +72,9 @@ import { useUpdateCategoryMutation } from "@/hooks/admin/category/useUpdateCateg
 import { CategoryResponse } from "@/interfaces/admin/category.interface";
 import { UpdateCategoryRequest } from "@/interfaces/admin/category.interface";
 import { Badge } from "@/components/ui/badge";
+import { usePagination } from "@/hooks/usePagination";
 
 export default function Categories() {
-  const queryClient = useQueryClient();
-
   // State
   const [dialogOpen, setDialogOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -115,12 +114,19 @@ export default function Categories() {
     [page, limit, debouncedSearch, mode, isActive, sortBy, sortOrder],
   );
 
-  const { data: response, isLoading } = usePaginatedCategories(params);
+  const {
+    data: response,
+    isLoading,
+    isFetching,
+  } = usePaginatedCategories(params);
   const createMutation = useCreateCategoryMutation();
   const updateMutation = useUpdateCategoryMutation();
 
   const categories = response?.data?.data || [];
   const totalPages = response?.data?.totalPages || 1;
+  const currentPage = response?.data?.page || page || 1;
+
+  const { pageNumbers } = usePagination({ currentPage, totalPages });
 
   const form = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
@@ -184,7 +190,6 @@ export default function Categories() {
         { id: selectedId, ...values },
         {
           onSuccess: (res) => {
-            queryClient.invalidateQueries({ queryKey: ["categoriesAdmin"] });
             setDialogOpen(false);
             toast.success(res.message || "Category updated successfully");
             onOpenChange(false);
@@ -196,7 +201,6 @@ export default function Categories() {
       // CREATE LOGIC
       createMutation.mutate(values, {
         onSuccess: (res) => {
-          queryClient.invalidateQueries({ queryKey: ["categoriesAdmin"] });
           setDialogOpen(false);
           toast.success(res.message);
           onOpenChange(false);
@@ -382,52 +386,46 @@ export default function Categories() {
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
-                    onClick={() => setPage((p) => p - 1)}
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage > 1)
+                        setPage((prev) => Math.max(prev - 1, 1));
+                    }}
                     className={
-                      page === 1
+                      currentPage === 1 || isFetching || isLoading
                         ? "pointer-events-none opacity-50"
                         : "cursor-pointer"
                     }
                   />
                 </PaginationItem>
 
-                {Array.from({ length: totalPages }, (_, i) => {
-                  const pageNumber = i + 1;
-
-                  // Show first page, last page, current page, and pages around current page
-                  if (
-                    pageNumber === 1 ||
-                    pageNumber === totalPages ||
-                    (pageNumber >= page - 1 && pageNumber <= page + 1)
-                  ) {
-                    return (
-                      <PaginationItem key={i}>
-                        <PaginationLink
-                          onClick={() => setPage(pageNumber)}
-                          isActive={page === pageNumber}
-                        >
-                          {pageNumber}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  }
-
-                  // Show ellipsis for gaps
-                  if (
-                    (pageNumber === page - 2 && pageNumber > 1) ||
-                    (pageNumber === page + 2 && pageNumber < totalPages)
-                  ) {
-                    return <PaginationEllipsis key={i} />;
-                  }
-
-                  return null;
-                })}
+                {pageNumbers.map((pageNumber, idx) => (
+                <PaginationItem key={`page-node-${idx}`}>
+                  {pageNumber === "ellipsis" ? (
+                    <PaginationEllipsis />
+                  ) : (
+                    <PaginationLink
+                      href="#"
+                      isActive={currentPage === pageNumber}
+                      onClick={(e) => { e.preventDefault(); setPage(Number(pageNumber)); }}
+                      className={isFetching || isLoading ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    >
+                      {pageNumber}
+                    </PaginationLink>
+                  )}
+                </PaginationItem>
+              ))}
 
                 <PaginationItem>
                   <PaginationNext
-                    onClick={() => setPage((p) => p + 1)}
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage < totalPages) setPage((prev) => prev + 1);
+                    }}
                     className={
-                      page === totalPages
+                      currentPage >= totalPages || isFetching || isLoading
                         ? "pointer-events-none opacity-50"
                         : "cursor-pointer"
                     }

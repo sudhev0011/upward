@@ -34,5 +34,12 @@ export interface IProviderServiceRepository extends IBaseRepository<ProviderServ
     providerId: string,
   ): Promise<ProviderServicePublicItem[]>;
 
-  servicesCountByProvider(providerId: string): Promise<number>
+  servicesCountByProvider(providerId: string): Promise<number>;
+
+  hasOtherServicesInSameCategory(providerServiceId: string): Promise<{
+    hasOtherServices: boolean;
+    categoryId: string;
+    categoryName: string;
+    providerId: string;
+  }>;
 }

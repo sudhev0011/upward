@@ -1,4 +1,4 @@
-import { Message } from '../../../entities/message.entity';
+import { SendMessageResult } from '../../../../application/dtos/chats/sendMessageResult.dto';
 
 export interface ISendMessageUseCase {
   execute(
@@ -6,6 +6,5 @@ export interface ISendMessageUseCase {
     conversationId: string,
     text: string,
     attachmentUrl?: string | null,
-    isDelivered?: boolean
-  ): Promise<Message>;
+  ): Promise<SendMessageResult>;
 }

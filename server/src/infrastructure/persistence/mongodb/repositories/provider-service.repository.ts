@@ -92,7 +92,7 @@ export class ProviderServiceRepository
 
       {
         $lookup: {
-          from: "services", 
+          from: "services",
           localField: "serviceId",
           foreignField: "_id",
           as: "service",
@@ -122,7 +122,7 @@ export class ProviderServiceRepository
 
           {
             $lookup: {
-              from: "categories", 
+              from: "categories",
               localField: "service.categoryId",
               foreignField: "_id",
               as: "category",
@@ -228,7 +228,7 @@ export class ProviderServiceRepository
     transaction?: ITransactionContext,
   ): Promise<ProviderService | null> {
     const session = MongoSessionUtil.getSession(transaction);
-    const count = this.countDocuments({providerId})
+    const count = this.countDocuments({ providerId });
     return this.findOne(
       {
         providerId,
@@ -251,4 +251,130 @@ export class ProviderServiceRepository
       session,
     );
   }
+
+  async hasOtherServicesInSameCategory(
+  providerServiceId: string,
+): Promise<{
+  hasOtherServices: boolean;
+  categoryId: string;
+  categoryName: string;
+  providerId: string;
+}> {
+  const result = await this.model.aggregate([
+    // Stage 1: Find the provider service being deleted
+    {
+      $match: {
+        _id: new Types.ObjectId(providerServiceId),
+        isActive: true,
+      },
+    },
+    // Stage 2: Lookup the service details to get categoryId
+    {
+      $lookup: {
+        from: "services",
+        localField: "serviceId",
+        foreignField: "_id",
+        as: "service",
+      },
+    },
+    // Stage 3: Unwind the service array
+    {
+      $unwind: {
+        path: "$service",
+        preserveNullAndEmptyArrays: false,
+      },
+    },
+    // Stage 4: Lookup category details to get category name
+    {
+      $lookup: {
+        from: "categories",
+        localField: "service.categoryId",
+        foreignField: "_id",
+        as: "category",
+      },
+    },
+    // Stage 5: Unwind the category array
+    {
+      $unwind: {
+        path: "$category",
+        preserveNullAndEmptyArrays: false,
+      },
+    },
+    // Stage 6: Lookup all services in the same category
+    {
+      $lookup: {
+        from: "services",
+        let: { categoryId: "$service.categoryId" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$categoryId", "$$categoryId"] },
+                  { $eq: ["$isActive", true] },
+                ],
+              },
+            },
+          },
+          { $project: { _id: 1 } },
+        ],
+        as: "servicesInCategory",
+      },
+    },
+    // Stage 7: Lookup all provider services for these services
+    // Excluding the one being deleted
+    {
+      $lookup: {
+        from: "providerservices",
+        let: {
+          serviceIds: "$servicesInCategory._id",
+          currentProviderId: "$providerId",
+          currentServiceId: "$_id",
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $in: ["$serviceId", "$$serviceIds"] },
+                  { $eq: ["$providerId", "$$currentProviderId"] },
+                  { $ne: ["$_id", "$$currentServiceId"] },
+                  { $eq: ["$isActive", true] },
+                ],
+              },
+            },
+          },
+          { $limit: 1 }, // We only need to know if at least one exists
+          { $project: { _id: 1 } },
+        ],
+        as: "otherProviderServices",
+      },
+    },
+    // Stage 8: Project the result with all needed information
+    {
+      $project: {
+        hasOtherServices: {
+          $gt: [{ $size: "$otherProviderServices" }, 0],
+        },
+        categoryId: "$service.categoryId",
+        categoryName: "$category.name",
+        providerId: "$providerId",
+        otherServicesCount: { $size: "$otherProviderServices" },
+      },
+    },
+  ]);
+
+  // If no result found, the provider service doesn't exist or is inactive
+  if (result.length === 0) {
+    return {
+      hasOtherServices: false,
+      categoryId: result[0].categoryId,
+      categoryName: result[0].categoryName,
+      providerId: result[0].providerId,
+    };
+  }
+
+  console.log(result[0]);
+  return result[0];
+}
 }

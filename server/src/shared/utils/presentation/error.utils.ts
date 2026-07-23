@@ -1,9 +1,9 @@
-import { 
-  AppError, 
-  ConflictError, 
-  InternalServerError, 
-  BadRequestError, 
-  ValidationError 
+import {
+  AppError,
+  ConflictError,
+  InternalServerError,
+  BadRequestError,
+  ValidationError,
 } from "../../../domain/errors/errors";
 
 export class ErrorHandler {
@@ -12,24 +12,27 @@ export class ErrorHandler {
   }
 
   static handleAsyncError(error: unknown): unknown {
-    if (error instanceof AppError || (error && (error as any).name === 'ZodError')) {
+    console.log(typeof error)
+    if (error instanceof AppError) {
       return error;
     }
 
-    if (typeof error === 'object' && error !== null) {
+    if (typeof error === "object" && error !== null) {
       const err = error as any;
 
       if (err.code === 11000) {
-        const field = Object.keys(err.keyValue || {})[0] || 'field';
+        const field = Object.keys(err.keyValue || {})[0] || "field";
         return new ConflictError(`That ${field} is already in use.`);
       }
 
-      if (err.name === 'ValidationError') {
-        const message = Object.values(err.errors).map((val: any) => val.message).join(', ');
+      if (err.name === "ValidationError") {
+        const message = Object.values(err.errors)
+          .map((val: any) => val.message)
+          .join(", ");
         return new ValidationError(message);
       }
 
-      if (err.name === 'CastError') {
+      if (err.name === "CastError") {
         return new BadRequestError(`Invalid format for field: ${err.path}`);
       }
     }
@@ -37,7 +40,7 @@ export class ErrorHandler {
     if (error instanceof Error) {
       return new InternalServerError(error.message);
     }
-    
-    return new InternalServerError('An unexpected server error occurred');
+
+    return new InternalServerError("An unexpected server error occurred");
   }
 }

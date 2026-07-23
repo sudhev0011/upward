@@ -2,12 +2,22 @@ import { Types } from "mongoose";
 import { IChatRepository } from "../../../../domain/interfaces/repositories/chat/IChatRepository";
 import { Conversation } from "../../../../domain/entities/conversation.entity";
 import { Message } from "../../../../domain/entities/message.entity";
-import { ConversationModel } from "../models/conversation.model";
+import {
+  ConversationModel,
+  ConversationDocument,
+} from "../models/conversation.model";
 import { MessageModel } from "../models/message.model";
 import {
   ConversationMapper,
   MessageMapper,
 } from "../../../mapers.persistence/chat/chat.mapper";
+import {
+  AddReactionResult,
+  DeleteMessageResult,
+  ResetUnreadCountResult,
+} from "../../../../domain/interfaces/chat.interface";
+import { MongoSessionUtil } from "../helper/mongo-session.utils";
+import { ITransactionContext } from "../../../../domain/interfaces/database/transaction-context.interface";
 
 export class MongoChatRepository implements IChatRepository {
   async findOrCreateConversation(
@@ -90,44 +100,63 @@ export class MongoChatRepository implements IChatRepository {
 
   async resetUnreadCount(
     conversationId: string,
-    role: "client" | "provider",
-  ): Promise<void> {
-    if (!Types.ObjectId.isValid(conversationId)) return;
+    userId: string,
+    transaction?: ITransactionContext,
+  ): Promise<ResetUnreadCountResult | null> {
+    if (!Types.ObjectId.isValid(conversationId)) {
+      return null;
+    }
 
-    const updateField =
-      role === "client" ? { unreadCountClient: 0 } : { unreadCountProvider: 0 };
-    await ConversationModel.findByIdAndUpdate(
-      new Types.ObjectId(conversationId),
-      {
-        $set: updateField,
-      },
-    );
+    const session = MongoSessionUtil.getSession(transaction);
 
     const conversation = await ConversationModel.findById(
       new Types.ObjectId(conversationId),
-    );
-    if (conversation) {
-      const readerId =
-        role === "client"
-          ? String(conversation.clientId)
-          : String(conversation.providerId);
-      const senderId =
-        role === "client" ? conversation.providerId : conversation.clientId;
+    ).session(session ?? null);
 
-      await MessageModel.updateMany(
-        {
-          conversationId: new Types.ObjectId(conversationId),
-          senderId: senderId,
-          [`userStates.${readerId}.isRead`]: false,
-        },
-        {
-          $set: {
-            [`userStates.${readerId}.isRead`]: true,
-            isDelivered: true,
-          },
-        },
-      );
+    if (!conversation) {
+      return null;
     }
+
+    const isClient = conversation.clientId.equals(userId);
+
+    const readerId = userId;
+
+    const senderId = isClient ? conversation.providerId : conversation.clientId;
+
+    const recipientId = isClient
+      ? conversation.providerId.toString()
+      : conversation.clientId.toString();
+
+    const updateField = isClient
+      ? { unreadCountClient: 0 }
+      : { unreadCountProvider: 0 };
+
+    await ConversationModel.updateOne(
+      { _id: conversation._id },
+      {
+        $set: updateField,
+      },
+      { session },
+    );
+
+    await MessageModel.updateMany(
+      {
+        conversationId: conversation._id,
+        senderId,
+        [`userStates.${readerId}.isRead`]: false,
+      },
+      {
+        $set: {
+          [`userStates.${readerId}.isRead`]: true,
+          isDelivered: true,
+        },
+      },
+      { session },
+    );
+
+    return {
+      recipientId,
+    };
   }
 
   async incrementUnreadCount(
@@ -167,7 +196,7 @@ export class MongoChatRepository implements IChatRepository {
   async markMessageAsDeleted(
     messageId: string,
     userId: string,
-  ): Promise<Message | null> {
+  ): Promise<DeleteMessageResult | null> {
     if (!Types.ObjectId.isValid(messageId) || !Types.ObjectId.isValid(userId))
       return null;
 
@@ -200,7 +229,10 @@ export class MongoChatRepository implements IChatRepository {
     );
 
     if (!doc) return null;
-    return MessageMapper.toEntity(doc);
+
+    const recipientId = this.findRecipient(userId, conversation);
+
+    return { message: MessageMapper.toEntity(doc), recipientId };
   }
 
   async markIncomingMessagesAsDelivered(userId: string): Promise<string[]> {
@@ -251,7 +283,7 @@ export class MongoChatRepository implements IChatRepository {
     messageId: string,
     userId: string,
     reaction: string,
-  ): Promise<Message | null> {
+  ): Promise<AddReactionResult | null> {
     const rawDoc = await MessageModel.findByIdAndUpdate(
       messageId,
       {
@@ -262,7 +294,26 @@ export class MongoChatRepository implements IChatRepository {
 
     if (!rawDoc) return null;
 
-    // Map database Document back to pristine clean domain entity
-    return MessageMapper.toEntity(rawDoc);
+    const conversation = await ConversationModel.findById(
+      rawDoc.conversationId,
+    );
+
+    if (!conversation) return null;
+
+    const recipientId = this.findRecipient(userId, conversation);
+
+    return {
+      message: MessageMapper.toEntity(rawDoc),
+      recipientId,
+    };
+  }
+
+  private findRecipient(
+    userId: string,
+    conversation: ConversationDocument,
+  ): string {
+    return userId === conversation.clientId.toString()
+      ? conversation.providerId.toString()
+      : conversation.clientId.toString();
   }
 }

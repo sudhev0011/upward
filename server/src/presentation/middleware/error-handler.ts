@@ -20,7 +20,9 @@ export function errorHandler(
   };
 
   if (error instanceof ZodError) {
+    console.log('caught at error handler')
     const first = error.issues[0];
+    console.log(first)
     const validationError = new ValidationError(
       first?.message ?? "Validation error",
     );

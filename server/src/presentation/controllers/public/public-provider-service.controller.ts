@@ -1,4 +1,3 @@
-// presentation/controllers/public/public-provider-service.controller.ts
 import { Request, Response, NextFunction } from 'express';
 import { IGetActiveProviderServicesUseCase } from '../../../domain/interfaces/usecases/provider/providerService/IGetActiveProviderServicesUseCase';
 import { handleAsyncError, handleValidationError, sendSuccessResponse } from '../../../shared/utils/presentation/controller.utils';

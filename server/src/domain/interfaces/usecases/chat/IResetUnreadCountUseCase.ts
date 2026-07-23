@@ -1,3 +1,5 @@
+import { ResetUnreadCountResult } from "../../chat.interface";
+
 export interface IResetUnreadCountUseCase {
-  execute(conversationId: string, role: 'client' | 'provider'): Promise<void>;
+  execute(conversationId: string, userId: string): Promise<ResetUnreadCountResult>;
 }
