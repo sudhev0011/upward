@@ -9,6 +9,8 @@ import { RepositoryBase } from "./base.repository";
 import { ProviderProfileMapper } from "../../../mapers.persistence/provider/provider-profile.mapper";
 import { ProviderListItem } from "../../../../domain/queries/provider/ProviderQueryModel";
 import { ClientProviderListItem } from "../../../../domain/queries/client/client-provider-list-item";
+import { ITransactionContext } from "../../../../domain/interfaces/database/transaction-context.interface";
+import { MongoSessionUtil } from "../helper/mongo-session.utils";
 
 export class ProviderProfileRepository
   extends RepositoryBase<ProviderProfile, ModelDocument>
@@ -236,5 +238,15 @@ export class ProviderProfileRepository
       { userId: new Types.ObjectId(userId) },
       { $addToSet: { categories: categoryName } },
     );
+  }
+
+  async removeCategory(userId:string, categoryName: string, transaction?: ITransactionContext): Promise<void>{
+
+    const session = MongoSessionUtil.getSession(transaction);
+    
+    await this.model.findOneAndUpdate(
+      {userId: new Types.ObjectId(userId)},
+      {$pull: {categories: categoryName}},
+    ).session(session ?? null)
   }
 }

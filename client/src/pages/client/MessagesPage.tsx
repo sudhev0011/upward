@@ -467,87 +467,15 @@ export default function MessagesPage() {
             </div>
 
             <div className="flex-1 overflow-auto p-4 md:p-6 space-y-4">
-              {/* {messages.map((msg) => {
-                const isMe = msg.senderId === currentUserId;
-                const isDeleted = msg.userStates?.[currentUserId]?.isDeleted;
-
-                return (
-                  <div
-                    key={msg.id}
-                    className={`flex ${isMe ? "justify-end" : "justify-start"} group relative`}
-                  >
-                    <div className={`flex items-center gap-2 max-w-[85%] sm:max-w-[75%] ${isMe ? "flex-row-reverse" : "flex-row"}`}>
-                      {isDeleted ? (
-                        <div
-                          className={`rounded-2xl px-4 py-2.5 border border-dashed flex items-center gap-2 ${
-                            isMe
-                              ? "bg-secondary/20 text-muted-foreground border-border"
-                              : "bg-secondary/10 text-muted-foreground border-border/50"
-                          }`}
-                        >
-                          <span className="text-xs italic select-none">
-                            This message was deleted
-                          </span>
-                          <span className="text-[10px] text-muted-foreground/60 ml-2">
-                            {new Date(msg.createdAt).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </span>
-                        </div>
-                      ) : (
-                        <>
-                          <div
-                            className={`rounded-2xl px-4 py-3 ${
-                              isMe
-                                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/10"
-                                : "bg-secondary/50 text-card-foreground"
-                            }`}
-                          >
-                            {msg.text && (
-                              <p className="text-sm leading-relaxed break-words">
-                                {msg.text}
-                              </p>
-                            )}
-                            {msg.attachmentUrl &&
-                              RenderAttachment(msg.attachmentUrl, isMe)}
-
-                            <div className="flex items-center justify-end gap-1.5 mt-1.5">
-                              <span className={`text-[11px] ${isMe ? "text-primary-foreground/60" : "text-muted-foreground"}`}>
-                                {new Date(msg.createdAt).toLocaleTimeString([], {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })}
-                              </span>
-                              {isMe && renderStatusTicks(msg, otherParticipantId)}
-                            </div>
-                          </div>
-
-                          <button
-                            onClick={() => msg.id && handleDeleteMessage(msg.id)}
-                            className="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 duration-200 shrink-0 p-1"
-                            title="Delete Message"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                );
-              })} */}
-
               {messages.map((msg) => {
                 const isMe = msg.senderId === currentUserId;
                 const isDeleted = msg.userStates?.[currentUserId]?.isDeleted;
 
-                // The WhatsApp emoji lineup
                 const EMOJI_PALETTE = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
 
                 const handleEmitReaction = (emoji: string) => {
                   if (!socket || !activeChat || !msg.id) return;
 
-                  // Emit the exact event our updated backend socket is listening for
                   socket.emit("send_message_reaction", {
                     messageId: msg.id,
                     conversationId: activeChat,

@@ -2,6 +2,7 @@ import { ProviderListItem } from "../../../queries/provider/ProviderQueryModel";
 import { ProviderProfile } from "../../../entities/provider-profile.entity";
 import { IBaseRepository } from "../base/IBaseRepository";
 import { ClientProviderListItem } from "../../../queries/client/client-provider-list-item";
+import { ITransactionContext } from "../../database/transaction-context.interface";
 
 export interface IProviderProfileRepository extends IBaseRepository<ProviderProfile> {
   getAll(options: {
@@ -26,4 +27,5 @@ export interface IProviderProfileRepository extends IBaseRepository<ProviderProf
   }): Promise<{ providers: ClientProviderListItem[]; total: number }>;
 
   addCategoryIfAbsent(providerId: string, categoryName: string): Promise<void>;
+  removeCategory(providerId: string, categoryName: string,transaction?: ITransactionContext): Promise<void>;
 }

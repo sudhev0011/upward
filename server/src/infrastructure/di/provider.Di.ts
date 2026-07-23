@@ -75,6 +75,8 @@ const unavailabilityRepository = new UnavailabilityRepository()
 const availabilityOverrideRepository = new AvailabilityOverrideRepository();
 const portfolioRepository = new PortfolioRepository()
 const providerSubscriptionRepository = new ProviderSubscriptionRepository()
+const bookingRepository = new BookingRepository();
+const payoutRequestRepository = new PayoutRequestRepository();
 
 // service init
 const logger = new WinstonLogger();
@@ -82,6 +84,8 @@ const s3Service = new S3Service(logger);
 const encryptionService = new EncryptionService();
 const workingHoursResolver = new WorkingHoursResolverService(avaliabilityRepository, availabilityOverrideRepository)
 const unavailabilityResolver = new UnavailabilityResolverService(unavailabilityRepository)
+const commissionCalculationService = new CommissionCalculationService();
+const mongoTransactionManager = new MongoTransactionManager();
 
 // useCase init
 export const getProviderProfileUseCase = new GetProviderProfileUseCase(providerProfileRepository,userRepository);
@@ -97,7 +101,7 @@ export const getProviderBankUseCase = new GetProviderBankUseCase(providerBankRep
 const createProviderServiceUseCase = new CreateProviderServiceUseCase(providerServiceRepository,providerSubscriptionRepository);
 const getProviderServicesByCategoryUseCase = new GetProviderServicesByCategoryUseCase(userRepository,providerServiceRepository)
 const configureProviderServiceUseCase = new ConfigureProviderServiceUseCase(providerServiceRepository, serviceRespository,providerProfileRepository,categoryRepository,logger);
-const deleteProviderServiceUseCase = new DeleteProviderServiceUseCase(providerServiceRepository)
+const deleteProviderServiceUseCase = new DeleteProviderServiceUseCase(providerServiceRepository,mongoTransactionManager,providerProfileRepository)
 const setAvailabilityUseCase = new SetAvailabilityUseCase(avaliabilityRepository)
 export const getAvailabilityUseCase = new GetAvailabilityUseCase(avaliabilityRepository)
 export const getUnavailabilitiesUseCase = new GetUnavailabilitiesUseCase(unavailabilityRepository)
@@ -113,12 +117,27 @@ export const getPortfolioUseCase = new GetPortfolioUseCase(portfolioRepository)
 const deletePortfolioItemUseCase = new DeletePortfolioItemUseCase(portfolioRepository, s3Service)
 const updatePortfolioItemUseCase = new UpdatePortfolioItemUseCase(portfolioRepository)
 const removePortfolioImageUseCase = new RemovePortfolioImageUseCase(portfolioRepository,s3Service)
-
+const getProviderDashboardStatsUseCase = new GetProviderDashboardStatsUseCase(bookingRepository);
+const getProviderPayoutsUseCase = new GetProviderPayoutsUseCase(
+  walletRepository,
+  walletTransactionRepository,
+  bookingRepository,
+  commissionCalculationService
+);
 const getProvidersByCategoryUseCase = new GetProvidersByCategoryUseCase(
   providerProfileRepository,
 );
-
 const getAvailableSlotsUseCase = new GetAvailableSlotsUseCase(providerServiceRepository,serviceRespository,categoryRepository,workingHoursResolver,unavailabilityResolver )
+const createPayoutRequestUseCase = new CreatePayoutRequestUseCase(
+  payoutRequestRepository,
+  walletRepository,
+  walletTransactionRepository,
+  providerBankRepository,
+  mongoTransactionManager
+);
+const getProviderPayoutRequestsUseCase = new GetProviderPayoutRequestsUseCase(
+  payoutRequestRepository
+);
 
 // contrller init
 export const providerProfileController = new ProviderProfileController(uploadAvatarUseCase,createProviderProfileUseCase,getProviderProfileUseCase,updateProviderProfileUseCase, getProvidersByCategoryUseCase);
@@ -131,31 +150,7 @@ export const availabilityOverrideController = new AvailabilityOverrideController
 
 export const portfolioController = new PortfolioController(getUploadUrlUseCase, createPortfolioItemUseCase, getPortfolioUseCase, updatePortfolioItemUseCase, removePortfolioImageUseCase, deletePortfolioItemUseCase);
 
-
 export const slotController = new SlotController(getAvailableSlotsUseCase)
-
-// Payouts wiring
-const bookingRepository = new BookingRepository();
-const commissionCalculationService = new CommissionCalculationService();
-const payoutRequestRepository = new PayoutRequestRepository();
-const mongoTransactionManager = new MongoTransactionManager();
-
-const getProviderPayoutsUseCase = new GetProviderPayoutsUseCase(
-  walletRepository,
-  walletTransactionRepository,
-  bookingRepository,
-  commissionCalculationService
-);
-const createPayoutRequestUseCase = new CreatePayoutRequestUseCase(
-  payoutRequestRepository,
-  walletRepository,
-  walletTransactionRepository,
-  providerBankRepository,
-  mongoTransactionManager
-);
-const getProviderPayoutRequestsUseCase = new GetProviderPayoutRequestsUseCase(
-  payoutRequestRepository
-);
 
 export const payoutController = new PayoutController(
   getProviderPayoutsUseCase,
@@ -163,5 +158,4 @@ export const payoutController = new PayoutController(
   getProviderPayoutRequestsUseCase
 );
 
-const getProviderDashboardStatsUseCase = new GetProviderDashboardStatsUseCase(bookingRepository);
 export const providerDashboardController = new ProviderDashboardController(getProviderDashboardStatsUseCase);

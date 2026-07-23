@@ -239,11 +239,33 @@ export default function MessagesPage() {
       }
     };
 
+    const handleReactionUpdated = (data: {
+      messageId: string;
+      userId: string;
+      reaction: string;
+    }) => {
+      setMessages((prev) =>
+        prev.map((msg) => {
+          if (msg.id === data.messageId) {
+            return {
+              ...msg,
+              reactions: {
+                ...msg.reactions,
+                [data.userId]: data.reaction,
+              },
+            };
+          }
+          return msg;
+        }),
+      );
+    };
+
     socket.on("message_received", handleMessageReceived);
     socket.on("conversation_updated", handleConversationUpdated);
     socket.on("message_deleted", handleMessageDeleted);
     socket.on("messages_delivered", handleMessagesDelivered);
     socket.on("messages_read", handleMessagesRead);
+    socket.on("message_reaction_updated", handleReactionUpdated);
 
     return () => {
       socket.off("message_received", handleMessageReceived);
@@ -251,6 +273,7 @@ export default function MessagesPage() {
       socket.off("message_deleted", handleMessageDeleted);
       socket.off("messages_delivered", handleMessagesDelivered);
       socket.off("messages_read", handleMessagesRead);
+      socket.off("message_reaction_updated", handleReactionUpdated);
     };
   }, [socket, activeChat, otherParticipantId, currentUserId]);
 
@@ -419,13 +442,11 @@ export default function MessagesPage() {
                 const isMe = msg.senderId === currentUserId;
                 const isDeleted = msg.userStates?.[currentUserId]?.isDeleted;
 
-                // The WhatsApp emoji lineup
                 const EMOJI_PALETTE = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
 
                 const handleEmitReaction = (emoji: string) => {
                   if (!socket || !activeChat || !msg.id) return;
 
-                  // Emit the exact event our updated backend socket is listening for
                   socket.emit("send_message_reaction", {
                     messageId: msg.id,
                     conversationId: activeChat,
@@ -438,7 +459,6 @@ export default function MessagesPage() {
                     key={msg.id}
                     className={`flex ${isMe ? "justify-end" : "justify-start"} group relative mb-3`}
                   >
-                    {/* FLOATING ACTION OVERLAY PANEL */}
                     {!isDeleted && (
                       <div
                         className={`absolute -top-10 z-10 hidden group-hover:flex items-center justify-center pt-2 pb-2 px-4 transition-all duration-150 ${

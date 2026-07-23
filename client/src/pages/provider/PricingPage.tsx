@@ -142,6 +142,7 @@ export default function PricingPage() {
       },
       {
         onSuccess: () => toast.success("Service updated"),
+        onError: (error)=> toast.error(error.message)
       },
     );
   };

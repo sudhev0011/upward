@@ -92,7 +92,7 @@ export class ProviderServiceController {
     const parsed = setProviderServicePriceRequestDtoSchema.safeParse(req.body);
 
     if (!parsed.success) {
-      return handleAsyncError(formatZodErrors(parsed.error), next);
+      return handleValidationError(formatZodErrors(parsed.error), next);
     }
 
     try {
