@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "@/components/header/Navbar";
 import Footer from "@/components/footer/Footer";
+import { Loading } from "@/components/ui/Loading";
 
 const PublicLayout = () => {
   return (
@@ -10,7 +12,9 @@ const PublicLayout = () => {
 
       {/* Main Content */}
       <main className="flex-1">
-        <Outlet />
+        <Suspense fallback={<Loading variant="inline" message="Loading page..." />}>
+          <Outlet />
+        </Suspense>
       </main>
 
       {/* Footer */}

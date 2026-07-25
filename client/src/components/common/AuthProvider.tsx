@@ -4,6 +4,7 @@ import { type RootState } from '@/store/store';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { useCheckAuthQuery } from '@/hooks/auth/useCheckAuth';
 import { setCredentials, setAuthChecked,setActiveRole } from '@/store/slices/authSlice';
+import { prefetchRouteForRole } from '@/utils/RoutePrefetch';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -25,7 +26,9 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if(data?.data?.roles){
       if(data?.data?.roles?.length === 1){
         dispatch(setActiveRole(data?.data?.roles[0]));
+        prefetchRouteForRole(data?.data?.roles[0])
       }
+
     }
 
     dispatch(setAuthChecked())

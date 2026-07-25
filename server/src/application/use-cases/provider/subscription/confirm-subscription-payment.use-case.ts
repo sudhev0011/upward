@@ -24,13 +24,12 @@ export class ConfirmSubscriptionPaymentUseCase {
         stripePaymentIntentId,
       );
 
-
     if (!subscription) {
       throw new NotFoundError("Subscription not found for this payment intent");
     }
 
     if (subscription.status === "active") {
-      return; 
+      return;
     }
 
     const plan = await this.subscriptionPlanRepository.findById(
@@ -45,6 +44,19 @@ export class ConfirmSubscriptionPaymentUseCase {
     });
     if (!profile) {
       throw new NotFoundError("Provider profile not found");
+    }
+
+    let previousSubscription: ProviderSubscription | null = null;
+    let previousPlan: SubscriptionPlan | null = null;
+    if (subscription.previousSubscriptionId) {
+      previousSubscription = await this.providerSubscriptionRepository.findById(
+        subscription.previousSubscriptionId,
+      );
+      if (previousSubscription) {
+        previousPlan = await this.subscriptionPlanRepository.findById(
+          previousSubscription.planId,
+        );
+      }
     }
 
     const startDate = new Date();
@@ -65,17 +77,11 @@ export class ConfirmSubscriptionPaymentUseCase {
         transaction,
       );
 
-
       const activeSubscription = ProviderSubscription.create({
-        id: subscription.id,
-        providerId: subscription.providerId,
-        planId: subscription.planId,
-        amount: subscription.amount,
+        ...subscription,
         status: "active",
         startDate,
         endDate,
-        stripePaymentIntentId: subscription.stripePaymentIntentId,
-        createdAt: subscription.createdAt,
         updatedAt: new Date(),
       });
       await this.providerSubscriptionRepository.update(
@@ -83,6 +89,33 @@ export class ConfirmSubscriptionPaymentUseCase {
         activeSubscription,
         transaction,
       );
+
+      if (previousSubscription) {
+        const cancelledSubscription = ProviderSubscription.create({
+          ...previousSubscription,
+          status: "cancelled",
+          updatedAt: new Date(),
+        });
+        await this.providerSubscriptionRepository.update(
+          previousSubscription.id,
+          cancelledSubscription,
+          transaction,
+        );
+
+        // Old plan loses a subscriber
+        if (previousPlan) {
+          const updatedOldPlan = SubscriptionPlan.create({
+            ...previousPlan,
+            subscriberCount: Math.max(0, previousPlan.subscriberCount - 1),
+            updatedAt: new Date(),
+          });
+          await this.subscriptionPlanRepository.update(
+            previousPlan.id,
+            updatedOldPlan,
+            transaction,
+          );
+        }
+      }
 
       const updatedProfile = ProviderProfile.create({
         id: profile.id,
@@ -103,6 +136,7 @@ export class ConfirmSubscriptionPaymentUseCase {
         categories: profile.categories,
         activeSubscriptionExpiresAt: endDate,
         activeSubscriptionPlanName: plan.name,
+        activeSubscriptionPlanId: plan.id,
         createdAt: profile.createdAt,
         updatedAt: new Date(),
       });
@@ -113,14 +147,8 @@ export class ConfirmSubscriptionPaymentUseCase {
       );
 
       const updatedPlan = SubscriptionPlan.create({
-        id: plan.id,
-        name: plan.name,
-        price: plan.price,
-        billingCycle: plan.billingCycle,
-        features: plan.features,
+        ...plan,
         subscriberCount: plan.subscriberCount + 1,
-        isActive: plan.isActive,
-        createdAt: plan.createdAt,
         updatedAt: new Date(),
       });
       await this.subscriptionPlanRepository.update(

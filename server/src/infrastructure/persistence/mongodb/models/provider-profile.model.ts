@@ -47,6 +47,7 @@ export interface ProviderProfileDocument extends Document {
 
   activeSubscriptionExpiresAt?: Date | null;
   activeSubscriptionPlanName?: string | null;
+  activeSubscriptionPlanId?: string | null;
 
   createdAt: Date;
   updatedAt: Date;
@@ -187,6 +188,11 @@ const ProviderProfileSchema = new Schema<ProviderProfileDocument>(
     },
 
     activeSubscriptionPlanName: {
+      type: String,
+      default: null,
+    },
+
+    activeSubscriptionPlanId: {
       type: String,
       default: null,
     },

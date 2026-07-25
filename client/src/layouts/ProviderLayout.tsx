@@ -1,7 +1,10 @@
+import { Suspense } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ProviderSidebar } from "@/components/provider/dashboard/ProviderSidebar";
 import { ProviderHeader } from "@/components/provider/dashboard/ProviderHeader";
 import { Outlet } from "react-router-dom";
+import { Loading } from "@/components/ui/Loading";
+
 
 export function ProviderLayout() {
   return (
@@ -13,7 +16,11 @@ export function ProviderLayout() {
           <ProviderHeader />
 
           <main className="flex-1 p-6 overflow-auto bg-secondary/20">
-            <Outlet />
+            <Suspense
+              fallback={<Loading variant="inline" message="Loading page..." />}
+            >
+              <Outlet />
+            </Suspense>
           </main>
         </div>
       </div>

@@ -27,7 +27,7 @@ import {
   CreditCard,
 } from "lucide-react";
 
-export const DashboardOverview = () => {
+export default function DashboardOverview(){
   const navigate = useNavigate();
   const { user } = useAppSelector((state: RootState) => state.auth);
   const [timeframe, setTimeframe] = useState<string>("monthly");

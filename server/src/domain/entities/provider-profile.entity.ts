@@ -22,6 +22,7 @@
       public readonly categories: string[],
       public readonly activeSubscriptionExpiresAt: Date | null,
       public readonly activeSubscriptionPlanName: string | null,
+      public readonly activeSubscriptionPlanId: string | null,
       public readonly createdAt: Date,
       public readonly updatedAt: Date,
     ) {}
@@ -45,6 +46,7 @@
       categories?: string[];
       activeSubscriptionExpiresAt?: Date | null;
       activeSubscriptionPlanName?: string | null;
+      activeSubscriptionPlanId?: string | null;
       createdAt?: Date;
       updatedAt?: Date;
     }): ProviderProfile {
@@ -68,6 +70,7 @@
         data.categories ?? [],
         data.activeSubscriptionExpiresAt ?? null,
         data.activeSubscriptionPlanName ?? null,
+        data.activeSubscriptionPlanId ?? null,
         data.createdAt ?? now,
         data.updatedAt ?? now,
       );

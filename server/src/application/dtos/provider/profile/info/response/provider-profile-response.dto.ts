@@ -27,6 +27,7 @@ export interface ProviderProfileResponseDto {
   socialLinks: SocialLinkResponseDto[];
   activeSubscriptionExpiresAt: string | null;
   activeSubscriptionPlanName: string | null;
+  activeSubscriptionPlanId: string | null;
   createdAt: string;
   updatedAt: string;
 }

@@ -1,18 +1,20 @@
+import { lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ProviderLayout } from "@/layouts/ProviderLayout";
-import DashboardHome from "@/pages/provider/DashboardHome";
-import ProfilePage from "@/pages/provider/ProfilePage";
-import ServicesPage from "@/pages/provider/ServicesPage";
-import PricingPage from "@/pages/provider/PricingPage";
-import PortfolioPage from "@/pages/provider/PortfolioPage";
-import KycPage from "@/pages/provider/KycPage";
-import OrdersPage from "@/pages/provider/OrdersPage";
-import PayoutsPage from "@/pages/provider/PayoutsPage";
-import AvailabilityPage from "@/pages/provider/AvailabilityPage";
-import MessagesPage from "@/pages/provider/MessagesPage";
-import SettingsPage from "@/pages/provider/SettingsPage";
-import SubscriptionsPage from "@/pages/provider/SubscriptionsPage";
 import NotFound from "@/pages/public/NotFound";
+
+const DashboardHome = lazy(() => import("@/pages/provider/DashboardHome"));
+const ProfilePage = lazy(() => import("@/pages/provider/ProfilePage"));
+const ServicesPage = lazy(() => import("@/pages/provider/ServicesPage"));
+const PricingPage = lazy(() => import("@/pages/provider/PricingPage"));
+const PortfolioPage = lazy(() => import("@/pages/provider/PortfolioPage"));
+const KycPage = lazy(() => import("@/pages/provider/KycPage"));
+const OrdersPage = lazy(() => import("@/pages/provider/OrdersPage"));
+const PayoutsPage = lazy(() => import("@/pages/provider/PayoutsPage"));
+const AvailabilityPage = lazy(() => import("@/pages/provider/AvailabilityPage"));
+const MessagesPage = lazy(() => import("@/pages/provider/MessagesPage"));
+const SettingsPage = lazy(() => import("@/pages/provider/SettingsPage"));
+const SubscriptionsPage = lazy(() => import("@/pages/provider/SubscriptionsPage"));
 
 const ProviderRoutes = () => {
   return (

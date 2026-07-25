@@ -1,14 +1,16 @@
+import { lazy } from "react";
 import { Route, Routes } from "react-router-dom";
 import AdminLayout from "@/layouts/AdminLayout";
-import Dashboard from "@/pages/admin/Dashboard";
-import Providers from "@/pages/admin/Providers";
-import Clients from "@/pages/admin/Clients";
-import Settings from "@/pages/admin/Settings";
-import Categories from "@/pages/admin/Categories";
-import Services from "@/pages/admin/Services";
-import Subscriptions from "@/pages/admin/Subscriptions";
-import Payments from "@/pages/admin/Payments";
 import NotFound from "@/pages/public/NotFound";
+
+const Dashboard = lazy(() => import("@/pages/admin/Dashboard"));
+const Providers = lazy(() => import("@/pages/admin/Providers"));
+const Clients = lazy(() => import("@/pages/admin/Clients"));
+const Settings = lazy(() => import("@/pages/admin/Settings"));
+const Categories = lazy(() => import("@/pages/admin/Categories"));
+const Services = lazy(() => import("@/pages/admin/Services"));
+const Subscriptions = lazy(() => import("@/pages/admin/Subscriptions"));
+const Payments = lazy(() => import("@/pages/admin/Payments"));
 
 const AdminRoutes = () => {
   return (
@@ -18,8 +20,6 @@ const AdminRoutes = () => {
         <Route path="providers" element={<Providers />} />
         <Route path="clients" element={<Clients />} />
         <Route path="settings" element={<Settings />} />
-
-        {/* Uncomment as you build each page */}
         <Route path="services" element={<Services />} />
         <Route path="categories" element={<Categories />} />
         <Route path="subscriptions" element={<Subscriptions />} />
