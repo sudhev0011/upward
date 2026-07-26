@@ -136,6 +136,7 @@ export const SubscriptionRoutes = {
   PROVIDER_ACTIVE_PLANS: "/api/subscriptions/provider/active-plans",
   PROVIDER_CHECKOUT: "/api/subscriptions/provider/checkout",
   PROVIDER_STATUS: "/api/subscriptions/provider/my-status",
+  PROVIDER_UPGRADE_CHECKOUT: "/api/subscriptions/provider/upgrade-checkout",
 } as const;
 
 export const ChatRoutes = {

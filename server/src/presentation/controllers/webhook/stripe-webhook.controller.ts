@@ -7,6 +7,7 @@ import { IPaymentGateway } from "../../../domain/interfaces/services/payment/IPa
 import { IConfirmPaymentUseCase } from "../../../domain/interfaces/usecases/payment/IConfirmPaymentUseCase";
 import { confirmSubscriptionPaymentUseCase } from "../../../infrastructure/di/subscriptionDi";
 import { IConfirmRemainingPaymentUseCase } from "../../../domain/interfaces/usecases/payment/IConfirmRemainingPaymentUseCase";
+import { IConfirmSubscriptionPaymentUseCase } from "../../../domain/interfaces/usecases/subscription/IConfirmSubscriptionPaymentUseCase";
 
 export class StripeWebhookController {
   constructor(
@@ -15,6 +16,8 @@ export class StripeWebhookController {
     private confirmPaymentUseCase: IConfirmPaymentUseCase,
 
     private confirmRemainingPaymentUseCase: IConfirmRemainingPaymentUseCase,
+
+    private confirmSubscriptionPaymentUseCase: IConfirmSubscriptionPaymentUseCase,
   ) {}
 
   handleWebhook = async (
@@ -35,11 +38,15 @@ export class StripeWebhookController {
 
       if (event.type === "payment_intent.succeeded") {
         if (event.metadata?.type === "subscription") {
-          await confirmSubscriptionPaymentUseCase.execute(
+          await this.confirmSubscriptionPaymentUseCase.execute(
             event.paymentIntentId,
           );
         } else if (event.metadata?.type === "remaining") {
           await this.confirmRemainingPaymentUseCase.execute(
+            event.paymentIntentId,
+          );
+        } else if (event?.metadata?.type === "subscription_upgrade") {
+          await this.confirmSubscriptionPaymentUseCase.execute(
             event.paymentIntentId,
           );
         } else {

@@ -81,8 +81,22 @@ export class ProviderSubscriptionRepository
     return {
       maxServices: activeSubscription.planId.features.maxServices,
       maxPortfolios: activeSubscription.planId.features.maxPortfolios,
-      maxManualUnavailability: activeSubscription.planId.features.maxManualUnavailability,
+      maxManualUnavailability:
+        activeSubscription.planId.features.maxManualUnavailability,
     };
+  }
+
+  async findPendingByProviderId(
+    providerId: string,
+    transaction?: ITransactionContext,
+  ): Promise<ProviderSubscription | null> {
+    return this.findOne(
+      {
+        providerId: new Types.ObjectId(providerId),
+        status: "pending",
+      } as QueryFilter<ProviderSubscriptionDocument>,
+      transaction,
+    );
   }
 
   protected mapToEntity(
@@ -95,5 +109,19 @@ export class ProviderSubscriptionRepository
     entity: Partial<ProviderSubscription>,
   ): Partial<ProviderSubscriptionDocument> {
     return ProviderSubscriptionMapper.toDocument(entity);
+  }
+
+  async findStalePending(
+    olderThan: Date,
+    transaction?: ITransactionContext,
+  ): Promise<ProviderSubscription[]> {
+    const session = MongoSessionUtil.getSession(transaction);
+    const documents = await this.model
+      .find({
+        status: "pending",
+        createdAt: { $lt: olderThan },
+      } as QueryFilter<ProviderSubscriptionDocument>)
+      .session(session || null);
+    return documents.map((doc) => this.mapToEntity(doc));
   }
 }

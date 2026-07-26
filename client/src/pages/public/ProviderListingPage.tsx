@@ -7,7 +7,7 @@ import { GetProvidersByCategoryParams } from "@/interfaces/provider/provider.lis
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useGetAllCategories } from "@/hooks/public/useGetAllCategories";
 
-export const ProviderListingPage = () => {
+export default function ProviderListingPage(){
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryFromUrl = searchParams.get("category") ?? "Photography"
 

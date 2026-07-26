@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Sidebar as DashSidebar } from "@/components/client/SideBar";
 import { Topbar } from "@/components/client/TopBar";
+import { Loading } from "@/components/ui/Loading";
 
 
 const ClientLayout = () => {
@@ -9,7 +10,6 @@ const ClientLayout = () => {
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50/60 font-sans">
-      {/* ── Sidebar (desktop: always visible, mobile: overlay) ── */}
       {/* Desktop */}
       <div className="hidden md:flex shrink-0">
         <DashSidebar />
@@ -35,7 +35,9 @@ const ClientLayout = () => {
           sidebarOpen={sidebarOpen}
         />
         <main className="flex-1 p-6 overflow-auto bg-secondary/20">
-          <Outlet />
+          <Suspense fallback={<Loading variant="inline" message="Loading page..." />}>
+            <Outlet />
+          </Suspense>
         </main>
       </div>
     </div>

@@ -2,7 +2,6 @@ import { api } from "./axios";
 import { SubscriptionRoutes } from "@/constants/api-routes";
 import { ApiEnvelope } from "@/interfaces/auth";
 
-
 export interface PlanFeatures {
   maxServices: number;
   maxPortfolios: number;
@@ -20,7 +19,7 @@ export interface SubscriptionPlanDto {
   updatedAt: string;
 }
 
-export interface PaginatedSubscriptionPlanDto{
+export interface PaginatedSubscriptionPlanDto {
   data: SubscriptionPlanDto[];
   total: number;
   page: number;
@@ -37,6 +36,7 @@ export interface ProviderSubscriptionDto {
   startDate: string | null;
   endDate: string | null;
   stripePaymentIntentId: string | null;
+  previousSubscriptionId: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -44,6 +44,7 @@ export interface ProviderSubscriptionDto {
 export interface ProviderSubscriptionStatusDto {
   activeSubscriptionExpiresAt: string | null;
   activeSubscriptionPlanName: string | null;
+  activeSubscriptionPlanId: string | null;
   history: ProviderSubscriptionDto[];
 }
 
@@ -69,9 +70,15 @@ export interface CheckoutResponseDto {
 }
 
 export const subscriptionApi = {
-  async adminGetPlans(params: { page: number; search: string; sort: string; sortOrder: 'asc' | 'desc' }): Promise<ApiEnvelope<PaginatedSubscriptionPlanDto>> {
+  async adminGetPlans(params: {
+    page: number;
+    search: string;
+    sort: string;
+    sortOrder: "asc" | "desc";
+  }): Promise<ApiEnvelope<PaginatedSubscriptionPlanDto>> {
     const res = await api.get<ApiEnvelope<PaginatedSubscriptionPlanDto>>(
-      SubscriptionRoutes.ADMIN_PLANS,{params}
+      SubscriptionRoutes.ADMIN_PLANS,
+      { params },
     );
     return res.data;
   },
@@ -121,7 +128,19 @@ export const subscriptionApi = {
     return res.data;
   },
 
-  async providerGetStatus(): Promise<ApiEnvelope<ProviderSubscriptionStatusDto>> {
+  async providerCreateUpgradeCheckout(
+    planId: string,
+  ): Promise<ApiEnvelope<CheckoutResponseDto>> {
+    const res = await api.post<ApiEnvelope<CheckoutResponseDto>>(
+      SubscriptionRoutes.PROVIDER_UPGRADE_CHECKOUT,
+      { planId },
+    );
+    return res.data;
+  },
+
+  async providerGetStatus(): Promise<
+    ApiEnvelope<ProviderSubscriptionStatusDto>
+  > {
     const res = await api.get<ApiEnvelope<ProviderSubscriptionStatusDto>>(
       SubscriptionRoutes.PROVIDER_STATUS,
     );

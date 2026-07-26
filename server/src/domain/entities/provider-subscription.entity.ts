@@ -8,6 +8,7 @@ export class ProviderSubscription {
     public readonly startDate: Date | null,
     public readonly endDate: Date | null,
     public readonly stripePaymentIntentId: string | null,
+    public readonly previousSubscriptionId: string | null, 
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
   ) {}
@@ -21,6 +22,7 @@ export class ProviderSubscription {
     startDate?: Date | null;
     endDate?: Date | null;
     stripePaymentIntentId?: string | null;
+    previousSubscriptionId?: string | null; 
     createdAt?: Date;
     updatedAt?: Date;
   }): ProviderSubscription {
@@ -34,6 +36,7 @@ export class ProviderSubscription {
       data.startDate ?? null,
       data.endDate ?? null,
       data.stripePaymentIntentId ?? null,
+      data.previousSubscriptionId ?? null, 
       data.createdAt ?? now,
       data.updatedAt ?? now,
     );

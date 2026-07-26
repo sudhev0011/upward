@@ -22,7 +22,7 @@ import { ReviewsSection } from "@/components/common/reviews/ReviewsSection";
 
 type Tab = "services" | "portfolio" | "availability" | "reviews";
 
-export const ProviderProfilePage = () => {
+export default function ProviderProfilePage(){
   const { providerId } = useParams<{ providerId: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("services");

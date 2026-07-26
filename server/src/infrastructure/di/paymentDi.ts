@@ -17,6 +17,10 @@ import { PlatformWalletService } from "../../application/services/platform-walle
 import { ReleaseProviderPayoutUseCase } from "../../application/use-cases/payment/release-provider-payout.use-case";
 import { CommissionCalculationService } from "../../application/services/commission-calculation.service";
 import { ProcessProviderPayoutsUseCase } from "../../application/use-cases/payment/process-provider-payouts.use-case";
+import { ConfirmSubscriptionPaymentUseCase } from "../../application/use-cases/provider/subscription/confirm-subscription-payment.use-case";
+import { SubscriptionPlanRepository } from "../persistence/mongodb/repositories/subscription-plan.repository";
+import { ProviderSubscriptionRepository } from "../persistence/mongodb/repositories/provider-subscription.repository";
+import { ProviderProfileRepository } from "../persistence/mongodb/repositories/provider-profile.repository";
 const stripeService = new StripeService();
 
 const paymentRepository = new PaymentRepository();
@@ -25,6 +29,10 @@ const bookingRepository = new BookingRepository();
 const transactionManager = new MongoTransactionManager();
 
 const notificationRepository = new MongoNotificationRepository();
+
+const subscriptionPlanRepository = new SubscriptionPlanRepository();
+const providerSubscriptionRepository = new ProviderSubscriptionRepository();
+const providerProfileRepository = new ProviderProfileRepository();
 
 export const notificationService = new NotificationService(
   notificationRepository,
@@ -61,7 +69,10 @@ export const releaseProviderPayoutUseCase = new ReleaseProviderPayoutUseCase(
   transactionManager,
 );
 
-export const processProviderPayoutsUseCase = new ProcessProviderPayoutsUseCase(bookingRepository,releaseProviderPayoutUseCase)
+export const processProviderPayoutsUseCase = new ProcessProviderPayoutsUseCase(
+  bookingRepository,
+  releaseProviderPayoutUseCase,
+);
 
 const confirmRemainingPaymentUseCase: IConfirmRemainingPaymentUseCase =
   new ConfirmRemainingPaymentUseCase(
@@ -72,10 +83,19 @@ const confirmRemainingPaymentUseCase: IConfirmRemainingPaymentUseCase =
     platformWalletService,
   );
 
+const confirmSubscriptionPaymentUseCase = new ConfirmSubscriptionPaymentUseCase(
+  subscriptionPlanRepository,
+  providerSubscriptionRepository,
+  providerProfileRepository,
+  platformWalletService,
+  transactionManager,
+);
+
 export const stripeWebhookController = new StripeWebhookController(
   stripeService,
 
   confirmPaymentUseCase,
 
   confirmRemainingPaymentUseCase,
+  confirmSubscriptionPaymentUseCase,
 );
