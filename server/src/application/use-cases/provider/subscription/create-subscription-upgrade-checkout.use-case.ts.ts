@@ -1,5 +1,8 @@
 import { ProviderSubscription } from "../../../../domain/entities/provider-subscription.entity";
-import { NotFoundError, BadRequestError } from "../../../../domain/errors/errors";
+import {
+  NotFoundError,
+  BadRequestError,
+} from "../../../../domain/errors/errors";
 import { ISubscriptionPlanRepository } from "../../../../domain/interfaces/repositories/subscription-plan/ISubscriptionPlanRepository";
 import { IProviderSubscriptionRepository } from "../../../../domain/interfaces/repositories/provider-subscription/IProviderSubscriptionRepository";
 import { IPaymentGateway } from "../../../../domain/interfaces/services/payment/IPaymentGateway";
@@ -7,9 +10,7 @@ import { CreateSubscriptionCheckoutResponse } from "../../../dtos/admin/subscrip
 import { CreateSubscriptionUpgradeCheckoutRequest } from "../../../dtos/admin/subscription/request/createSubscriptionUpgradeCheckoutRequest.dto";
 import { ICreateSubscriptionUpgradeCheckoutUseCase } from "../../../../domain/interfaces/usecases/subscription/ICreateSubscriptionUpgradeCheckoutUseCase";
 
-export class CreateSubscriptionUpgradeCheckoutUseCase
-  implements ICreateSubscriptionUpgradeCheckoutUseCase
-{
+export class CreateSubscriptionUpgradeCheckoutUseCase implements ICreateSubscriptionUpgradeCheckoutUseCase {
   constructor(
     private readonly subscriptionPlanRepository: ISubscriptionPlanRepository,
     private readonly providerSubscriptionRepository: IProviderSubscriptionRepository,
@@ -19,20 +20,26 @@ export class CreateSubscriptionUpgradeCheckoutUseCase
   async execute(
     data: CreateSubscriptionUpgradeCheckoutRequest,
   ): Promise<CreateSubscriptionCheckoutResponse> {
+    const existingPending =
+      await this.providerSubscriptionRepository.findPendingByProviderId(
+        data.providerId,
+      );
+    if (existingPending) {
+      throw new BadRequestError(
+        "You already have a pending subscription payment. Please complete or cancel it before starting a new upgrade.",
+      );
+    }
+
     const currentSubscription =
       await this.providerSubscriptionRepository.findActiveSubscriptionByProviderId(
         data.providerId,
       );
 
     if (!currentSubscription) {
-      throw new NotFoundError(
-        "No active subscription found to upgrade from",
-      );
+      throw new NotFoundError("No active subscription found to upgrade from");
     }
 
-    const newPlan = await this.subscriptionPlanRepository.findById(
-      data.planId,
-    );
+    const newPlan = await this.subscriptionPlanRepository.findById(data.planId);
     if (!newPlan || !newPlan.isActive) {
       throw new NotFoundError("Active subscription plan not found");
     }

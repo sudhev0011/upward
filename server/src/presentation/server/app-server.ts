@@ -14,7 +14,7 @@ import { errorHandler } from "../middleware/error-handler";
 import { requestLogger } from "../middleware/logger.middleware";
 import { winstonLogger } from "../../infrastructure/config/logger";
 import { PublicRouter } from "../routes/public-router";
-import { bookingExpirationJob, providerPayoutJob } from "../../infrastructure/di/jobsDi";
+import { bookingExpirationJob, providerPayoutJob,expirePendingSubscriptionsJob } from "../../infrastructure/di/jobsDi";
 import { WebhookRouter } from "../routes/webhook-router";
 import { LocationRouter } from "../routes/location.router";
 import { ChatRouter } from "../routes/chat-router";
@@ -93,6 +93,7 @@ export class AppServer {
   private initializeJobs(): void {
     bookingExpirationJob.start();
     providerPayoutJob.start();
+    expirePendingSubscriptionsJob.start();
 
     winstonLogger.info("Background jobs initialized");
   }

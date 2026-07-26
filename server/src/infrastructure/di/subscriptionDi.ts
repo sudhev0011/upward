@@ -16,8 +16,9 @@ import { GetAllSubscriptionPlansUseCase } from "../../application/use-cases/admi
 import { GetActivePlansUseCase } from "../../application/use-cases/provider/subscription/get-active-plans.use-case";
 import { CreateSubscriptionCheckoutUseCase } from "../../application/use-cases/provider/subscription/create-subscription-checkout.use-case";
 import { ConfirmSubscriptionPaymentUseCase } from "../../application/use-cases/provider/subscription/confirm-subscription-payment.use-case";
-
+import { CreateSubscriptionUpgradeCheckoutUseCase } from "../../application/use-cases/provider/subscription/create-subscription-upgrade-checkout.use-case.ts";
 import { SubscriptionController } from "../../presentation/controllers/subscription/subscription.controller";
+import { ExpireStalePendingSubscriptionsUseCase } from "../../application/use-cases/provider/subscription/expire-stale-pending-subscription.use-case";
 
 // Repositories
 export const subscriptionPlanRepository = new SubscriptionPlanRepository();
@@ -67,7 +68,9 @@ export const confirmSubscriptionPaymentUseCase = new ConfirmSubscriptionPaymentU
   transactionManager,
 );
 
-// Controller Singleton
+const createSubscriptionUpgradeCheckoutUseCase = new CreateSubscriptionUpgradeCheckoutUseCase(subscriptionPlanRepository,providerSubscriptionRepository,stripeService);
+export const expireStalePendingSubscriptionsUseCase = new ExpireStalePendingSubscriptionsUseCase(providerSubscriptionRepository)
+
 export const subscriptionController = new SubscriptionController(
   createSubscriptionPlanUseCase,
   updateSubscriptionPlanUseCase,
@@ -75,6 +78,7 @@ export const subscriptionController = new SubscriptionController(
   getAllSubscriptionPlansUseCase,
   getActivePlansUseCase,
   createSubscriptionCheckoutUseCase,
+  createSubscriptionUpgradeCheckoutUseCase,
   providerProfileRepository,
   providerSubscriptionRepository,
 );

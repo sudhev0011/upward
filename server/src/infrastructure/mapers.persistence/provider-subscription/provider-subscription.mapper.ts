@@ -13,6 +13,7 @@ export class ProviderSubscriptionMapper {
       startDate: doc.startDate,
       endDate: doc.endDate,
       stripePaymentIntentId: doc.stripePaymentIntentId,
+      previousSubscriptionId: doc.previousSubscriptionId,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     });
@@ -33,6 +34,8 @@ export class ProviderSubscriptionMapper {
     if (entity.endDate !== undefined) doc.endDate = entity.endDate;
     if (entity.stripePaymentIntentId !== undefined)
       doc.stripePaymentIntentId = entity.stripePaymentIntentId;
+    if (entity.previousSubscriptionId !== undefined)
+      doc.previousSubscriptionId = entity.previousSubscriptionId;
 
     return doc;
   }

@@ -31,7 +31,10 @@ export const useAdminPlans = (params: {
   sort: string;
   sortOrder: "asc" | "desc";
 }) => {
-  return useQuery<ApiEnvelope<PaginatedSubscriptionPlanDto>, AxiosError<ApiErrorResponse>>({
+  return useQuery<
+    ApiEnvelope<PaginatedSubscriptionPlanDto>,
+    AxiosError<ApiErrorResponse>
+  >({
     queryKey: subscriptionKeys.adminPlans(params),
     queryFn: () => subscriptionApi.adminGetPlans(params),
   });
@@ -104,16 +107,20 @@ export const useDeleteSubscriptionPlan = (options?: {
 };
 
 export const useProviderActivePlans = () => {
-  return useQuery<ApiEnvelope<SubscriptionPlanDto[]>, AxiosError<ApiErrorResponse>>({
+  return useQuery<
+    ApiEnvelope<SubscriptionPlanDto[]>,
+    AxiosError<ApiErrorResponse>
+  >({
     queryKey: subscriptionKeys.providerActivePlans(),
     queryFn: () => subscriptionApi.providerGetActivePlans(),
   });
 };
 
-export const useProviderStatus = () => {
+export const useProviderStatus = (options?: { refetchInterval?: number | false }) => {
   return useQuery<ApiEnvelope<ProviderSubscriptionStatusDto>, AxiosError<ApiErrorResponse>>({
     queryKey: subscriptionKeys.providerStatus(),
     queryFn: () => subscriptionApi.providerGetStatus(),
+    refetchInterval: options?.refetchInterval ?? false,
   });
 };
 
@@ -121,9 +128,33 @@ export const useCreateSubscriptionCheckout = (options?: {
   onSuccess?: (data: ApiEnvelope<CheckoutResponseDto>) => void;
   onError?: (error: AxiosError<ApiErrorResponse>) => void;
 }) => {
-  return useMutation<ApiEnvelope<CheckoutResponseDto>, AxiosError<ApiErrorResponse>, string>({
+
+  const queryClient = useQueryClient();
+  return useMutation<
+    ApiEnvelope<CheckoutResponseDto>,
+    AxiosError<ApiErrorResponse>,
+    string
+  >({
     mutationFn: (planId: string) =>
       subscriptionApi.providerCreateCheckout(planId),
+    onSuccess: (data) => {
+      options?.onSuccess?.(data);
+    },
+    onError: options?.onError,
+  });
+};
+
+export const useCreateSubscriptionUpgradeCheckout = (options?: {
+  onSuccess?: (data: ApiEnvelope<CheckoutResponseDto>) => void;
+  onError?: (error: AxiosError<ApiErrorResponse>) => void;
+}) => {
+  return useMutation<
+    ApiEnvelope<CheckoutResponseDto>,
+    AxiosError<ApiErrorResponse>,
+    string
+  >({
+    mutationFn: (planId: string) =>
+      subscriptionApi.providerCreateUpgradeCheckout(planId),
     onSuccess: (data) => {
       options?.onSuccess?.(data);
     },

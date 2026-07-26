@@ -49,6 +49,11 @@ export class SubscriptionRouter {
       authorizeRoles("provider"),
       subscriptionController.createCheckout,
     );
+    this.router.post(
+      "/provider/upgrade-checkout",
+      authorizeRoles("provider"),
+      subscriptionController.createUpgradeCheckout,
+    );
     this.router.get(
       "/provider/my-status",
       authorizeRoles("provider"),

@@ -8,8 +8,9 @@ import { ProviderProfile } from "../../../../domain/entities/provider-profile.en
 import { SubscriptionPlan } from "../../../../domain/entities/subscription-plan.entity";
 import { IPlatformWalletService } from "../../../../domain/interfaces/services/payment/IPlatformWalletService";
 import { WalletTransactionCategory } from "../../../../domain/enums/wallet-transaction-category.enum";
+import { IConfirmSubscriptionPaymentUseCase } from "../../../../domain/interfaces/usecases/subscription/IConfirmSubscriptionPaymentUseCase";
 
-export class ConfirmSubscriptionPaymentUseCase {
+export class ConfirmSubscriptionPaymentUseCase implements IConfirmSubscriptionPaymentUseCase {
   constructor(
     private readonly subscriptionPlanRepository: ISubscriptionPlanRepository,
     private readonly providerSubscriptionRepository: IProviderSubscriptionRepository,
