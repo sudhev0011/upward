@@ -129,7 +129,6 @@ export const useCreateSubscriptionCheckout = (options?: {
   onError?: (error: AxiosError<ApiErrorResponse>) => void;
 }) => {
 
-  const queryClient = useQueryClient();
   return useMutation<
     ApiEnvelope<CheckoutResponseDto>,
     AxiosError<ApiErrorResponse>,
