@@ -23,4 +23,14 @@ export interface IProviderSubscriptionRepository extends IBaseRepository<Provide
     providerId: string,
     transaction?: ITransactionContext,
   ): Promise<PlanFeatures>;
+
+  findPendingByProviderId(
+    providerId: string,
+    transaction?: ITransactionContext,
+  ): Promise<ProviderSubscription | null>;
+
+  findStalePending(
+    olderThan: Date,
+    transaction?: ITransactionContext,
+  ): Promise<ProviderSubscription[]>;
 }

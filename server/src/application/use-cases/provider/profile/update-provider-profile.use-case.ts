@@ -54,7 +54,7 @@ export class UpdateProviderProfileUseCase implements IUpdateProviderProfileUseCa
       throw new NotFoundError('Failed to update seeker profile');
     }
 
-    if(!user.avatarFileName){
+    if(updatedProfile){
       await this._userRepository.update(userId, {avatarFileName: updatedProfile.avatarUrl})
     }
     

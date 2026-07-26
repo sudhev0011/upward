@@ -1,10 +1,10 @@
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { UserRole } from "@/constants/user-role";
 import type { RootState } from "@/store/store";
-import { useAppDispatch } from "@/hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { setActiveRole } from "@/store/slices/authSlice";
 import { ArrowUpRight } from "lucide-react";
+import { prefetchRouteForRole } from "@/utils/RoutePrefetch";
 
 const roleRoutes: Record<UserRole, string> = {
   admin: "/admin/dashboard",
@@ -47,13 +47,14 @@ const ROLE_META: Record<
 
 const SelectRole = () => {
   const navigate = useNavigate();
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user } = useAppSelector((state: RootState) => state.auth);
   const dispatch = useAppDispatch();
 
   if (!user?.roles) return null;
 
   const handleSelect = (role: UserRole) => {
     dispatch(setActiveRole(role));
+    prefetchRouteForRole(role);
     navigate(roleRoutes[role]);
   };
 

@@ -8,6 +8,7 @@ export interface ProviderSubscriptionDocument extends Document {
   startDate: Date | null;
   endDate: Date | null;
   stripePaymentIntentId: string | null;
+  previousSubscriptionId: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -52,6 +53,10 @@ const ProviderSubscriptionSchema = new Schema<ProviderSubscriptionDocument>(
       default: null,
       unique: true,
       sparse: true,
+    },
+    previousSubscriptionId: {
+      type: String,
+      default: null,
     },
   },
   {

@@ -1,12 +1,14 @@
 import { ProviderSubscription } from "../../../../domain/entities/provider-subscription.entity";
-import { NotFoundError } from "../../../../domain/errors/errors";
+import {
+  BadRequestError,
+  NotFoundError,
+} from "../../../../domain/errors/errors";
 import { ISubscriptionPlanRepository } from "../../../../domain/interfaces/repositories/subscription-plan/ISubscriptionPlanRepository";
 import { IProviderSubscriptionRepository } from "../../../../domain/interfaces/repositories/provider-subscription/IProviderSubscriptionRepository";
 import { IPaymentGateway } from "../../../../domain/interfaces/services/payment/IPaymentGateway";
 import { CreateSubscriptionCheckoutResponse } from "../../../dtos/admin/subscription/response/createSubscriptionCheckout.response";
 import { CreateSubscriptionCheckoutRequest } from "../../../dtos/admin/subscription/request/createSubscriptionCheckoutRequest.dto";
 import { ICreateSubscriptionCheckoutUseCase } from "../../../../domain/interfaces/usecases/subscription/ICreateSubscriptionCheckoutUseCase";
-
 
 export class CreateSubscriptionCheckoutUseCase implements ICreateSubscriptionCheckoutUseCase {
   constructor(
@@ -18,6 +20,17 @@ export class CreateSubscriptionCheckoutUseCase implements ICreateSubscriptionChe
   async execute(
     data: CreateSubscriptionCheckoutRequest,
   ): Promise<CreateSubscriptionCheckoutResponse> {
+    
+    const existingPending =
+      await this.providerSubscriptionRepository.findPendingByProviderId(
+        data.providerId,
+      );
+    if (existingPending) {
+      throw new BadRequestError(
+        "You already have a pending subscription payment. Please complete or cancel it first.",
+      );
+    }
+
     const plan = await this.subscriptionPlanRepository.findById(data.planId);
 
     if (!plan || !plan.isActive) {
@@ -25,7 +38,7 @@ export class CreateSubscriptionCheckoutUseCase implements ICreateSubscriptionChe
     }
 
     const subscription = ProviderSubscription.create({
-      id: "", 
+      id: "",
       providerId: data.providerId,
       planId: plan.id,
       amount: plan.price,

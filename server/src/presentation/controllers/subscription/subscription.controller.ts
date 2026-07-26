@@ -17,8 +17,13 @@ import { IDeleteSubscriptionPlanUseCase } from "../../../domain/interfaces/useca
 import { IGetActivePlansUseCase } from "../../../domain/interfaces/usecases/subscription/IGetActivePlansUseCase";
 import { IGetAllSubscriptionPlansUseCase } from "../../../domain/interfaces/usecases/subscription/IGetAllSubscriptionPlansUseCase";
 import { ICreateSubscriptionCheckoutUseCase } from "../../../domain/interfaces/usecases/subscription/ICreateSubscriptionCheckoutUseCase";
-import { CreateSubscriptionPlanRequestDto, UpdateSubscriptionPlanRequestDto } from "../../../application/dtos/admin/subscription/request/createSubscriptionPlanRequest.dto";
+import {
+  CreateSubscriptionPlanRequestDto,
+  UpdateSubscriptionPlanRequestDto,
+} from "../../../application/dtos/admin/subscription/request/createSubscriptionPlanRequest.dto";
 import { formatZodErrors } from "../../../shared/utils/presentation/zod-error-formatter.utils";
+import { ICreateSubscriptionUpgradeCheckoutUseCase } from "../../../domain/interfaces/usecases/subscription/ICreateSubscriptionUpgradeCheckoutUseCase";
+import { CreateSubscriptionUpgradeCheckoutRequestDto } from "../../../application/dtos/provider/subscription/createSubscriptionUpgradeCheckoutRequest.dto";
 
 export class SubscriptionController {
   constructor(
@@ -28,6 +33,7 @@ export class SubscriptionController {
     private readonly getAllSubscriptionPlansUseCase: IGetAllSubscriptionPlansUseCase,
     private readonly getActivePlansUseCase: IGetActivePlansUseCase,
     private readonly createSubscriptionCheckoutUseCase: ICreateSubscriptionCheckoutUseCase,
+    private readonly createSubscriptionUpgradeCheckoutUseCase: ICreateSubscriptionUpgradeCheckoutUseCase,
     private readonly providerProfileRepository: IProviderProfileRepository,
     private readonly providerSubscriptionRepository: IProviderSubscriptionRepository,
   ) {}
@@ -38,14 +44,15 @@ export class SubscriptionController {
     next: NextFunction,
   ): Promise<void> => {
     try {
+      const parsed = CreateSubscriptionPlanRequestDto.safeParse(req.body);
 
-      const parsed = CreateSubscriptionPlanRequestDto.safeParse(req.body); 
-
-      if(!parsed.success){
+      if (!parsed.success) {
         return handleValidationError(formatZodErrors(parsed.error), next);
       }
 
-      const plan = await this.createSubscriptionPlanUseCase.execute(parsed.data);
+      const plan = await this.createSubscriptionPlanUseCase.execute(
+        parsed.data,
+      );
 
       sendCreatedResponse(res, "Subscription plan created successfully", plan);
     } catch (error) {
@@ -61,8 +68,11 @@ export class SubscriptionController {
     try {
       const { id } = req.params;
 
-      if(!id){
-        return handleValidationError('invalid plan id received please provide correct one', next)
+      if (!id) {
+        return handleValidationError(
+          "invalid plan id received please provide correct one",
+          next,
+        );
       }
 
       const parsed = UpdateSubscriptionPlanRequestDto.safeParse(req.body);
@@ -71,7 +81,10 @@ export class SubscriptionController {
         return handleValidationError(formatZodErrors(parsed.error), next);
       }
 
-      const plan = await this.updateSubscriptionPlanUseCase.execute(id as string, parsed.data);
+      const plan = await this.updateSubscriptionPlanUseCase.execute(
+        id as string,
+        parsed.data,
+      );
 
       sendSuccessResponse(res, "Subscription plan updated successfully", plan);
     } catch (error) {
@@ -184,6 +197,7 @@ export class SubscriptionController {
         activeSubscriptionExpiresAt:
           profile?.activeSubscriptionExpiresAt || null,
         activeSubscriptionPlanName: profile?.activeSubscriptionPlanName || null,
+        activeSubscriptionPlanId: profile?.activeSubscriptionPlanId || null,
         history,
       };
 
@@ -191,6 +205,40 @@ export class SubscriptionController {
         res,
         "Subscription status fetched successfully",
         data,
+      );
+    } catch (error) {
+      handleAsyncError(error, next);
+    }
+  };
+
+  createUpgradeCheckout = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const providerId = validateUserId(req);
+      if (!providerId) {
+        throw new Error("Provider ID is required.");
+      }
+
+      const parsed = CreateSubscriptionUpgradeCheckoutRequestDto.safeParse(
+        req.body,
+      );
+      if (!parsed.success) {
+        return handleValidationError(formatZodErrors(parsed.error), next);
+      }
+
+      const checkoutData =
+        await this.createSubscriptionUpgradeCheckoutUseCase.execute({
+          providerId,
+          planId: parsed.data.planId,
+        });
+
+      sendSuccessResponse(
+        res,
+        "Upgrade checkout session initialized successfully",
+        checkoutData,
       );
     } catch (error) {
       handleAsyncError(error, next);

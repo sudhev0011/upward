@@ -22,6 +22,7 @@ export class ProviderProfileMapper {
       isApprovedByAdmin: doc.isApprovedByAdmin || false,
       activeSubscriptionExpiresAt: doc.activeSubscriptionExpiresAt || null,
       activeSubscriptionPlanName: doc.activeSubscriptionPlanName || null,
+      activeSubscriptionPlanId: doc.activeSubscriptionPlanId || null,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     });
@@ -46,6 +47,7 @@ export class ProviderProfileMapper {
     if (entity.isApprovedByAdmin !== undefined) doc.isApprovedByAdmin = entity.isApprovedByAdmin || false;
     if (entity.activeSubscriptionExpiresAt !== undefined) doc.activeSubscriptionExpiresAt = entity.activeSubscriptionExpiresAt;
     if (entity.activeSubscriptionPlanName !== undefined) doc.activeSubscriptionPlanName = entity.activeSubscriptionPlanName;
+    if (entity.activeSubscriptionPlanId !== undefined) doc.activeSubscriptionPlanId = entity.activeSubscriptionPlanId;
     return doc;
   }
 }

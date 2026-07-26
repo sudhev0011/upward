@@ -27,6 +27,7 @@ export class ProviderProfileMapper {
     categories?: string[];
     activeSubscriptionExpiresAt?: Date | null;
     activeSubscriptionPlanName?: string | null;
+    activeSubscriptionPlanId?: string | null;
   }): CreateInput<ProviderProfile> {
     return {
       userId: data.userId,
@@ -46,6 +47,7 @@ export class ProviderProfileMapper {
       categories: data.categories ?? [],
       activeSubscriptionExpiresAt: data.activeSubscriptionExpiresAt ?? null,
       activeSubscriptionPlanName: data.activeSubscriptionPlanName ?? null,
+      activeSubscriptionPlanId: data.activeSubscriptionPlanId ?? null,
     };
   }
 
@@ -81,6 +83,7 @@ export class ProviderProfileMapper {
         ? profile.activeSubscriptionExpiresAt.toISOString()
         : null,
       activeSubscriptionPlanName: profile.activeSubscriptionPlanName,
+      activeSubscriptionPlanId: profile.activeSubscriptionPlanId,
       createdAt: profile.createdAt.toISOString(),
       updatedAt: profile.updatedAt.toISOString(),
     };
