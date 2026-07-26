@@ -5,7 +5,6 @@ const SOCKET_URL = import.meta.env.VITE_ENV == 'production' ? import.meta.env.VI
 
 let globalSocket: Socket | null = null;
 
-// Helper to ensure socket is instantiated lazily when needed
 const getOrCreateSocket = (): Socket => {
   if (!globalSocket) {
     globalSocket = io(SOCKET_URL, {
@@ -17,13 +16,10 @@ const getOrCreateSocket = (): Socket => {
 };
 
 export const useSocket = (conversationId?: string) => {
-  // 1. Initialize state directly using the singleton value or initializer function
-  // This avoids running setSocket/setIsConnected synchronously inside useEffect
   const [socket] = useState<Socket>(getOrCreateSocket);
   const [isConnected, setIsConnected] = useState(() => globalSocket?.connected ?? false);
 
   useEffect(() => {
-    // globalSocket is guaranteed to exist now because of the initializer
     const currentSocket = globalSocket!; 
 
     const onConnect = () => {
@@ -37,7 +33,6 @@ export const useSocket = (conversationId?: string) => {
     currentSocket.on('connect', onConnect);
     currentSocket.on('disconnect', onDisconnect);
 
-    // Join conversation logic
     if (conversationId) {
       if (currentSocket.connected) {
         currentSocket.emit('join_conversation', { conversationId });
