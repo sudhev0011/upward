@@ -107,55 +107,64 @@ export class BookingController {
     }
   };
 
-  listBookings =
-    (role: UserRole) =>
-    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-      const currentUserId = validateUserId(req);
+  listBookings = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const currentUserId = validateUserId(req);
+    // Extract the role dynamically from the authenticated request
+    const role = req.user?.roles[0] as UserRole;
 
-      const parsed = ListBookingsRequestDtoSchema.safeParse(req.query);
+    const parsed = ListBookingsRequestDtoSchema.safeParse(req.query);
 
-      if (!parsed.success) {
-        return handleValidationError(formatZodErrors(parsed.error), next);
-      }
+    if (!parsed.success) {
+      return handleValidationError(formatZodErrors(parsed.error), next);
+    }
 
-      try {
-        const result = await this._listBookingsUseCase.execute(
-          parsed.data,
-          currentUserId,
-          role,
-        );
+    try {
+      const result = await this._listBookingsUseCase.execute(
+        parsed.data,
+        currentUserId,
+        role,
+      );
 
-        sendSuccessResponse(res, successResponse.GET_BOOKINGS_SUCCESS, result);
-      } catch (error) {
-        handleAsyncError(error, next);
-      }
-    };
+      sendSuccessResponse(res, successResponse.GET_BOOKINGS_SUCCESS, result);
+    } catch (error) {
+      handleAsyncError(error, next);
+    }
+  };
 
-  cancelBooking =
-    (role: UserRole) =>
-    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-      const userId = validateUserId(req);
-      const bookingId = req.params.id as string;
+  cancelBooking = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const userId = validateUserId(req);
+    // Extract the role dynamically from the authenticated request
+    const role = req.user?.roles[0] as UserRole;
 
-      const parsed = CancelBookingRequestDtoSchema.safeParse(req.body);
+    const bookingId = req.params.id as string;
 
-      if (!parsed.success) {
-        return handleValidationError(formatZodErrors(parsed.error), next);
-      }
+    const parsed = CancelBookingRequestDtoSchema.safeParse(req.body);
 
-      try {
-        await this._cancelBookingUseCase.execute({
-          bookingId,
-          userId,
-          role,
-          reason: parsed.data.reason ?? null,
-        });
+    if (!parsed.success) {
+      return handleValidationError(formatZodErrors(parsed.error), next);
+    }
 
-        sendSuccessResponse(res, successResponse.CANCEL_BOOKING_SUCCESS, null);
-      } catch (error) {
-        handleAsyncError(error, next);
-      }
-    };
+    try {
+      await this._cancelBookingUseCase.execute({
+        bookingId,
+        userId,
+        role,
+        reason: parsed.data.reason ?? null,
+      });
+
+      sendSuccessResponse(res, successResponse.CANCEL_BOOKING_SUCCESS, null);
+    } catch (error) {
+      handleAsyncError(error, next);
+    }
+  };
 
   completeBooking = async (
     req: AuthenticatedRequest,
@@ -223,7 +232,6 @@ export class BookingController {
     }
   };
 
-
   rescheduleOnsiteBooking = async (
     req: AuthenticatedRequest,
     res: Response,
@@ -233,7 +241,9 @@ export class BookingController {
       const clientId = validateUserId(req);
       const bookingId = req.params.id as string;
 
-      const parsed = RescheduleOnsiteBookingRequestDtoSchema.safeParse(req.body);
+      const parsed = RescheduleOnsiteBookingRequestDtoSchema.safeParse(
+        req.body,
+      );
 
       if (!parsed.success) {
         return handleValidationError(formatZodErrors(parsed.error), next);
@@ -262,7 +272,9 @@ export class BookingController {
       const clientId = validateUserId(req);
       const bookingId = req.params.id as string;
 
-      const parsed = RescheduleOffsiteBookingRequestDtoSchema.safeParse(req.body);
+      const parsed = RescheduleOffsiteBookingRequestDtoSchema.safeParse(
+        req.body,
+      );
 
       if (!parsed.success) {
         return handleValidationError(formatZodErrors(parsed.error), next);

@@ -14,100 +14,111 @@ export const AuthRoutes = {
 } as const;
 
 export const ClientRoutes = {
-  PROFILE: "/api/client/profile",
-  PROFILE_UPLOAD_URL: "/api/client/profile-upload-url",
-  PROFILE_AVATAR: "/api/client/profile/avatar",
+  PROFILE: "/api/clients/me/profile",
+  PROFILE_UPLOAD_URL: "/api/clients/me/profile-upload-url",
+  PROFILE_AVATAR: "/api/clients/me/profile/avatar",
+  
   AVAILABLE_SLOTS: (providerId: string, serviceId: string) =>
-    `/api/client/providers/${providerId}/services/${serviceId}/slots`,
+    `/api/providers/${providerId}/services/${serviceId}/slots`,
 
-  BOOKINGS: "/api/client/bookings",
-  BOOKINGS_ONSITE: "/api/client/bookings/onsite",
-  BOOKINGS_OFFSITE: "/api/client/bookings/offsite",
-  PAYMENT_CREATE_INTENT: "/api/client/payments/create-intent",
-  GET_WALLET: "/api/client/wallet",
-
-  PAYMENT_REMAINING_INTENT: "/api/client/payments/remaining-intent",
+  BOOKINGS: "/api/bookings",
+  BOOKINGS_ONSITE: "/api/bookings/onsite",
+  BOOKINGS_OFFSITE: "/api/bookings/offsite",
+  
+  PAYMENT_CREATE_INTENT: "/api/payments/create-intent",
+  GET_WALLET: "/api/wallets/me",
+  PAYMENT_REMAINING_INTENT: "/api/payments/remaining-intent",
 
   CLIENT_COMPLETE_BOOKING: (bookingId: string) =>
-    `/api/client/bookings/${bookingId}/client-complete`,
+    `/api/bookings/${bookingId}/client-complete`,
 
   RESCHEDULE_BOOKING_ONSITE: (bookingId: string) =>
-    `/api/client/bookings/${bookingId}/reschedule/onsite`,
+    `/api/bookings/${bookingId}/reschedule/onsite`,
 
   RESCHEDULE_BOOKING_OFFSITE: (bookingId: string) =>
-    `/api/client/bookings/${bookingId}/reschedule/offsite`,
+    `/api/bookings/${bookingId}/reschedule/offsite`,
 
-  GET_DASHBOARD_STATS: "/api/client/dashboard/stats",
+  GET_DASHBOARD_STATS: "/api/dashboards/client/stats",
 } as const;
 
-
 export const ProviderRoutes = {
-  PROFILE: "/api/provider/profile",
-  PROFILE_UPLOAD_URL: "/api/provider/profile-upload-url",
-  KYC_IDENTITY: "/api/provider/kyc/identity",
-  KYC_BANK: "/api/provider/kyc/bank",
-  KYC_DOCUMENT_UPLOAD: "/api/provider/media/kyc-document",
-  GET_KYC_DOCUMENT: "/api/provider/kyc/identity",
-  GET_BANK_DOCUMENT: "/api/provider/kyc/bank",
-  CREATE_PROVIDE_SERVICE: "/api/provider/providerService",
-  GET_ALL_PROVIDER_SERVICE_BY_CATEGORY: "/api/provider/providerServices",
-  SET_PROVIDER_SERVICE_PRICE: "/api/provider/providerService",
-  DELETE_PROVIDER_SERVICE: "/api/provider/providerService/:id",
+  PROFILE: "/api/providers/me/profile",
+  PROFILE_UPLOAD_URL: "/api/providers/me/profile-upload-url",
+  
+  KYC_IDENTITY: "/api/providers/me/kyc/identity",
+  KYC_BANK: "/api/providers/me/kyc/bank",
+  KYC_DOCUMENT_UPLOAD: "/api/providers/me/media/kyc-document",
+  GET_KYC_DOCUMENT: "/api/providers/me/kyc/identity",
+  GET_BANK_DOCUMENT: "/api/providers/me/kyc/bank",
+  
+  CREATE_PROVIDE_SERVICE: "/api/providers/me/services",
+  GET_ALL_PROVIDER_SERVICE_BY_CATEGORY: "/api/providers/me/services",
+  SET_PROVIDER_SERVICE_PRICE: "/api/providers/me/services",
+  DELETE_PROVIDER_SERVICE: "/api/providers/me/services/:id",
 
   // ─── Availability ────────────────────────────────────────────────────────────
-  SET_AVAILABILITY: "/api/provider/availability",
-  GET_AVAILABILITY: "/api/provider/availability",
+  SET_AVAILABILITY: "/api/providers/me/availability",
+  GET_AVAILABILITY: "/api/providers/me/availability",
 
   // ─── Unavailability ──────────────────────────────────────────────────────────
-  GET_UNAVAILABILITY: "/api/provider/unavailability",
-  CREATE_UNAVAILABILITY: "/api/provider/unavailability",
-  DELETE_UNAVAILABILITY: "/api/provider/unavailability/:id",
+  GET_UNAVAILABILITY: "/api/providers/me/unavailability",
+  CREATE_UNAVAILABILITY: "/api/providers/me/unavailability",
+  DELETE_UNAVAILABILITY: "/api/providers/me/unavailability/:id",
 
   // ─── Availability Overrides ──────────────────────────────────────────────────
-  SET_AVAILABILITY_OVERRIDE: "/api/provider/availability/overrides",
-  GET_AVAILABILITY_OVERRIDES: "/api/provider/availability/overrides",
-  DELETE_AVAILABILITY_OVERRIDE: "/api/provider/availability/overrides/:date",
+  SET_AVAILABILITY_OVERRIDE: "/api/providers/me/availability/overrides",
+  GET_AVAILABILITY_OVERRIDES: "/api/providers/me/availability/overrides",
+  DELETE_AVAILABILITY_OVERRIDE: "/api/providers/me/availability/overrides/:date",
 
   // ─── Portfolio ───────────────────────────────────────────────────────────────
-  GET_PORTFOLIO_UPLOAD_URL: "/api/provider/portfolio/upload-url",
-  CREATE_PORTFOLIO_ITEM: "/api/provider/portfolio",
-  GET_PORTFOLIO: "/api/provider/portfolio",
-  DELETE_PORTFOLIO_ITEM: "/api/provider/portfolio/:id",
-  REMOVE_PORTFOLIO_IMAGE: "/api/provider/portfolio/:id/images",
-  UPDATE_PORTFOLIO_ITEM: "/api/provider/portfolio/:id",
+  GET_PORTFOLIO_UPLOAD_URL: "/api/providers/me/portfolio/upload-url",
+  CREATE_PORTFOLIO_ITEM: "/api/providers/me/portfolio",
+  GET_PORTFOLIO: "/api/providers/me/portfolio",
+  DELETE_PORTFOLIO_ITEM: "/api/providers/me/portfolio/:id",
+  REMOVE_PORTFOLIO_IMAGE: "/api/providers/me/portfolio/:id/images",
+  UPDATE_PORTFOLIO_ITEM: "/api/providers/me/portfolio/:id",
 
   PROVIDER_COMPLETE_BOOKING: (bookingId: string) =>
-    `/api/provider/bookings/${bookingId}/provider-complete`,
-  GET_PAYOUTS: "/api/provider/payouts",
-  GET_DASHBOARD_STATS: "/api/provider/dashboard/stats",
-  PAYOUT_REQUESTS: "/api/provider/payout-requests",
+    `/api/bookings/${bookingId}/provider-complete`,
+  
+  BOOKINGS: "/api/bookings",
+  CANCEL_BOOKING: (bookingId: string) => `/api/bookings/${bookingId}/cancel`,
+  GET_PAYOUTS: "/api/payouts",
+  GET_DASHBOARD_STATS: "/api/dashboards/provider/stats",
+  PAYOUT_REQUESTS: "/api/payouts/requests",
 } as const;
 
 export const AdminRoutes = {
-  GET_PROVIDER_PROFILES: "/api/admin/providers",
-  GET_PROVIDER_PROFILE_BY_ID: "/api/admin/provider/:id",
-  APPROVE_PROVIDER: "/api/admin/provider/approve",
-  APPROVE_REJECT: "/api/admin/provider/reject",
-  BLOCK_PROVIDER: "/api/admin/provider/block",
-  GET_PROVIDER_BANK: (providerId: string) => `/api/admin/provider/${providerId}/bank`,
-  APPROVE_PROVIDER_BANK: (providerId: string) => `/api/admin/provider/${providerId}/bank/approve`,
-  GET_CLIENT_PROFILES: "/api/admin/clients",
-  GET_CLIENT_PROFILE_BY_ID: "/api/admin/client/:id",
-  BLOCK_CLIENT: "/api/admin/client/block",
-  GET_KYC_DOCUMENT: "/api/admin/kyc/identity/:userId",
-  CREATE_CATEGORY: "/api/admin/category",
-  CREATE_SERVICE: "/api/admin/service",
-  DELETE_SERVICE: "/api/admin/service/:serviceId",
-  GET_ALL_CATEGORIES: "/api/admin/categories/all",
-  UPDATE_CATEGORY: "/api/admin/category/update",
-  GET_ALL_PAGINATED_CATEGORIES: "/api/admin/categories",
-  GET_ALL_SERVICES: "/api/admin/services/all",
-  GET_ALL_PAGINATED_SERVICES: "/api/admin/services",
-  TOGGLE_SERVICE: "/api/admin/service/toggle",
-  UPDATE_SERVICE: "/api/admin/service/update",
-  GET_DASHBOARD_STATS: "/api/admin/dashboard/stats",
-  GET_PAYMENTS: "/api/admin/payments",
-  PAYOUT_REQUESTS: "/api/admin/payout-requests",
+  GET_PROVIDER_PROFILES: "/api/providers",
+  GET_PROVIDER_PROFILE_BY_ID: "/api/providers/:id",
+  APPROVE_PROVIDER: "/api/providers/:id/approve",
+  APPROVE_REJECT: "/api/providers/:id/reject",
+  BLOCK_PROVIDER: "/api/providers/:id/block",
+  
+  GET_PROVIDER_BANK: (providerId: string) => `/api/providers/${providerId}/bank`,
+  APPROVE_PROVIDER_BANK: (providerId: string) => `/api/providers/${providerId}/bank/approve`,
+  
+  GET_CLIENT_PROFILES: "/api/clients",
+  GET_CLIENT_PROFILE_BY_ID: "/api/clients/:id",
+  BLOCK_CLIENT: "/api/clients/:id/block",
+  
+  GET_KYC_DOCUMENT: "/api/providers/:userId/kyc",
+  
+  CREATE_CATEGORY: "/api/categories",
+  GET_ALL_CATEGORIES: "/api/categories/all",
+  GET_ALL_PAGINATED_CATEGORIES: "/api/categories",
+  UPDATE_CATEGORY: "/api/categories/:categoryId", 
+  
+  CREATE_SERVICE: "/api/services",
+  DELETE_SERVICE: "/api/services/:serviceId",
+  GET_ALL_SERVICES: "/api/services/all",
+  GET_ALL_PAGINATED_SERVICES: "/api/services",
+  TOGGLE_SERVICE: "/api/services/:serviceId/toggle",
+  UPDATE_SERVICE: "/api/services/:serviceId",
+  
+  GET_DASHBOARD_STATS: "/api/dashboards/admin/stats",
+  GET_PAYMENTS: "/api/payments",
+  PAYOUT_REQUESTS: "/api/payouts/admin/requests",
 } as const;
 
 export const PublicRoutes = {
@@ -145,7 +156,6 @@ export const ChatRoutes = {
   FIND_OR_CREATE_CONVERSATION: "/api/chat/conversations",
   RESET_UNREAD_COUNT: "/api/chat/conversations/:conversationId/reset",
   GET_UPLOAD_URL: "/api/chat/presigned-url"
-
 } as const;
 
 export const NotificationRoutes = {
@@ -161,5 +171,5 @@ export const ReviewRoutes = {
   GET_PROVIDER_REVIEWS: "/api/reviews/provider/:providerId",
   GET_CLIENT_REVIEWS: "/api/reviews/client",
   GET_PENDING: "/api/reviews/pending",
-  COMPLETE_BOOKING: "/api/provider/bookings/:id/complete",
+  COMPLETE_BOOKING: "/api/bookings/:id/complete", 
 } as const;
