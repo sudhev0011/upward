@@ -496,11 +496,8 @@ export class BookingRepository
         _id: bookingId,
         clientId,
         status: {
-        $in: [
-          BookingStatus.CONFIRMED,
-          BookingStatus.PROVIDER_COMPLETED,
-        ],
-      },
+          $in: [BookingStatus.CONFIRMED, BookingStatus.PROVIDER_COMPLETED],
+        },
         paymentType: PaymentType.PARTIAL,
         paymentStatus: PaymentStatus.PARTIALLY_PAID,
       },
@@ -592,7 +589,9 @@ export class BookingRepository
     if (grouping === "hour") {
       dateGroupId = { $hour: "$createdAt" };
     } else if (grouping === "day") {
-      dateGroupId = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
+      dateGroupId = {
+        $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+      };
     } else if (grouping === "week") {
       dateGroupId = { $week: "$createdAt" };
     } else {
@@ -631,13 +630,19 @@ export class BookingRepository
         return `${key}:00`;
       } else if (grouping === "day") {
         const date = new Date(String(key));
-        return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        return date.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
       } else if (grouping === "week") {
         return `Week ${key}`;
       } else {
         const [year, month] = String(key).split("-");
         const date = new Date(parseInt(year), parseInt(month) - 1, 1);
-        return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+        return date.toLocaleDateString("en-US", {
+          month: "short",
+          year: "numeric",
+        });
       }
     };
 
@@ -667,18 +672,39 @@ export class BookingRepository
     earningsOverview: Array<{ label: string; earnings: number }>;
   }> {
     const providerObjectId = new Types.ObjectId(providerId);
+    const now = new Date();
 
-    const totalOrders = await BookingModel.countDocuments({
-      providerId: providerObjectId,
-      createdAt: { $gte: startDate },
-      status: { $nin: [BookingStatus.CANCELLED, BookingStatus.EXPIRED] },
-    });
+    const bookingFacets = await BookingModel.aggregate([
+      { $match: { providerId: providerObjectId } },
+      {
+        $facet: {
+          totalOrders: [
+            {
+              $match: {
+                createdAt: { $gte: startDate },
+                status: {
+                  $nin: [BookingStatus.CANCELLED, BookingStatus.EXPIRED],
+                },
+              },
+            },
+            { $count: "count" },
+          ],
+          upcomingBookingsCount: [
+            {
+              $match: {
+                status: BookingStatus.CONFIRMED,
+                startDateTime: { $gt: now },
+              },
+            },
+            { $count: "count" },
+          ],
+        },
+      },
+    ]);
 
-    const upcomingBookingsCount = await BookingModel.countDocuments({
-      providerId: providerObjectId,
-      status: BookingStatus.CONFIRMED,
-      startDateTime: { $gt: new Date() },
-    });
+    const totalOrders = bookingFacets[0]?.totalOrders[0]?.count ?? 0;
+    const upcomingBookingsCount =
+      bookingFacets[0]?.upcomingBookingsCount[0]?.count ?? 0;
 
     const wallet = await WalletModel.findOne({ userId: providerObjectId });
     const walletBalance = wallet ? wallet.balance : 0;
@@ -711,11 +737,15 @@ export class BookingRepository
       if (grouping === "hour") {
         dateGroupId = { $hour: "$createdAt" };
       } else if (grouping === "day") {
-        dateGroupId = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
+        dateGroupId = {
+          $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+        };
       } else if (grouping === "week") {
         dateGroupId = { $week: "$createdAt" };
       } else {
-        dateGroupId = { $dateToString: { format: "%Y-%m", date: "$createdAt" } };
+        dateGroupId = {
+          $dateToString: { format: "%Y-%m", date: "$createdAt" },
+        };
       }
 
       const earningsOverviewResult = await WalletTransactionModel.aggregate([
@@ -752,13 +782,19 @@ export class BookingRepository
           return `${key}:00`;
         } else if (grouping === "day") {
           const date = new Date(String(key));
-          return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+          return date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          });
         } else if (grouping === "week") {
           return `Week ${key}`;
         } else {
           const [year, month] = String(key).split("-");
           const date = new Date(parseInt(year), parseInt(month) - 1, 1);
-          return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+          return date.toLocaleDateString("en-US", {
+            month: "short",
+            year: "numeric",
+          });
         }
       };
 
@@ -828,22 +864,24 @@ export class BookingRepository
         },
       },
     ]);
-    const bookingCommission = (bookingRevenueResult[0]?.total || 0) * 0.20;
+    const bookingCommission = (bookingRevenueResult[0]?.total || 0) * 0.2;
 
-    const subscriptionRevenueResult = await ProviderSubscriptionModel.aggregate([
-      {
-        $match: {
-          status: { $in: ["active", "expired", "cancelled"] },
-          createdAt: { $gte: startDate },
+    const subscriptionRevenueResult = await ProviderSubscriptionModel.aggregate(
+      [
+        {
+          $match: {
+            status: { $in: ["active", "expired", "cancelled"] },
+            createdAt: { $gte: startDate },
+          },
         },
-      },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: "$amount" },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: "$amount" },
+          },
         },
-      },
-    ]);
+      ],
+    );
     const subscriptionRevenue = subscriptionRevenueResult[0]?.total || 0;
     const totalRevenue = bookingCommission + subscriptionRevenue;
 
@@ -862,7 +900,9 @@ export class BookingRepository
     if (grouping === "hour") {
       dateGroupId = { $hour: "$createdAt" };
     } else if (grouping === "day") {
-      dateGroupId = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
+      dateGroupId = {
+        $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+      };
     } else if (grouping === "week") {
       dateGroupId = { $week: "$createdAt" };
     } else {
@@ -909,7 +949,7 @@ export class BookingRepository
     const dataMap = new Map<string | number, number>();
     for (const item of bookingTrend) {
       if (item._id !== null && item._id !== undefined) {
-        const comm = item.amount * 0.20;
+        const comm = item.amount * 0.2;
         dataMap.set(item._id, comm);
       }
     }
@@ -929,13 +969,19 @@ export class BookingRepository
         return `${key}:00`;
       } else if (grouping === "day") {
         const date = new Date(String(key));
-        return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        return date.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
       } else if (grouping === "week") {
         return `Week ${key}`;
       } else {
         const [year, month] = String(key).split("-");
         const date = new Date(parseInt(year), parseInt(month) - 1, 1);
-        return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+        return date.toLocaleDateString("en-US", {
+          month: "short",
+          year: "numeric",
+        });
       }
     };
 
@@ -958,35 +1004,49 @@ export class BookingRepository
         },
       },
     ]);
-    const totalBookings = distribution.reduce((sum, item) => sum + item.count, 0);
+    const totalBookings = distribution.reduce(
+      (sum, item) => sum + item.count,
+      0,
+    );
     const serviceDistribution = distribution.map((item) => {
-      const percentage = totalBookings > 0 ? Math.round((item.count / totalBookings) * 100) : 0;
-      const name = item._id === "onsite" ? "Onsite" : item._id === "offsite" ? "Offsite" : "Dedicated";
-      const fill = item._id === "onsite" ? "#719FC4" : item._id === "offsite" ? "#6366F1" : "#8B5CF6";
+      const percentage =
+        totalBookings > 0 ? Math.round((item.count / totalBookings) * 100) : 0;
+      const name =
+        item._id === "onsite"
+          ? "Onsite"
+          : item._id === "offsite"
+            ? "Offsite"
+            : "Dedicated";
+      const fill =
+        item._id === "onsite"
+          ? "#719FC4"
+          : item._id === "offsite"
+            ? "#6366F1"
+            : "#8B5CF6";
       return { name, value: percentage, fill };
     });
 
     // Recent transactions
     const recentPayments = await PaymentModel.aggregate([
       {
-        $sort: { createdAt: -1 }
+        $sort: { createdAt: -1 },
       },
       {
-        $limit: 5
+        $limit: 5,
       },
       {
         $lookup: {
           from: "users",
           localField: "clientId",
           foreignField: "_id",
-          as: "client"
-        }
+          as: "client",
+        },
       },
       {
         $unwind: {
           path: "$client",
-          preserveNullAndEmptyArrays: true
-        }
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $project: {
@@ -994,9 +1054,9 @@ export class BookingRepository
           transactionId: { $ifNull: ["$stripePaymentIntentId", "$_id"] },
           clientName: { $ifNull: ["$client.name", "Unknown Client"] },
           amount: "$amount",
-          status: "$transactionStatus"
-        }
-      }
+          status: "$transactionStatus",
+        },
+      },
     ]);
 
     // Top Providers
@@ -1006,11 +1066,11 @@ export class BookingRepository
           from: "users",
           localField: "userId",
           foreignField: "_id",
-          as: "user"
-        }
+          as: "user",
+        },
       },
       {
-        $unwind: "$user"
+        $unwind: "$user",
       },
       {
         $lookup: {
@@ -1022,23 +1082,23 @@ export class BookingRepository
                 $expr: {
                   $and: [
                     { $eq: ["$providerId", "$$providerId"] },
-                    { $eq: ["$status", BookingStatus.COMPLETED] }
-                  ]
-                }
-              }
+                    { $eq: ["$status", BookingStatus.COMPLETED] },
+                  ],
+                },
+              },
             },
             {
-              $count: "count"
-            }
+              $count: "count",
+            },
           ],
-          as: "completedBookings"
-        }
+          as: "completedBookings",
+        },
       },
       {
         $unwind: {
           path: "$completedBookings",
-          preserveNullAndEmptyArrays: true
-        }
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $project: {
@@ -1046,15 +1106,15 @@ export class BookingRepository
           name: { $ifNull: ["$user.name", "Unknown Provider"] },
           avatar: { $ifNull: ["$user.avatarFileName", ""] },
           completedJobs: { $ifNull: ["$completedBookings.count", 0] },
-          rating: { $ifNull: ["$ratingAvg", 5] }
-        }
+          rating: { $ifNull: ["$ratingAvg", 5] },
+        },
       },
       {
-        $sort: { rating: -1, completedJobs: -1 }
+        $sort: { rating: -1, completedJobs: -1 },
       },
       {
-        $limit: 5
-      }
+        $limit: 5,
+      },
     ]);
 
     return {
@@ -1074,7 +1134,9 @@ export class BookingRepository
       topProviders: topProviders.map((tp) => ({
         id: String(tp.id),
         name: String(tp.name),
-        avatar: tp.avatar ? String(tp.avatar) : String(tp.name).substring(0, 2).toUpperCase(),
+        avatar: tp.avatar
+          ? String(tp.avatar)
+          : String(tp.name).substring(0, 2).toUpperCase(),
         completedJobs: Number(tp.completedJobs),
         rating: Number(tp.rating),
       })),

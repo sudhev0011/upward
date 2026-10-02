@@ -4,8 +4,9 @@ import { useProvidersByCategory } from "@/hooks/public/providers/useProvidersByC
 import { ProviderCard } from "@/components/provider/listing/ProviderCard";
 import { ProviderListingFilters } from "@/components/provider/listing/ProviderListingFilters";
 import { GetProvidersByCategoryParams } from "@/interfaces/provider/provider.listing.interface";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useGetAllCategories } from "@/hooks/public/useGetAllCategories";
+import { usePagination } from "@/hooks/usePagination";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 export default function ProviderListingPage(){
   const [searchParams, setSearchParams] = useSearchParams();
@@ -46,7 +47,12 @@ export default function ProviderListingPage(){
     setSearchParams({ category });
   };
 
-  const { data, isLoading, isError } = useProvidersByCategory(filters);
+  const { data, isLoading, isError,isFetching } = useProvidersByCategory(filters);
+
+  const currentPage = data?.page || filters.page || 1;
+  const totalPages = data?.totalPages || 1;
+
+  const {pageNumbers} = usePagination({currentPage, totalPages});
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -137,41 +143,51 @@ export default function ProviderListingPage(){
             </div>
 
             {/* Pagination */}
-            {data.totalPages > 1 && (
-              <div className="flex items-center justify-center gap-4 mt-12">
-                <button
-                  onClick={() => updateFilters({ page: filters.page! - 1 })}
-                  disabled={filters.page === 1}
-                  className="p-2 rounded-xl border border-gray-200 bg-white disabled:opacity-40 hover:border-[#719FC4] transition-colors"
-                >
-                  <ChevronLeft size={16} />
-                </button>
+            <div className="flex flex-col gap-4 sm:flex-row items-center justify-between border-t border-border/30 pt-6 mt-4">
+        <div className="text-xs font-medium text-muted-foreground order-2 sm:order-1">
+          Page <span className="text-foreground font-semibold">{currentPage}</span> of{" "}
+          <span className="text-foreground font-semibold">{totalPages}</span>
+        </div>
 
-                <div className="flex gap-1">
-                  {Array.from({ length: data.totalPages }).map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => updateFilters({ page: i + 1 })}
-                      className={`w-8 h-8 rounded-lg text-sm font-medium transition-all ${
-                        filters.page === i + 1
-                          ? "bg-[#719FC4] text-white"
-                          : "bg-white text-gray-500 border border-gray-200 hover:border-[#719FC4]"
-                      }`}
+        <div className="order-1 sm:order-2 w-full sm:w-auto">
+          <Pagination>
+            <PaginationContent className="flex-wrap justify-end gap-1">
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => { e.preventDefault(); if (currentPage > 1) updateFilters({ page: filters.page! - 1 }) }}
+                  className={currentPage === 1 || isFetching || isLoading ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+
+              {pageNumbers.map((pageNumber, idx) => (
+                <PaginationItem key={`page-node-${idx}`}>
+                  {pageNumber === "ellipsis" ? (
+                    <PaginationEllipsis />
+                  ) : (
+                    <PaginationLink
+                      href="#"
+                      isActive={currentPage === pageNumber}
+                      onClick={(e) => { e.preventDefault(); updateFilters({ page: idx + 1 }); }}
+                      className={isFetching || isLoading ? "pointer-events-none opacity-50" : "cursor-pointer"}
                     >
-                      {i + 1}
-                    </button>
-                  ))}
-                </div>
+                      {pageNumber}
+                    </PaginationLink>
+                  )}
+                </PaginationItem>
+              ))}
 
-                <button
-                  onClick={() => updateFilters({ page: filters.page! + 1 })}
-                  disabled={filters.page === data.totalPages}
-                  className="p-2 rounded-xl border border-gray-200 bg-white disabled:opacity-40 hover:border-[#719FC4] transition-colors"
-                >
-                  <ChevronRight size={16} />
-                </button>
-              </div>
-            )}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => { e.preventDefault(); if (currentPage < totalPages) updateFilters({ page: filters.page! + 1 }) }}
+                  className={currentPage >= totalPages || isFetching || isLoading ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      </div>
           </>
         )}
       </div>

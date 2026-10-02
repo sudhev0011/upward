@@ -1,15 +1,20 @@
-import { PayoutRequest } from "../../../../entities/payout-request.entity";
-import { ProviderBank } from "../../../../entities/provider-bank.entity";
+import {
+  PayoutRequestQueryModel,
+  AdminPayoutRequestResponse,
+  PaginatedPayoutRequestsResponse,
+  PayoutRequestPaginationOptions,
+} from "../../../../queries/admin/PayoutRequestQueryModel";
 
-export interface AdminPayoutRequestResponse {
-  payoutRequest: PayoutRequest;
-  provider: {
-    name: string;
-    email: string;
-  };
-  bankDetails: ProviderBank | null;
-}
+export {
+  PayoutRequestQueryModel,
+  AdminPayoutRequestResponse,
+  PaginatedPayoutRequestsResponse,
+  PayoutRequestPaginationOptions,
+};
 
 export interface IGetAdminPayoutRequestsUseCase {
-  execute(): Promise<AdminPayoutRequestResponse[]>;
+  execute(
+    options?: PayoutRequestPaginationOptions
+  ): Promise<PaginatedPayoutRequestsResponse>;
 }
+
