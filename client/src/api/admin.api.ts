@@ -231,9 +231,14 @@ export const adminApi = {
     ).data;
   },
 
-  async getPayoutRequests(): Promise<ApiEnvelope<any[]>> {
+  async getPayoutRequests(params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    search?: string;
+  }): Promise<ApiEnvelope<any>> {
     return (
-      await api.get<ApiEnvelope<any[]>>(AdminRoutes.PAYOUT_REQUESTS)
+      await api.get<ApiEnvelope<any>>(AdminRoutes.PAYOUT_REQUESTS, { params })
     ).data;
   },
 

@@ -19,7 +19,17 @@ export class AdminPayoutController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const result = await this.getAdminPayoutRequestsUseCase.execute();
+      const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+      const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+      const status = req.query.status as string | undefined;
+      const search = req.query.search as string | undefined;
+
+      const result = await this.getAdminPayoutRequestsUseCase.execute({
+        page,
+        limit,
+        status,
+        search,
+      });
 
       sendSuccessResponse(
         res,

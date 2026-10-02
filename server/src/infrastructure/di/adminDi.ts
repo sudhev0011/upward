@@ -64,8 +64,8 @@ const encryptionService = new EncryptionService();
 const getAllUsersUseCase = new GetAllClientsUseCase(userRepository,clientProfileRepository,s3Service)
 const blockUserUseCase = new BlockClientUseCase(userRepository)
 const adminGetUserByIdUseCase = new AdminGetClientByIdUseCase(userRepository,getClientProfileUseCase); 
-export const getProviderKycUseCase = new GetProviderKycUseCase(providerKycRepository,s3Service,encryptionService);
-export const getProviderBankUseCase = new GetProviderBankUseCase(providerBankRepository,s3Service,encryptionService);
+const getProviderKycUseCase = new GetProviderKycUseCase(providerKycRepository,s3Service,encryptionService);
+const getProviderBankUseCase = new GetProviderBankUseCase(providerBankRepository,s3Service,encryptionService);
 
 const getAllProvidersUseCase = new GetAllProvidersUseCase(providerProfileRepository);
 const adminGetProviderByIdUseCase = new ProviderGetByIdUseCase(userRepository, providerProfileRepository);
@@ -112,9 +112,7 @@ export const adminPaymentController = new AdminPaymentController(getAdminPayment
 const payoutRequestRepository = new PayoutRequestRepository();
 const mongoTransactionManager = new MongoTransactionManager();
 const getAdminPayoutRequestsUseCase = new GetAdminPayoutRequestsUseCase(
-  payoutRequestRepository,
-  userRepository,
-  providerBankRepository
+  payoutRequestRepository
 );
 const processPayoutRequestUseCase = new ProcessPayoutRequestUseCase(
   payoutRequestRepository,

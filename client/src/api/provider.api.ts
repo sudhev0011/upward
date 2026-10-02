@@ -312,8 +312,9 @@ export const providerApi = {
     params: ListBookingsRequest,
   ): Promise<ApiEnvelope<ListBookingsResponse>> {
     return (
+      // FIXED: Used constant instead of hardcoded "/api/provider/bookings"
       await api.get<ApiEnvelope<ListBookingsResponse>>(
-        "/api/provider/bookings",
+        ProviderRoutes.BOOKINGS,
         { params },
       )
     ).data;
@@ -324,8 +325,9 @@ export const providerApi = {
     reason?: string | null,
   ): Promise<ApiEnvelope<void>> {
     return (
+      // FIXED: Used constant function instead of hardcoded string
       await api.patch<ApiEnvelope<void>>(
-        `/api/provider/bookings/${bookingId}/cancel`,
+        ProviderRoutes.CANCEL_BOOKING(bookingId),
         { reason },
       )
     ).data;
